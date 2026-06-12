@@ -1,0 +1,21 @@
+/* Header Component Styles */
+
+.header {
+  @apply bg-white shadow-sm border-b border-gray-200;
+}
+
+.header-container {
+  @apply flex items-center justify-between px-6 py-4;
+}
+
+.header-left {
+  @apply flex items-center gap-4;
+}
+
+.header-right {
+  @apply flex items-center gap-4;
+}
+
+.sidebar-toggle-button {
+  @apply p-2 hover:bg-gray-100 rounded-lg transition-colors;
+}

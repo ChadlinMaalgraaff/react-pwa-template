@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
-import Header from './Header'
-import Sidebar from './Sidebar'
+import Header from '../Header/Header'
+import Sidebar from '../Sidebar/Sidebar'
+import './Layout.css'
 
 /**
  * Main Layout Component
@@ -8,12 +9,12 @@ import Sidebar from './Sidebar'
  */
 function Layout() {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="layout-container">
       <Header />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="layout-content-wrapper">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto">
-          <div className="p-6">
+        <main className="layout-main">
+          <div className="layout-main-content">
             <Outlet />
           </div>
         </main>

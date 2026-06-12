@@ -1,0 +1,17 @@
+/* Layout Component Styles */
+
+.layout-container {
+  @apply flex flex-col min-h-screen bg-gray-50;
+}
+
+.layout-content-wrapper {
+  @apply flex flex-1 overflow-hidden;
+}
+
+.layout-main {
+  @apply flex-1 overflow-y-auto;
+}
+
+.layout-main-content {
+  @apply p-6;
+}

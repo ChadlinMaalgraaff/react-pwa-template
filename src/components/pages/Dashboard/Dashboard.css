@@ -1,0 +1,21 @@
+/* Dashboard Page Styles */
+
+.dashboard-container {
+  @apply space-y-6;
+}
+
+.dashboard-title {
+  @apply text-3xl font-bold text-gray-800;
+}
+
+.dashboard-grid {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+}
+
+.dashboard-stat-card {
+  @apply card;
+}
+
+.dashboard-stat-value {
+  @apply text-3xl font-bold;
+}

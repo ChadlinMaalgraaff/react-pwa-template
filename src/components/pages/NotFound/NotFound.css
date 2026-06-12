@@ -1,0 +1,25 @@
+/* NotFound Page Styles */
+
+.notfound-container {
+  @apply flex flex-col items-center justify-center min-h-screen bg-gray-50;
+}
+
+.notfound-content {
+  @apply text-center;
+}
+
+.notfound-title {
+  @apply text-6xl font-bold text-gray-800 mb-4;
+}
+
+.notfound-subtitle {
+  @apply text-2xl font-semibold text-gray-700 mb-4;
+}
+
+.notfound-message {
+  @apply text-gray-600 mb-8;
+}
+
+.notfound-link {
+  @apply btn-primary;
+}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useAppSelector } from '@hooks/redux.hooks'
+import './Sidebar.css'
 
 /**
  * Sidebar Component
@@ -13,23 +14,23 @@ function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-white shadow-sm border-r border-gray-200">
-      <nav className="p-4 space-y-2">
+    <aside className="sidebar">
+      <nav className="sidebar-nav">
         <Link
           to="/"
-          className="block px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+          className="sidebar-link"
         >
           Dashboard
         </Link>
         <Link
           to="/settings"
-          className="block px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+          className="sidebar-link"
         >
           Settings
         </Link>
         <Link
           to="/components"
-          className="block px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+          className="sidebar-link"
         >
           Components
         </Link>

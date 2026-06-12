@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@hooks/redux.hooks'
 import { setSidebarOpen } from '@store/slices/ui.slice'
 import { logout } from '@store/slices/auth.slice'
+import './Header.css'
 
 /**
  * Header Component
@@ -19,12 +20,12 @@ function Header() {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-4">
+    <header className="header">
+      <div className="header-container">
+        <div className="header-left">
           <button
             onClick={handleToggleSidebar}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="sidebar-toggle-button"
             aria-label="Toggle sidebar"
           >
             <svg
@@ -44,16 +45,16 @@ function Header() {
           <h1 className="text-2xl font-bold text-gray-800">FTD App</h1>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="header-right">
           {user && (
             <>
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-800">{user.name}</p>
+                <p className="text-sm font-semibold text-gray-800">{user.name}</p>
                 <p className="text-xs text-gray-500">{user.email}</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 Logout
               </button>
