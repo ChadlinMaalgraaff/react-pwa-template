@@ -375,6 +375,12 @@ it('should set state', () => {
 - 100% coverage for critical paths (auth, payments)
 - Focus on meaningful tests, not just coverage
 
+### Tests Are Required
+
+Every new component, hook, util, or bug fix must ship with tests covering it.
+A pull request that adds behavior without a corresponding test (or a fix
+without a regression test) should not be merged.
+
 ## Performance
 
 ### Code Splitting
@@ -591,6 +597,10 @@ chore: Update dependencies
 
 ## Linting and Formatting
 
+ESLint must pass with zero errors and zero warnings (`--max-warnings 0`)
+before code is committed or merged. Do not disable rules or widen
+`ignorePatterns` to silence failures — fix the underlying issue.
+
 Run these commands before committing:
 
 ```bash
@@ -600,12 +610,17 @@ npm run test                 # Run tests
 npm run build                # Build for production
 ```
 
+A pre-commit hook (Husky + lint-staged, see `.husky/pre-commit`) runs ESLint
+on staged `.ts`/`.tsx` files and the full test suite automatically. Commits
+that fail lint or tests are blocked.
+
 ## Summary
 
 - ✅ Use TypeScript strictly
 - ✅ Write functional components with hooks
 - ✅ Keep Redux slices focused
-- ✅ Test thoroughly
+- ✅ Write tests for all new code and bug fixes
+- ✅ Pass ESLint with zero errors/warnings
 - ✅ Optimize performance
 - ✅ Ensure accessibility
 - ✅ Follow naming conventions
