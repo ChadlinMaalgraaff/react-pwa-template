@@ -9,9 +9,28 @@ export interface Pagination {
   total: number
 }
 
+/**
+ * Shape returned by paginated backend list endpoints
+ * (GET /recipes, GET /specials, GET /admin/users, etc.)
+ */
+export interface PaginatedResult<T> {
+  items: T[]
+  page: number
+  pageSize: number
+  total: number
+}
+
+/**
+ * Acknowledgement shape returned by DELETE endpoints
+ */
+export interface PartialEntityModel {
+  id: string
+  message: string
+}
+
 export interface Filter {
   key: string
-  value: any
+  value: unknown
   operator?: 'eq' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte'
 }
 

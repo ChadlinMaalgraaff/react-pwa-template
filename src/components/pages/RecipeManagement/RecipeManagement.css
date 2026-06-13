@@ -1,0 +1,27 @@
+.recipe-management-page {
+  @apply flex flex-col gap-4;
+}
+
+.recipe-management-header {
+  @apply flex items-center justify-between;
+}
+
+.recipe-management-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.recipe-management-actions {
+  @apply flex gap-3;
+}
+
+.recipe-management-filters {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center;
+}
+
+.recipe-management-filters > *:first-child {
+  @apply sm:w-64;
+}
+
+.recipe-management-cuisines {
+  @apply flex flex-wrap gap-2;
+}

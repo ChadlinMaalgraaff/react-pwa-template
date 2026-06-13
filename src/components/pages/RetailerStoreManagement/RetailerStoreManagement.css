@@ -1,0 +1,47 @@
+.retailer-management-page {
+  @apply flex flex-col gap-4;
+}
+
+.retailer-management-header {
+  @apply flex items-center justify-between;
+}
+
+.retailer-management-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.retailer-management-list {
+  @apply flex flex-col gap-3;
+}
+
+.retailer-management-card {
+  @apply flex flex-col gap-3;
+}
+
+.retailer-management-row {
+  @apply flex items-center justify-between gap-3;
+}
+
+.retailer-management-row-main {
+  @apply flex flex-1 items-center gap-3 text-left;
+}
+
+.retailer-management-logo {
+  @apply h-8 w-8 rounded object-contain;
+}
+
+.retailer-management-name {
+  @apply text-base font-medium text-neutral-900;
+}
+
+.retailer-management-row-actions {
+  @apply flex items-center gap-2;
+}
+
+.retailer-management-stores {
+  @apply mt-2;
+}
+
+.retailer-management-form {
+  @apply flex flex-col gap-4;
+}

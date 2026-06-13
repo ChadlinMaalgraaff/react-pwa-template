@@ -1,0 +1,29 @@
+/* RecipeIngredientFormRow Component Styles */
+
+.recipe-ingredient-form-row {
+  @apply flex flex-wrap items-center gap-2 border-b border-neutral-100 py-2;
+}
+
+.recipe-ingredient-form-name {
+  @apply min-w-[10rem] flex-1;
+}
+
+.recipe-ingredient-form-name-display {
+  @apply flex items-center justify-between gap-2 text-sm text-neutral-900;
+}
+
+.recipe-ingredient-form-quantity {
+  @apply w-20;
+}
+
+.recipe-ingredient-form-unit {
+  @apply w-24;
+}
+
+.recipe-ingredient-form-optional {
+  @apply flex items-center gap-1 text-sm text-neutral-700;
+}
+
+.recipe-ingredient-form-notes {
+  @apply min-w-[8rem] flex-1;
+}

@@ -1,0 +1,23 @@
+.ingredient-catalog-page {
+  @apply flex flex-col gap-4;
+}
+
+.ingredient-catalog-header {
+  @apply flex items-center justify-between;
+}
+
+.ingredient-catalog-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.ingredient-catalog-filters {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center;
+}
+
+.ingredient-catalog-filters > * {
+  @apply sm:w-64;
+}
+
+.ingredient-catalog-form {
+  @apply flex flex-col gap-4;
+}

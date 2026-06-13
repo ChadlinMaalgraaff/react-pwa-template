@@ -1,0 +1,13 @@
+/* RecipeBrowse Page Styles */
+
+.recipe-browse-page {
+  @apply flex flex-col gap-4 p-4;
+}
+
+.recipe-browse-cuisines {
+  @apply flex gap-2 overflow-x-auto pb-2;
+}
+
+.recipe-browse-list {
+  @apply flex flex-col gap-3;
+}

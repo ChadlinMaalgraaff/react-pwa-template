@@ -22,6 +22,6 @@ export interface PaginatedResponse<T> {
 export interface ApiError {
   status: number
   message: string
-  details?: Record<string, any>
+  details?: Record<string, unknown>
   timestamp?: string
 }

@@ -1,0 +1,17 @@
+/* PhotoCapture Page Styles */
+
+.photo-capture-page {
+  @apply relative flex h-screen flex-col bg-neutral-900 text-white;
+}
+
+.photo-capture-close {
+  @apply absolute left-4 top-4 z-10 text-white;
+}
+
+.photo-capture-status {
+  @apply flex h-full flex-col items-center justify-center gap-4 text-neutral-300;
+}
+
+.photo-capture-error {
+  @apply absolute bottom-4 left-1/2 -translate-x-1/2 rounded-md bg-danger px-4 py-2 text-sm text-white;
+}

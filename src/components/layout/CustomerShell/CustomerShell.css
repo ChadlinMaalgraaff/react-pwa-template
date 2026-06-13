@@ -1,0 +1,17 @@
+/* CustomerShell Component Styles */
+
+.customer-shell {
+  @apply flex min-h-screen flex-col bg-neutral-50;
+}
+
+.customer-shell-header {
+  @apply sticky top-0 z-10 border-b border-neutral-200 bg-surface px-4 py-3;
+}
+
+.customer-shell-title {
+  @apply text-lg font-semibold text-neutral-900;
+}
+
+.customer-shell-main {
+  @apply flex-1 overflow-y-auto pb-20;
+}

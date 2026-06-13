@@ -1,0 +1,5 @@
+/* RetailerFilterBar Component Styles */
+
+.retailer-filter-bar {
+  @apply flex gap-2 overflow-x-auto pb-2;
+}

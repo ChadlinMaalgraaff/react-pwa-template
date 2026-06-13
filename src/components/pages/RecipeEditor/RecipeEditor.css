@@ -1,0 +1,35 @@
+.recipe-editor-page {
+  @apply flex flex-col gap-6 pb-24;
+}
+
+.recipe-editor-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.recipe-editor-grid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+}
+
+.recipe-editor-section {
+  @apply flex flex-col gap-4;
+}
+
+.recipe-editor-section-title {
+  @apply text-lg font-semibold text-neutral-900;
+}
+
+.recipe-editor-textarea-label {
+  @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+.recipe-editor-textarea {
+  @apply input w-full;
+}
+
+.recipe-editor-ingredients {
+  @apply flex flex-col gap-3;
+}
+
+.recipe-editor-actions {
+  @apply fixed inset-x-0 bottom-0 z-10 flex justify-end gap-3 border-t border-neutral-200 bg-surface p-4;
+}

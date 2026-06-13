@@ -1,0 +1,25 @@
+/* ShoppingListItemRow Component Styles */
+
+.shopping-list-item-row {
+  @apply flex items-center gap-3 border-b border-neutral-100 py-3;
+}
+
+.shopping-list-item-checkbox {
+  @apply h-5 w-5 rounded border-neutral-300 text-primary focus:ring-primary;
+}
+
+.shopping-list-item-info {
+  @apply flex flex-1 items-center gap-2;
+}
+
+.shopping-list-item-name {
+  @apply text-sm font-medium text-neutral-900;
+}
+
+.shopping-list-item-checked .shopping-list-item-name {
+  @apply text-neutral-400 line-through;
+}
+
+.shopping-list-item-delete {
+  @apply text-neutral-400 hover:text-danger;
+}

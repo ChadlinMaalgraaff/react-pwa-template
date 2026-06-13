@@ -1,0 +1,11 @@
+.user-management-page {
+  @apply flex flex-col gap-4;
+}
+
+.user-management-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.user-management-search {
+  @apply sm:w-64;
+}

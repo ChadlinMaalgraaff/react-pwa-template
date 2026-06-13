@@ -1,0 +1,33 @@
+/* ShoppingListDetail Page Styles */
+
+.shopping-list-detail-page {
+  @apply flex flex-col gap-4 p-4;
+}
+
+.shopping-list-detail-header {
+  @apply flex items-center justify-between;
+}
+
+.shopping-list-detail-title {
+  @apply text-lg font-semibold text-neutral-900;
+}
+
+.shopping-list-detail-groups {
+  @apply flex flex-col gap-6;
+}
+
+.shopping-list-detail-group {
+  @apply flex flex-col gap-1;
+}
+
+.shopping-list-detail-group-title {
+  @apply text-sm font-semibold uppercase tracking-wide text-neutral-500;
+}
+
+.shopping-list-detail-add-form {
+  @apply flex flex-col gap-4;
+}
+
+.shopping-list-detail-add-selected {
+  @apply flex items-center justify-between gap-3;
+}

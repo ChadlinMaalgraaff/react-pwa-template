@@ -1,0 +1,33 @@
+/* Login Page Styles */
+
+.auth-page {
+  @apply flex min-h-screen items-center justify-center bg-neutral-50 p-4;
+}
+
+.auth-card {
+  @apply w-full max-w-sm rounded-lg bg-surface p-6 shadow-sm;
+}
+
+.auth-logo {
+  @apply mb-2 text-center text-2xl font-bold text-primary;
+}
+
+.auth-heading {
+  @apply mb-4 text-center text-lg font-semibold text-neutral-900;
+}
+
+.auth-error {
+  @apply mb-4 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger;
+}
+
+.auth-form {
+  @apply flex flex-col gap-4;
+}
+
+.auth-footer {
+  @apply mt-4 text-center text-sm text-neutral-600;
+}
+
+.auth-footer a {
+  @apply font-medium text-primary;
+}

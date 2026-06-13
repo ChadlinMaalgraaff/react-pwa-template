@@ -1,0 +1,13 @@
+/* ComingSoon Page Styles */
+
+.coming-soon {
+  @apply flex flex-col items-center justify-center gap-2 p-8 text-center;
+}
+
+.coming-soon-title {
+  @apply text-xl font-semibold text-neutral-900;
+}
+
+.coming-soon-message {
+  @apply text-sm text-neutral-500;
+}

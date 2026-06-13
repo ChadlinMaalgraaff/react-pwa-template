@@ -1,0 +1,25 @@
+/* SpecialCard Component Styles */
+
+.special-card {
+  @apply flex flex-col gap-2;
+}
+
+.special-card-image {
+  @apply -mx-6 -mt-6 mb-2 h-32 w-[calc(100%+3rem)] rounded-t-lg object-cover;
+}
+
+.special-card-body {
+  @apply flex flex-col items-start gap-1;
+}
+
+.special-card-name {
+  @apply text-base font-semibold text-neutral-900;
+}
+
+.special-card-price {
+  @apply text-lg font-bold text-accent;
+}
+
+.special-card-validity {
+  @apply text-xs text-neutral-500;
+}

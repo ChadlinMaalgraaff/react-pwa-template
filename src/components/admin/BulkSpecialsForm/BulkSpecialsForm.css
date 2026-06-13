@@ -1,0 +1,37 @@
+/* BulkSpecialsForm Component Styles */
+
+.bulk-specials-form {
+  @apply flex flex-col gap-4;
+}
+
+.bulk-specials-form-header {
+  @apply grid grid-cols-1 gap-3 sm:grid-cols-3;
+}
+
+.bulk-specials-form-items {
+  @apply flex flex-col gap-3;
+}
+
+.bulk-specials-form-row {
+  @apply flex flex-wrap items-center gap-2 border-b border-neutral-100 pb-3;
+}
+
+.bulk-specials-form-item-name {
+  @apply min-w-[10rem] flex-1;
+}
+
+.bulk-specials-form-price {
+  @apply w-24;
+}
+
+.bulk-specials-form-unit {
+  @apply w-20;
+}
+
+.bulk-specials-form-ingredient {
+  @apply min-w-[12rem] flex-1;
+}
+
+.bulk-specials-form-ingredient-name {
+  @apply mt-1 block text-xs text-neutral-500;
+}

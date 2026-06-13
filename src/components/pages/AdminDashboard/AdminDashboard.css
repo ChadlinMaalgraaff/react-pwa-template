@@ -1,0 +1,23 @@
+.admin-dashboard-page {
+  @apply flex flex-col gap-6;
+}
+
+.admin-dashboard-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.admin-dashboard-grid {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+.admin-dashboard-card {
+  @apply flex flex-col gap-2;
+}
+
+.admin-dashboard-count {
+  @apply text-3xl font-semibold text-neutral-900;
+}
+
+.admin-dashboard-label {
+  @apply text-sm font-medium text-neutral-500;
+}

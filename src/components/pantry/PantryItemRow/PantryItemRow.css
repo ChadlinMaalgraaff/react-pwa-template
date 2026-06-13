@@ -1,0 +1,21 @@
+/* PantryItemRow Component Styles */
+
+.pantry-item-row {
+  @apply flex items-center justify-between gap-4 border-b border-neutral-100 py-3;
+}
+
+.pantry-item-info {
+  @apply flex-1;
+}
+
+.pantry-item-name {
+  @apply text-sm font-medium text-neutral-900;
+}
+
+.pantry-item-category {
+  @apply text-xs text-neutral-500;
+}
+
+.pantry-item-delete {
+  @apply text-neutral-400 hover:text-danger;
+}

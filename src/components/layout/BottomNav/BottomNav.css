@@ -1,0 +1,13 @@
+/* BottomNav Component Styles */
+
+.bottom-nav {
+  @apply fixed bottom-0 left-0 right-0 z-10 flex items-center justify-around border-t border-neutral-200 bg-surface py-2;
+}
+
+.bottom-nav-link {
+  @apply flex flex-1 flex-col items-center gap-1 text-neutral-500;
+}
+
+.bottom-nav-link-active {
+  @apply text-primary;
+}

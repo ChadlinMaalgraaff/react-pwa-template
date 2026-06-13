@@ -1,0 +1,25 @@
+/* ShoppingListSummaryCard Component Styles */
+
+.shopping-list-summary-card {
+  @apply flex flex-col gap-1;
+}
+
+.shopping-list-summary-row {
+  @apply flex flex-row items-center justify-between gap-3;
+}
+
+.shopping-list-summary-button {
+  @apply block flex-1 text-left;
+}
+
+.shopping-list-summary-name {
+  @apply text-base font-semibold text-neutral-900;
+}
+
+.shopping-list-summary-meta {
+  @apply text-xs text-neutral-500;
+}
+
+.shopping-list-summary-delete {
+  @apply text-neutral-400 hover:text-danger;
+}

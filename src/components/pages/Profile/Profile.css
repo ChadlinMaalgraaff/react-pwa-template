@@ -1,0 +1,33 @@
+/* Profile Page Styles */
+
+.profile-page {
+  @apply flex flex-col gap-6 p-4;
+}
+
+.profile-header {
+  @apply flex flex-col gap-1;
+}
+
+.profile-name {
+  @apply text-lg font-semibold text-neutral-900;
+}
+
+.profile-email {
+  @apply text-sm text-neutral-500;
+}
+
+.profile-section {
+  @apply flex flex-col gap-2;
+}
+
+.profile-section-title {
+  @apply text-sm font-semibold uppercase tracking-wide text-neutral-500;
+}
+
+.profile-chip-group {
+  @apply flex flex-wrap gap-2;
+}
+
+.profile-divider {
+  @apply border-t border-neutral-100;
+}

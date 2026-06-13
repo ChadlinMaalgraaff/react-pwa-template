@@ -1,0 +1,13 @@
+/* IngredientAutocomplete Component Styles */
+
+.ingredient-autocomplete {
+  @apply relative;
+}
+
+.ingredient-autocomplete-list {
+  @apply absolute z-10 mt-1 w-full rounded-lg border border-neutral-200 bg-surface shadow-md;
+}
+
+.ingredient-autocomplete-option {
+  @apply block w-full px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-100;
+}

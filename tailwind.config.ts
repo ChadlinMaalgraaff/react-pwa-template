@@ -7,9 +7,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#3B82F6',
-        secondary: '#8B5CF6',
-        accent: '#EC4899',
+        primary: {
+          DEFAULT: '#16A34A',
+          light: '#DCFCE7',
+        },
+        secondary: '#2563EB',
+        accent: {
+          DEFAULT: '#F59E0B',
+          light: '#FEF3C7',
+        },
+        danger: '#DC2626',
+        surface: '#FFFFFF',
+        neutral: {
+          50: '#FAFAF9',
+          100: '#F5F5F4',
+          200: '#E7E5E4',
+          300: '#D6D3D1',
+          400: '#A8A29E',
+          500: '#78716C',
+          600: '#57534E',
+          700: '#44403C',
+          800: '#292524',
+          900: '#1C1917',
+        },
       },
       spacing: {
         '128': '32rem',

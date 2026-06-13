@@ -1,0 +1,9 @@
+/* AdminFormModal Component Styles */
+
+.admin-form-modal-body {
+  @apply space-y-4;
+}
+
+.admin-form-modal-footer {
+  @apply mt-6 flex justify-end gap-3;
+}

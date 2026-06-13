@@ -1,0 +1,39 @@
+.recipe-import-page {
+  @apply flex flex-col gap-6;
+}
+
+.recipe-import-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.recipe-import-description {
+  @apply text-sm text-neutral-500;
+}
+
+.recipe-import-form {
+  @apply flex flex-col gap-4 sm:flex-row sm:items-end;
+}
+
+.recipe-import-preview-title {
+  @apply text-lg font-semibold text-neutral-900;
+}
+
+.recipe-import-preview-meta {
+  @apply text-sm text-neutral-500;
+}
+
+.recipe-import-preview-section {
+  @apply mt-4 flex flex-col gap-2;
+}
+
+.recipe-import-preview-heading {
+  @apply text-sm font-medium text-neutral-700;
+}
+
+.recipe-import-preview-list {
+  @apply list-disc pl-5 text-sm text-neutral-700;
+}
+
+.recipe-import-preview-actions {
+  @apply mt-6 flex gap-3;
+}

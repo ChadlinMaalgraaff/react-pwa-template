@@ -1,0 +1,17 @@
+/* ShoppingLists Page Styles */
+
+.shopping-lists-page {
+  @apply flex flex-col gap-4 p-4;
+}
+
+.shopping-lists-actions {
+  @apply flex justify-end;
+}
+
+.shopping-lists-list {
+  @apply flex flex-col gap-3;
+}
+
+.shopping-lists-form {
+  @apply flex flex-col gap-4;
+}

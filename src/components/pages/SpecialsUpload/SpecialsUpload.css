@@ -1,0 +1,15 @@
+.specials-upload-page {
+  @apply flex flex-col gap-6;
+}
+
+.specials-upload-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.specials-upload-error {
+  @apply text-sm text-danger;
+}
+
+.specials-upload-actions {
+  @apply flex gap-3;
+}

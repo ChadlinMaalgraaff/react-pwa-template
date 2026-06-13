@@ -1,0 +1,17 @@
+/* PhotoReview Page Styles */
+
+.photo-review-page {
+  @apply flex flex-col gap-4 p-4;
+}
+
+.photo-review-progress {
+  @apply mb-2;
+}
+
+.photo-review-list {
+  @apply flex flex-col gap-2;
+}
+
+.photo-review-manual {
+  @apply mt-2;
+}

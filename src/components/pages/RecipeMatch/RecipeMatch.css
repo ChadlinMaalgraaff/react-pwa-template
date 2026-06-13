@@ -1,0 +1,9 @@
+/* RecipeMatch Page Styles */
+
+.recipe-match-page {
+  @apply flex flex-col gap-4 p-4;
+}
+
+.recipe-match-list {
+  @apply flex flex-col gap-3;
+}

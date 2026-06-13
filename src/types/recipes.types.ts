@@ -1,0 +1,141 @@
+/**
+ * Recipes Domain Types
+ * Mirrors Recipe / RecipeIngredient (Backend PRD §6.5-6.6) and
+ * /recipes, /recipes/match, /recipes/{id}/cost, /admin/recipes (§7.4)
+ */
+
+import { PaginatedResult } from './common.types'
+
+export type RecipeSource = 'admin' | 'api'
+
+export interface RecipeSummary {
+  id: string
+  title: string
+  imageUrl: string | null
+  cuisine: string | null
+  prepTimeMinutes: number | null
+  cookTimeMinutes: number | null
+  servings: number | null
+  isSaStaple: boolean
+}
+
+export interface RecipeIngredientDetail {
+  ingredientId: string
+  name: string
+  quantity: number
+  unit: string
+  isOptional: boolean
+  notes: string | null
+  inPantry: boolean
+}
+
+export interface RecipeDetail {
+  id: string
+  title: string
+  description: string | null
+  instructions: string[]
+  imageUrl: string | null
+  cuisine: string | null
+  prepTimeMinutes: number | null
+  cookTimeMinutes: number | null
+  servings: number | null
+  isSaStaple: boolean
+  ingredients: RecipeIngredientDetail[]
+}
+
+export interface ListRecipesParams {
+  search?: string
+  cuisine?: string
+  isSaStaple?: boolean
+  page?: number
+  pageSize?: number
+}
+
+export type RecipesPage = PaginatedResult<RecipeSummary>
+
+export interface MatchRecipesParams {
+  maxMissing?: number
+  page?: number
+  pageSize?: number
+}
+
+export interface MissingIngredient {
+  ingredientId: string
+  name: string
+}
+
+export interface MatchedRecipe {
+  id: string
+  title: string
+  imageUrl: string | null
+  totalIngredients: number
+  matchedIngredients: number
+  missingIngredients: MissingIngredient[]
+  isFullyMakeable: boolean
+}
+
+export type RecipeMatchPage = PaginatedResult<MatchedRecipe>
+
+export interface RecipeCostOffer {
+  retailerId: string
+  retailerName: string
+  itemName: string
+  price: number
+  validTo: string
+}
+
+export interface RecipeCostMissingIngredient {
+  ingredientId: string
+  name: string
+  quantity: number
+  unit: string
+  cheapestOffers: RecipeCostOffer[]
+}
+
+export interface CheapestSingleRetailer {
+  retailerId: string
+  retailerName: string
+  total: number
+  coversIngredientIds: string[]
+}
+
+export interface CheapestCombination {
+  total: number
+  byIngredient: Record<string, { retailerId: string; price: number }>
+}
+
+export interface RecipeCostResponse {
+  recipeId: string
+  missingIngredients: RecipeCostMissingIngredient[]
+  cheapestSingleRetailer: CheapestSingleRetailer | null
+  cheapestCombination: CheapestCombination
+  uncoveredIngredientIds: string[]
+}
+
+export interface RecipeIngredientInput {
+  ingredientId?: string
+  ingredientName?: string
+  quantity: number
+  unit: string
+  isOptional?: boolean
+  notes?: string
+}
+
+export interface CreateRecipeRequest {
+  title: string
+  description?: string
+  instructions: string[]
+  imageUrl?: string
+  cuisine?: string
+  prepTimeMinutes?: number
+  cookTimeMinutes?: number
+  servings?: number
+  isSaStaple?: boolean
+  ingredients: RecipeIngredientInput[]
+}
+
+export type UpdateRecipeRequest = Partial<CreateRecipeRequest>
+
+export interface ImportRecipeRequest {
+  externalId: string
+}

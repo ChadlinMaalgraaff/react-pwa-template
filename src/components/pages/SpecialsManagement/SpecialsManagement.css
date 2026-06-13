@@ -1,0 +1,23 @@
+.specials-management-page {
+  @apply flex flex-col gap-4;
+}
+
+.specials-management-header {
+  @apply flex items-center justify-between;
+}
+
+.specials-management-title {
+  @apply text-2xl font-semibold text-neutral-900;
+}
+
+.specials-management-filters {
+  @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+}
+
+.specials-management-mapping {
+  @apply flex flex-col gap-2;
+}
+
+.specials-management-mapping-button {
+  @apply cursor-pointer;
+}

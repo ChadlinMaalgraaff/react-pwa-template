@@ -1,0 +1,29 @@
+/* Pantry Page Styles */
+
+.pantry-page {
+  @apply flex flex-col gap-4 p-4;
+}
+
+.pantry-actions {
+  @apply flex justify-end gap-3 text-neutral-600;
+}
+
+.pantry-groups {
+  @apply flex flex-col gap-6;
+}
+
+.pantry-group {
+  @apply flex flex-col gap-2;
+}
+
+.pantry-group-title {
+  @apply text-sm font-semibold uppercase tracking-wide text-neutral-500;
+}
+
+.pantry-add-form {
+  @apply flex flex-col gap-4;
+}
+
+.pantry-add-selected {
+  @apply flex items-center justify-between gap-3;
+}

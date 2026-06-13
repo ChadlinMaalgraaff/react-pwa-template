@@ -1,0 +1,33 @@
+/* RecipeDetail Page Styles */
+
+.recipe-detail-page {
+  @apply flex flex-col gap-4 p-4 pb-24;
+}
+
+.recipe-detail-hero {
+  @apply -mx-4 -mt-4 h-48 w-[calc(100%+2rem)] object-cover;
+}
+
+.recipe-detail-title {
+  @apply text-xl font-semibold text-neutral-900;
+}
+
+.recipe-detail-meta {
+  @apply flex gap-3 text-sm text-neutral-500;
+}
+
+.recipe-detail-section-title {
+  @apply mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-500;
+}
+
+.recipe-detail-instructions {
+  @apply flex list-decimal flex-col gap-2 pl-5 text-sm text-neutral-700;
+}
+
+.recipe-detail-sticky-bar {
+  @apply fixed bottom-0 left-0 right-0 border-t border-neutral-100 bg-surface p-4;
+}
+
+.recipe-detail-picker-list {
+  @apply flex flex-col gap-2;
+}

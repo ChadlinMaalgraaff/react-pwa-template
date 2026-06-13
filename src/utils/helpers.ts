@@ -3,6 +3,22 @@
  * Common helper functions used throughout the application
  */
 
+import { AxiosError } from 'axios'
+
+/**
+ * Extract a human-readable message from a thrown error,
+ * preferring the backend's error message when present.
+ */
+export const getErrorMessage = (err: unknown): string => {
+  if (err instanceof AxiosError) {
+    const data = err.response?.data as { message?: string } | undefined
+    if (data?.message) return data.message
+    return err.message
+  }
+  if (err instanceof Error) return err.message
+  return 'Unknown error'
+}
+
 /**
  * Format a date string to locale-specific format
  */
@@ -22,7 +38,7 @@ export const formatDateTime = (date: Date | string, locale = 'en-US'): string =>
 /**
  * Debounce function - delays execution until timeout expires
  */
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
   delay: number
 ): ((...args: Parameters<T>) => void) => {
@@ -36,7 +52,7 @@ export const debounce = <T extends (...args: any[]) => any>(
 /**
  * Throttle function - limits execution frequency
  */
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: unknown[]) => unknown>(
   func: T,
   limit: number
 ): ((...args: Parameters<T>) => void) => {
@@ -60,7 +76,7 @@ export const deepClone = <T>(obj: T): T => {
 /**
  * Check if object is empty
  */
-export const isEmpty = (obj: Record<string, any>): boolean => {
+export const isEmpty = (obj: Record<string, unknown>): boolean => {
   return Object.keys(obj).length === 0
 }
 
@@ -74,16 +90,16 @@ export const toCamelCase = (str: string): string => {
 /**
  * Convert object keys from snake_case to camelCase
  */
-export const keysToCamelCase = (obj: any): any => {
+export const keysToCamelCase = (obj: unknown): unknown => {
   if (Array.isArray(obj)) {
     return obj.map(keysToCamelCase)
   }
 
-  if (obj !== null && obj.constructor === Object) {
-    return Object.keys(obj).reduce((result, key) => {
-      result[toCamelCase(key)] = keysToCamelCase(obj[key])
+  if (obj !== null && typeof obj === 'object' && obj.constructor === Object) {
+    return Object.entries(obj as Record<string, unknown>).reduce((result, [key, value]) => {
+      result[toCamelCase(key)] = keysToCamelCase(value)
       return result
-    }, {} as any)
+    }, {} as Record<string, unknown>)
   }
 
   return obj

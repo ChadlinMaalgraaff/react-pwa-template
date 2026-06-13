@@ -1,0 +1,9 @@
+/* Specials Page Styles */
+
+.specials-page {
+  @apply flex flex-col gap-4 p-4;
+}
+
+.specials-list {
+  @apply flex flex-col gap-3;
+}

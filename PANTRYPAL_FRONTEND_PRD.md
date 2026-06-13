@@ -89,14 +89,14 @@ PantryPal's palette signals "fresh ingredients + savings"
 
 | Token | Hex | Usage |
 |---|---|---|
-| `primary` |  | Primary actions, "makeable" recipe badges, success states, nav active state |
-| `primary-light` |  | Primary backgrounds (chips, makeable recipe card background) |
-| `secondary` |  | Secondary actions, links |
-| `accent` | | Specials/deals badges, "save money" highlights, price callouts |
-| `accent-light` | | Special card backgrounds |
-| `danger` |  | Delete actions, errors, "missing ingredient" indicators |
-| `neutral-50`…`neutral-900` | (Tailwind `stone` scale) | Backgrounds, text, borders — warm gray rather than cool gray to match the food theme |
-| `surface` |  | Card/sheet backgrounds |
+| `primary` | `#16A34A` | Primary actions, "makeable" recipe badges, success states, nav active state |
+| `primary-light` | `#DCFCE7` | Primary backgrounds (chips, makeable recipe card background) |
+| `secondary` | `#2563EB` | Secondary actions, links |
+| `accent` | `#F59E0B` | Specials/deals badges, "save money" highlights, price callouts |
+| `accent-light` | `#FEF3C7` | Special card backgrounds |
+| `danger` | `#DC2626` | Delete actions, errors, "missing ingredient" indicators |
+| `neutral-50`…`neutral-900` | `#FAFAF9` … `#1C1917` (Tailwind `stone` scale) | Backgrounds, text, borders — warm gray rather than cool gray to match the food theme |
+| `surface` | `#FFFFFF` | Card/sheet backgrounds |
 
 
 ### 5.2 Typography

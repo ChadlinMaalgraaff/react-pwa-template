@@ -1,0 +1,29 @@
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import BottomNav from '@components/layout/BottomNav/BottomNav'
+
+describe('BottomNav Component', () => {
+  it('renders all 5 tabs', () => {
+    render(
+      <MemoryRouter initialEntries={['/pantry']}>
+        <BottomNav />
+      </MemoryRouter>
+    )
+    expect(screen.getByRole('link', { name: /pantry/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /recipes/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /specials/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /lists/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /profile/i })).toBeInTheDocument()
+  })
+
+  it('marks the active tab based on the current route', () => {
+    render(
+      <MemoryRouter initialEntries={['/recipes']}>
+        <BottomNav />
+      </MemoryRouter>
+    )
+    expect(screen.getByRole('link', { name: /recipes/i })).toHaveClass('bottom-nav-link-active')
+    expect(screen.getByRole('link', { name: /pantry/i })).not.toHaveClass('bottom-nav-link-active')
+  })
+})

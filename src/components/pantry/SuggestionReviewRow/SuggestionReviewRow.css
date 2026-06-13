@@ -1,0 +1,17 @@
+/* SuggestionReviewRow Component Styles */
+
+.suggestion-review-row {
+  @apply flex items-center justify-between gap-4 border-b border-neutral-100 py-3;
+}
+
+.suggestion-review-info {
+  @apply flex flex-1 items-center gap-2;
+}
+
+.suggestion-review-name {
+  @apply text-sm font-medium text-neutral-900;
+}
+
+.suggestion-review-remove {
+  @apply text-neutral-400 hover:text-danger;
+}

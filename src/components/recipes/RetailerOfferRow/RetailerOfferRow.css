@@ -1,0 +1,33 @@
+/* RetailerOfferRow Component Styles */
+
+.retailer-offer-row {
+  @apply flex items-center justify-between gap-4 border-b border-neutral-100 py-2;
+}
+
+.retailer-offer-info {
+  @apply flex items-center gap-3;
+}
+
+.retailer-offer-logo {
+  @apply h-8 w-8 rounded object-contain;
+}
+
+.retailer-offer-item {
+  @apply text-sm font-medium text-neutral-900;
+}
+
+.retailer-offer-retailer {
+  @apply text-xs text-neutral-500;
+}
+
+.retailer-offer-price-info {
+  @apply flex flex-col items-end;
+}
+
+.retailer-offer-price {
+  @apply text-sm font-semibold text-accent;
+}
+
+.retailer-offer-valid {
+  @apply text-xs text-neutral-500;
+}

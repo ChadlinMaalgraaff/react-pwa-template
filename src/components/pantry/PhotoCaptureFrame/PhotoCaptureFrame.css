@@ -1,0 +1,17 @@
+/* PhotoCaptureFrame Component Styles */
+
+.photo-capture-frame {
+  @apply flex h-full flex-col items-center justify-center gap-6 bg-neutral-900 text-white;
+}
+
+.photo-capture-placeholder {
+  @apply flex cursor-pointer flex-col items-center gap-3 text-neutral-300;
+}
+
+.photo-capture-preview {
+  @apply max-h-[70vh] w-full object-contain;
+}
+
+.photo-capture-actions {
+  @apply flex gap-4;
+}

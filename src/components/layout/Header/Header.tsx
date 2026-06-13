@@ -10,9 +10,10 @@ import './Header.css'
 function Header() {
   const dispatch = useAppDispatch()
   const { user } = useAppSelector((state) => state.auth)
+  const { sidebarOpen } = useAppSelector((state) => state.ui)
 
   const handleToggleSidebar = () => {
-    dispatch(setSidebarOpen((prev) => !prev))
+    dispatch(setSidebarOpen(!sidebarOpen))
   }
 
   const handleLogout = () => {
@@ -42,7 +43,7 @@ function Header() {
               />
             </svg>
           </button>
-          <h1 className="text-2xl font-bold text-gray-800">FTD App</h1>
+          <h1 className="text-2xl font-bold text-gray-800">PantryPal</h1>
         </div>
 
         <div className="header-right">

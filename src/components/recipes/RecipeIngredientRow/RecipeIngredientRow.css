@@ -1,0 +1,17 @@
+/* RecipeIngredientRow Component Styles */
+
+.recipe-ingredient-row {
+  @apply flex items-center justify-between gap-4 border-b border-neutral-100 py-2;
+}
+
+.recipe-ingredient-info {
+  @apply flex flex-1 items-center gap-2 text-sm text-neutral-900;
+}
+
+.recipe-ingredient-quantity {
+  @apply text-neutral-500;
+}
+
+.recipe-ingredient-optional {
+  @apply rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500;
+}
