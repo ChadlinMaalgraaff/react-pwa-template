@@ -72,7 +72,13 @@ describe('Login Page', () => {
   })
 
   it('navigates to /pantry on successful login for a regular user', async () => {
-    mockedAuthService.login.mockResolvedValue({ token: 'token-123', user: userProfile })
+    mockedAuthService.login.mockResolvedValue({
+      accessToken: 'access-token-123',
+      idToken: 'id-token-123',
+      refreshToken: 'refresh-token-123',
+      expiresIn: 3600,
+      tokenType: 'Bearer',
+    })
     mockedProfileService.getProfile.mockResolvedValue(userProfile)
     const user = userEvent.setup()
     renderLogin()
@@ -86,7 +92,13 @@ describe('Login Page', () => {
 
   it('navigates to /admin on successful login for an admin user', async () => {
     const adminProfile = { ...userProfile, role: 'admin' as const }
-    mockedAuthService.login.mockResolvedValue({ token: 'token-123', user: adminProfile })
+    mockedAuthService.login.mockResolvedValue({
+      accessToken: 'access-token-123',
+      idToken: 'id-token-123',
+      refreshToken: 'refresh-token-123',
+      expiresIn: 3600,
+      tokenType: 'Bearer',
+    })
     mockedProfileService.getProfile.mockResolvedValue(adminProfile)
     const user = userEvent.setup()
     renderLogin()

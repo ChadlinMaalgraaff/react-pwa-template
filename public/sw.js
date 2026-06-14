@@ -13,11 +13,11 @@ const urlsToCache = [
 
 // Reference data that changes slowly - safe to serve stale-while-revalidate.
 const RUNTIME_CACHE_PATTERNS = [
-  /^\/api\/ingredients(\/.*)?$/,
-  /^\/api\/retailers(\/.*)?$/,
-  /^\/api\/recipes$/,
-  /^\/api\/recipes\?.*/,
-  /^\/api\/recipes\/[^/]+$/,
+  /^\/ingredients(\/.*)?$/,
+  /^\/retailers(\/.*)?$/,
+  /^\/recipes$/,
+  /^\/recipes\?.*/,
+  /^\/recipes\/[^/]+$/,
 ]
 
 const isRuntimeCacheable = (pathname, search) => {
@@ -107,9 +107,9 @@ self.addEventListener('fetch', (event) => {
 
   // Live/mutable data (pantry, recipe matching, shopping lists) - always network.
   if (
-    url.pathname.startsWith('/api/pantry') ||
-    url.pathname.startsWith('/api/recipes/match') ||
-    url.pathname.startsWith('/api/shopping-lists')
+    url.pathname.startsWith('/pantry') ||
+    url.pathname.startsWith('/recipes/match') ||
+    url.pathname.startsWith('/shopping-lists')
   ) {
     return
   }

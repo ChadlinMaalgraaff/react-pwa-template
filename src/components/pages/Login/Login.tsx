@@ -20,8 +20,8 @@ const Login = () => {
     setError(null)
     setIsLoading(true)
     try {
-      const { token } = await authService.login({ email, password })
-      dispatch(setToken(token))
+      const { accessToken } = await authService.login({ email, password })
+      dispatch(setToken(accessToken))
       const profile = await profileService.getProfile()
       dispatch(setUser(profile))
       navigate(profile.role === 'admin' ? '/admin' : '/pantry')

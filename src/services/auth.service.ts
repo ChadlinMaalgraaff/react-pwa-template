@@ -13,8 +13,11 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  user: User
-  token: string
+  accessToken: string
+  idToken: string
+  refreshToken: string
+  expiresIn: number
+  tokenType: string
 }
 
 /**
