@@ -8,3 +8,4 @@ export { default as IngredientAutocomplete } from './IngredientAutocomplete/Ingr
 export type { IngredientSelection, NewIngredientOption } from './IngredientAutocomplete/IngredientAutocomplete'
 export { default as PhotoCaptureFrame } from './PhotoCaptureFrame/PhotoCaptureFrame'
 export { default as SuggestionReviewRow } from './SuggestionReviewRow/SuggestionReviewRow'
+export { default as PantryStaplesSection } from './PantryStaplesSection/PantryStaplesSection'

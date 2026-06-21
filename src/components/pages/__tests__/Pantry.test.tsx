@@ -113,8 +113,8 @@ describe('Pantry Page', () => {
 
     await user.click(screen.getByRole('button', { name: 'Add item' }))
     await user.type(screen.getByRole('searchbox'), 'Flour')
-    await waitFor(() => screen.getByText('Flour'), { timeout: 2000 })
-    await user.click(screen.getByText('Flour'))
+    await waitFor(() => screen.getByRole('button', { name: 'Flour' }), { timeout: 2000 })
+    await user.click(screen.getByRole('button', { name: 'Flour' }))
     await user.click(screen.getByRole('button', { name: 'Add to pantry' }))
 
     await waitFor(() =>

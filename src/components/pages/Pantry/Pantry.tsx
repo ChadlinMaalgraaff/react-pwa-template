@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Camera, Package, Plus, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Badge, Button, BottomSheet, Spinner, QuantityStepper } from '@components/shared'
-import { PantryItemRow, IngredientAutocomplete, IngredientSelection } from '@components/pantry'
+import { PantryItemRow, IngredientAutocomplete, IngredientSelection, PantryStaplesSection } from '@components/pantry'
 import { usePantry } from '@hooks/usePantry'
 import { groupItemsByCategory } from './groupItemsByCategory'
 import './Pantry.css'
@@ -68,6 +68,10 @@ const Pantry = () => {
     }
   }
 
+  const addStaple = async (name: string, quantity: number, unit: string) => {
+    await addItem({ ingredientName: name, quantity, unit })
+  }
+
   const groups = groupItemsByCategory(items)
   const hasItems = items.length > 0
 
@@ -93,30 +97,43 @@ const Pantry = () => {
       {isLoading ? (
         <Spinner fullScreen />
       ) : !hasItems ? (
-        <div className="pantry-empty">
-          <div className="pantry-empty-icon">
-            <Package className="h-11 w-11 text-primary" strokeWidth={1.6} />
+        <>
+          <div className="pantry-empty">
+            <div className="pantry-empty-icon">
+              <Package className="h-11 w-11 text-primary" strokeWidth={1.6} />
+            </div>
+            <p className="pantry-empty-title">Let's stock your pantry</p>
+            <p className="pantry-empty-message">
+              Snap a photo of your shelf, or add items one at a time.
+            </p>
+            <div className="pantry-empty-actions">
+              <Button onClick={() => navigate('/pantry/capture')}>
+                <Camera className="h-[18px] w-[18px]" />
+                Scan pantry
+              </Button>
+              <Button variant="secondary" onClick={openAddSheet}>
+                <Plus className="h-[18px] w-[18px]" />
+                Add manually
+              </Button>
+            </div>
           </div>
-          <p className="pantry-empty-title">Let's stock your pantry</p>
-          <p className="pantry-empty-message">
-            Snap a photo of your shelf, or add items one at a time.
-          </p>
-          <div className="pantry-empty-actions">
-            <Button onClick={() => navigate('/pantry/capture')}>
-              <Camera className="h-[18px] w-[18px]" />
-              Scan pantry
-            </Button>
-            <Button variant="secondary" onClick={openAddSheet}>
-              <Plus className="h-[18px] w-[18px]" />
-              Add manually
-            </Button>
-          </div>
-        </div>
+          <PantryStaplesSection
+            items={items}
+            onAdd={addStaple}
+            onRemove={removeItem}
+            defaultExpanded
+          />
+        </>
       ) : (
         <>
           <div className="pantry-summary-badge">
             <Badge variant="success">✓ {items.length} items fresh</Badge>
           </div>
+          <PantryStaplesSection
+            items={items}
+            onAdd={addStaple}
+            onRemove={removeItem}
+          />
           <div className="pantry-groups">
             {groups.map(([category, categoryItems]) => (
               <section key={category} className="pantry-group">
