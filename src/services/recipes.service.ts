@@ -9,6 +9,8 @@ import {
   MatchRecipesParams,
   CreateRecipeRequest,
   UpdateRecipeRequest,
+  AiRecommendRequest,
+  AiRecommendResponse,
 } from '@/types/recipes.types'
 
 /**
@@ -55,6 +57,11 @@ class RecipesService {
 
   async importRecipe(externalId: string): Promise<RecipeDetail> {
     const response = await apiClient.post<RecipeDetail>('/admin/recipes/import', { externalId })
+    return response.data
+  }
+
+  async getAiRecommendation(data: AiRecommendRequest): Promise<AiRecommendResponse> {
+    const response = await apiClient.post<AiRecommendResponse>('/recipes/ai-recommend', data)
     return response.data
   }
 }

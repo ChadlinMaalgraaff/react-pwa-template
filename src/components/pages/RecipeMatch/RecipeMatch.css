@@ -39,3 +39,55 @@
 .recipe-match-nudge {
   @apply text-center text-xs text-neutral-500;
 }
+
+.recipe-match-goal-section {
+  @apply flex flex-col gap-2;
+}
+
+.recipe-match-goal-label {
+  @apply text-xs font-medium text-neutral-500;
+}
+
+/* Recommendation card */
+
+.recipe-match-recommendation {
+  @apply flex flex-col gap-3 rounded-xl border border-primary/20 bg-primary-light p-4;
+}
+
+.recipe-match-recommendation-header {
+  @apply flex items-center justify-between;
+}
+
+.recipe-match-recommendation-eyebrow {
+  @apply text-xs font-semibold uppercase tracking-wide text-primary;
+}
+
+.recipe-match-recommendation-dismiss {
+  @apply text-neutral-400 hover:text-neutral-600;
+}
+
+.recipe-match-recommendation-title {
+  @apply text-base font-semibold text-neutral-900;
+}
+
+.recipe-match-recommendation-rationale {
+  @apply text-sm text-neutral-600;
+}
+
+/* Skeleton loader */
+
+.recipe-match-skeleton {
+  @apply flex animate-pulse flex-col gap-3 rounded-xl border border-neutral-100 bg-neutral-50 p-4;
+}
+
+.recipe-match-skeleton-line {
+  @apply h-3 w-full rounded-full bg-neutral-200;
+}
+
+.recipe-match-skeleton-line--short {
+  @apply w-1/3;
+}
+
+.recipe-match-skeleton-line--medium {
+  @apply w-2/3;
+}

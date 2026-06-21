@@ -139,3 +139,16 @@ export type UpdateRecipeRequest = Partial<CreateRecipeRequest>
 export interface ImportRecipeRequest {
   externalId: string
 }
+
+export type RecommendGoal = 'cost-effective' | 'high-protein' | 'light-meal' | 'quick-cook'
+
+export interface AiRecommendRequest {
+  goal: RecommendGoal
+  recipes: MatchedRecipe[]
+}
+
+export interface AiRecommendResponse {
+  recommendedRecipeId: string
+  rationale: string
+  goal: string
+}

@@ -58,31 +58,29 @@ describe('Profile Page', () => {
     expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument()
   })
 
-  it('renders the user details, preferred area and dietary preferences', () => {
+  it('renders the user details and dietary preferences', () => {
     mockedUseProfile.mockReturnValue({ profile, isLoading: false, error: null, updateProfile: vi.fn() })
     renderProfile()
 
     expect(screen.getByText('Jane Doe')).toBeInTheDocument()
     expect(screen.getByText('jane@example.com')).toBeInTheDocument()
-    expect(screen.getByLabelText('Suburb')).toHaveValue('Sandton')
+    expect(screen.queryByLabelText('Suburb')).not.toBeInTheDocument()
+    expect(screen.queryByText('Preferred shopping area')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Vegetarian' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: 'Vegan' })).toHaveAttribute('aria-pressed', 'false')
   })
 
-  it('saves changes when "Save changes" is clicked', async () => {
+  it('saves dietary preferences when "Save changes" is clicked', async () => {
     const updateProfile = vi.fn().mockResolvedValue(profile)
     mockedUseProfile.mockReturnValue({ profile, isLoading: false, error: null, updateProfile })
     const user = userEvent.setup()
     renderProfile()
 
-    await user.clear(screen.getByLabelText('Suburb'))
-    await user.type(screen.getByLabelText('Suburb'), 'Cape Town')
     await user.click(screen.getByRole('button', { name: 'Vegan' }))
     await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
     await waitFor(() =>
       expect(updateProfile).toHaveBeenCalledWith({
-        preferredArea: 'Cape Town',
         dietaryPreferences: ['Vegetarian', 'Vegan'],
       })
     )

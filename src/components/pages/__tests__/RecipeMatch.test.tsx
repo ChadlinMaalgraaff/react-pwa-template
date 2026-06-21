@@ -9,11 +9,14 @@ import authReducer from '@store/slices/auth.slice'
 import pantryReducer from '@store/slices/pantry.slice'
 import RecipeMatch from '@components/pages/RecipeMatch/RecipeMatch'
 import { useRecipeMatch } from '@hooks/useRecipeMatch'
+import { useRecipeRecommendation } from '@hooks/useRecipeRecommendation'
 import { MatchedRecipe } from '@/types/recipes.types'
 
 vi.mock('@hooks/useRecipeMatch')
+vi.mock('@hooks/useRecipeRecommendation')
 
 const mockedUseRecipeMatch = useRecipeMatch as unknown as ReturnType<typeof vi.fn>
+const mockedUseRecipeRecommendation = useRecipeRecommendation as unknown as ReturnType<typeof vi.fn>
 
 const navigateMock = vi.fn()
 
@@ -41,9 +44,18 @@ const matches: MatchedRecipe[] = [
   { id: 'recipe-2', title: 'Fully Makeable', imageUrl: null, totalIngredients: 3, matchedIngredients: 3, missingIngredients: [], isFullyMakeable: true },
 ]
 
+const defaultRecommendation = {
+  recommend: vi.fn(),
+  clear: vi.fn(),
+  recommendation: null,
+  isLoading: false,
+  error: null,
+}
+
 describe('RecipeMatch Page', () => {
   beforeEach(() => {
     navigateMock.mockClear()
+    mockedUseRecipeRecommendation.mockReturnValue({ ...defaultRecommendation, recommend: vi.fn(), clear: vi.fn() })
   })
 
   it('shows a spinner while loading', () => {
@@ -108,5 +120,99 @@ describe('RecipeMatch Page', () => {
     await user.click(screen.getByRole('button', { name: 'Any' }))
     expect(screen.getByRole('button', { name: 'Any' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: '2' })).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('shows goal chips when matches exist', () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    renderRecipeMatch()
+    expect(screen.getByText("What's your goal tonight?")).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cost-effective' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'High protein' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Light meal' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Quick cook' })).toBeInTheDocument()
+  })
+
+  it('does not show goal chips when there are no matches', () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches: [], isLoading: false, refetch: vi.fn() })
+    renderRecipeMatch()
+    expect(screen.queryByText("What's your goal tonight?")).not.toBeInTheDocument()
+  })
+
+  it('calls recommend with the correct goal and recipes when a goal chip is clicked', async () => {
+    const recommend = vi.fn()
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    mockedUseRecipeRecommendation.mockReturnValue({ ...defaultRecommendation, recommend, clear: vi.fn() })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+
+    await user.click(screen.getByRole('button', { name: 'Quick cook' }))
+
+    expect(recommend).toHaveBeenCalledWith('quick-cook', expect.arrayContaining([
+      expect.objectContaining({ id: 'recipe-2' }),
+      expect.objectContaining({ id: 'recipe-1' }),
+    ]))
+  })
+
+  it('calls clear when the selected goal chip is clicked again', async () => {
+    const clear = vi.fn()
+    const recommend = vi.fn()
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    mockedUseRecipeRecommendation.mockReturnValue({ ...defaultRecommendation, recommend, clear })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+
+    await user.click(screen.getByRole('button', { name: 'Light meal' }))
+    await user.click(screen.getByRole('button', { name: 'Light meal' }))
+
+    expect(clear).toHaveBeenCalled()
+  })
+
+  it('shows the recommendation card with title, rationale and View Recipe button', () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    mockedUseRecipeRecommendation.mockReturnValue({
+      ...defaultRecommendation,
+      recommendation: { recommendedRecipeId: 'recipe-2', rationale: 'Great choice tonight.', goal: 'quick-cook' },
+    })
+    renderRecipeMatch()
+
+    expect(screen.getByText(/tonight's pick/i)).toBeInTheDocument()
+    expect(screen.getAllByText('Fully Makeable').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getByText('Great choice tonight.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View Recipe →' })).toBeInTheDocument()
+  })
+
+  it('navigates to the recipe when View Recipe is clicked', async () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    mockedUseRecipeRecommendation.mockReturnValue({
+      ...defaultRecommendation,
+      recommendation: { recommendedRecipeId: 'recipe-2', rationale: 'Great choice.', goal: 'quick-cook' },
+    })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+
+    await user.click(screen.getByRole('button', { name: 'View Recipe →' }))
+    expect(navigateMock).toHaveBeenCalledWith('/recipes/recipe-2')
+  })
+
+  it('calls clear when the dismiss button on the recommendation card is clicked', async () => {
+    const clear = vi.fn()
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    mockedUseRecipeRecommendation.mockReturnValue({
+      ...defaultRecommendation,
+      clear,
+      recommendation: { recommendedRecipeId: 'recipe-2', rationale: 'Great choice.', goal: 'quick-cook' },
+    })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+
+    await user.click(screen.getByRole('button', { name: 'Dismiss recommendation' }))
+    expect(clear).toHaveBeenCalled()
+  })
+
+  it('shows the loading skeleton while a recommendation is being fetched', () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    mockedUseRecipeRecommendation.mockReturnValue({ ...defaultRecommendation, isLoading: true })
+    renderRecipeMatch()
+    expect(screen.getByLabelText('Loading recommendation')).toBeInTheDocument()
   })
 })
