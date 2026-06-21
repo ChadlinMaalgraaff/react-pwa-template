@@ -1,17 +1,29 @@
 /* RecipeIngredientRow Component Styles */
 
 .recipe-ingredient-row {
-  @apply flex items-center justify-between gap-4 border-b border-neutral-100 py-2;
+  @apply flex items-center gap-3 border-b border-line py-[13px] last:border-b-0;
 }
 
-.recipe-ingredient-info {
-  @apply flex flex-1 items-center gap-2 text-sm text-neutral-900;
+.recipe-ingredient-ico {
+  @apply flex h-[30px] w-[30px] flex-none items-center justify-center rounded-[9px];
 }
 
-.recipe-ingredient-quantity {
-  @apply text-neutral-500;
+.recipe-ingredient-ico--have {
+  @apply bg-primary-light text-primary;
+}
+
+.recipe-ingredient-ico--miss {
+  @apply bg-accent-tint text-accent-ink;
+}
+
+.recipe-ingredient-name {
+  @apply flex flex-1 items-center gap-2 text-[15px] font-semibold text-ink;
+}
+
+.recipe-ingredient-amt {
+  @apply text-[13px] text-ink-mute;
 }
 
 .recipe-ingredient-optional {
-  @apply rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500;
+  @apply rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-normal text-ink-mute;
 }

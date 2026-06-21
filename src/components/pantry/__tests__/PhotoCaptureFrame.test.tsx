@@ -6,15 +6,16 @@ import PhotoCaptureFrame from '@components/pantry/PhotoCaptureFrame/PhotoCapture
 describe('PhotoCaptureFrame Component', () => {
   beforeEach(() => {
     URL.createObjectURL = vi.fn(() => 'blob:mock-url')
+    URL.revokeObjectURL = vi.fn()
   })
 
   it('renders the upload prompt initially', () => {
     render(<PhotoCaptureFrame onCapture={vi.fn()} />)
     expect(screen.getByText('Scan your shelf')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Use Photo' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Scan \d+ photo/ })).not.toBeInTheDocument()
   })
 
-  it('shows a preview and action buttons after selecting a file', async () => {
+  it('shows thumbnails and scan button after selecting a file', async () => {
     const user = userEvent.setup()
     render(<PhotoCaptureFrame onCapture={vi.fn()} />)
 
@@ -22,12 +23,11 @@ describe('PhotoCaptureFrame Component', () => {
     const input = screen.getByLabelText('Take or upload a photo')
     await user.upload(input, file)
 
-    expect(screen.getByAltText('Captured pantry items')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Use Photo' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Retake' })).toBeInTheDocument()
+    expect(screen.getByAltText('Photo 1')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Scan 1 photo' })).toBeInTheDocument()
   })
 
-  it('calls onCapture with the selected file when Use Photo is clicked', async () => {
+  it('calls onCapture with the selected files when scan button is clicked', async () => {
     const user = userEvent.setup()
     const handleCapture = vi.fn()
     render(<PhotoCaptureFrame onCapture={handleCapture} />)
@@ -35,19 +35,19 @@ describe('PhotoCaptureFrame Component', () => {
     const file = new File(['photo'], 'pantry.jpg', { type: 'image/jpeg' })
     const input = screen.getByLabelText('Take or upload a photo')
     await user.upload(input, file)
-    await user.click(screen.getByRole('button', { name: 'Use Photo' }))
+    await user.click(screen.getByRole('button', { name: 'Scan 1 photo' }))
 
-    expect(handleCapture).toHaveBeenCalledWith(file)
+    expect(handleCapture).toHaveBeenCalledWith([file])
   })
 
-  it('returns to the upload prompt when Retake is clicked', async () => {
+  it('returns to the upload prompt when the last photo is removed', async () => {
     const user = userEvent.setup()
     render(<PhotoCaptureFrame onCapture={vi.fn()} />)
 
     const file = new File(['photo'], 'pantry.jpg', { type: 'image/jpeg' })
     const input = screen.getByLabelText('Take or upload a photo')
     await user.upload(input, file)
-    await user.click(screen.getByRole('button', { name: 'Retake' }))
+    await user.click(screen.getByRole('button', { name: 'Remove photo 1' }))
 
     expect(screen.getByText('Scan your shelf')).toBeInTheDocument()
   })

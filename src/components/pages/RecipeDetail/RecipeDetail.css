@@ -1,32 +1,77 @@
 /* RecipeDetail Page Styles */
 
 .recipe-detail-page {
-  @apply flex flex-col gap-4 p-4 pb-24;
+  @apply flex min-h-screen flex-col bg-canvas pb-36;
 }
 
+/* Hero */
+
 .recipe-detail-hero {
-  @apply -mx-4 -mt-4 h-48 w-[calc(100%+2rem)] object-cover;
+  @apply relative flex h-[230px] items-center justify-center;
+  background: linear-gradient(160deg, #F7EBCF 0%, #F3F1EA 100%);
+}
+
+.recipe-detail-hero-img {
+  @apply absolute inset-0 h-full w-full object-cover;
+}
+
+.recipe-detail-back {
+  @apply absolute left-4 top-3.5 z-10 flex h-10 w-10 items-center justify-center rounded-full text-ink shadow-sm;
+  background-color: rgba(255, 255, 255, 0.92);
+}
+
+.recipe-detail-hero-ribbon {
+  @apply absolute bottom-4 left-4 z-10;
+}
+
+/* Body */
+
+.recipe-detail-body {
+  @apply flex flex-col px-5 pb-4;
 }
 
 .recipe-detail-title {
-  @apply text-xl font-semibold text-neutral-900;
+  @apply font-fraunces text-[28px] font-semibold leading-tight tracking-[-0.02em] text-ink mt-5 mb-1.5;
 }
 
 .recipe-detail-meta {
-  @apply flex gap-3 text-sm text-neutral-500;
+  @apply mb-5 flex flex-wrap items-center gap-1.5 text-[13px] text-ink-mute;
 }
 
-.recipe-detail-section-title {
-  @apply mb-2 text-sm font-semibold uppercase tracking-wide text-neutral-500;
+.recipe-detail-meta-dot {
+  @apply inline-block h-[3px] w-[3px] rounded-full bg-ink-mute;
 }
 
-.recipe-detail-instructions {
-  @apply flex list-decimal flex-col gap-2 pl-5 text-sm text-neutral-700;
+.recipe-detail-eyebrow {
+  @apply mb-3 text-[11px] font-bold uppercase tracking-[.14em] text-ink-mute;
 }
+
+.recipe-detail-section {
+  @apply mb-6;
+}
+
+/* Steps */
+
+.recipe-detail-step {
+  @apply mb-3.5 flex gap-3;
+}
+
+.recipe-detail-step-n {
+  @apply flex h-[26px] w-[26px] flex-none items-center justify-center rounded-full bg-primary-light text-[13px] font-bold text-primary;
+}
+
+.recipe-detail-step-text {
+  @apply mt-0.5 text-[14.5px] leading-relaxed text-ink-soft;
+}
+
+/* Sticky CTA bar */
 
 .recipe-detail-sticky-bar {
-  @apply fixed bottom-0 left-0 right-0 border-t border-neutral-100 bg-surface p-4;
+  @apply fixed bottom-0 left-0 right-0 bg-canvas px-5 pb-8 pt-3;
+  border-top: 1px solid #EAE4D8;
 }
+
+/* Sheets */
 
 .recipe-detail-picker-list {
   @apply flex flex-col gap-2;
@@ -37,7 +82,7 @@
 }
 
 .recipe-detail-made-message {
-  @apply text-sm text-neutral-600;
+  @apply text-[14px] text-ink-soft;
 }
 
 .recipe-detail-made-list {
@@ -45,7 +90,7 @@
 }
 
 .recipe-detail-made-row {
-  @apply flex cursor-pointer items-center gap-3 text-sm text-neutral-800;
+  @apply flex cursor-pointer items-center gap-3 text-[14px] text-ink;
 }
 
 .recipe-detail-made-checkbox {

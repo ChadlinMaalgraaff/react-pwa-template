@@ -41,7 +41,7 @@ describe('RecipeCard Component', () => {
         matchInfo={{ isFullyMakeable: false, missingCount: 2 }}
       />
     )
-    expect(screen.getByText('Missing 2')).toBeInTheDocument()
+    expect(screen.getByText('Pantry is missing 2 ingredients for this recipe')).toBeInTheDocument()
   })
 
   it('calls onClick when clicked', async () => {

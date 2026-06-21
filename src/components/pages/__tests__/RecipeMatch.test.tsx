@@ -87,7 +87,7 @@ describe('RecipeMatch Page', () => {
     const titles = screen.getAllByRole('heading', { level: 3 }).map((el) => el.textContent)
     expect(titles).toEqual(['Fully Makeable', 'Almost Makeable'])
     expect(screen.getByText('Makeable')).toBeInTheDocument()
-    expect(screen.getByText('Missing 2')).toBeInTheDocument()
+    expect(screen.getByText('Pantry is missing 2 ingredients for this recipe')).toBeInTheDocument()
   })
 
   it('navigates to the recipe detail when a card is clicked', async () => {
@@ -125,7 +125,7 @@ describe('RecipeMatch Page', () => {
   it('shows goal chips when matches exist', () => {
     mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
     renderRecipeMatch()
-    expect(screen.getByText("What's your goal tonight?")).toBeInTheDocument()
+    expect(screen.getByText("What's your goal today?")).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cost-effective' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'High protein' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Light meal' })).toBeInTheDocument()
@@ -135,7 +135,7 @@ describe('RecipeMatch Page', () => {
   it('does not show goal chips when there are no matches', () => {
     mockedUseRecipeMatch.mockReturnValue({ matches: [], isLoading: false, refetch: vi.fn() })
     renderRecipeMatch()
-    expect(screen.queryByText("What's your goal tonight?")).not.toBeInTheDocument()
+    expect(screen.queryByText("What's your goal today?")).not.toBeInTheDocument()
   })
 
   it('calls recommend with the correct goal and recipes when a goal chip is clicked', async () => {
@@ -175,7 +175,7 @@ describe('RecipeMatch Page', () => {
     })
     renderRecipeMatch()
 
-    expect(screen.getByText(/tonight's pick/i)).toBeInTheDocument()
+    expect(screen.getByText(/today's pick/i)).toBeInTheDocument()
     expect(screen.getAllByText('Fully Makeable').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Great choice tonight.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'View Recipe →' })).toBeInTheDocument()

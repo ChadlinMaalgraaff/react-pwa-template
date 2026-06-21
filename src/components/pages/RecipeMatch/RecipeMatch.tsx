@@ -77,7 +77,11 @@ const RecipeMatch = () => {
       <Tabs tabs={RECIPE_TABS} value="match" onChange={handleTabChange} />
 
       <div className="recipe-match-filter">
-        <span className="recipe-match-filter-label">Missing up to</span>
+        <span className="recipe-match-filter-label">
+          {maxMissing === undefined
+            ? 'Recipes with any number of missing ingredients'
+            : `Recipes with up to ${maxMissing} missing ingredient${maxMissing === 1 ? '' : 's'}`}
+        </span>
         <div className="recipe-match-filter-chips">
           {MAX_MISSING_OPTIONS.map((option) => (
             <Chip
@@ -112,7 +116,7 @@ const RecipeMatch = () => {
       ) : (
         <>
           <div className="recipe-match-goal-section">
-            <span className="recipe-match-goal-label">What&apos;s your goal tonight?</span>
+            <span className="recipe-match-goal-label">What&apos;s your goal today?</span>
             <div className="recipe-match-filter-chips">
               {GOAL_OPTIONS.map((option) => (
                 <Chip
@@ -140,7 +144,7 @@ const RecipeMatch = () => {
               <div className="recipe-match-recommendation-header">
                 <span className="recipe-match-recommendation-eyebrow">
                   <Sparkles className="h-3 w-3" />
-                  Tonight&apos;s pick
+                  Today&apos;s pick
                 </span>
                 <button
                   type="button"

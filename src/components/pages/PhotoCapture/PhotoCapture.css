@@ -23,3 +23,33 @@
 .photo-capture-error {
   @apply absolute bottom-4 left-1/2 -translate-x-1/2 rounded-2xl bg-danger px-4 py-2.5 text-sm font-semibold text-white;
 }
+
+/* Scan progress list */
+
+.photo-capture-scan-list {
+  @apply flex flex-col px-5 pt-5;
+}
+
+.photo-capture-scan-row {
+  @apply flex items-center gap-3.5 border-b border-line py-3 last:border-b-0;
+}
+
+.photo-capture-scan-thumb {
+  @apply h-14 w-14 flex-none rounded-2xl bg-surface-2 object-cover;
+}
+
+.photo-capture-scan-name {
+  @apply flex-1 text-[15px] font-medium text-ink;
+}
+
+.photo-capture-scan-status {
+  @apply flex h-6 w-6 items-center justify-center;
+}
+
+.photo-capture-scan-dot {
+  @apply block h-2.5 w-2.5 rounded-full bg-line-strong;
+}
+
+.photo-capture-scan-footer {
+  @apply px-5 pt-6;
+}

@@ -120,7 +120,7 @@ const Pantry = () => {
           <div className="pantry-groups">
             {groups.map(([category, categoryItems]) => (
               <section key={category} className="pantry-group">
-                <h2 className="pantry-group-title">{category}</h2>
+                {category !== 'Uncategorized' && <h2 className="pantry-group-title">{category}</h2>}
                 <div className="card overflow-hidden p-0">
                   {categoryItems.map((item) => (
                     <PantryItemRow

@@ -49,6 +49,7 @@ describe('PhotoCapture Page', () => {
     vi.clearAllMocks()
     global.fetch = vi.fn().mockResolvedValue({ ok: true })
     URL.createObjectURL = vi.fn().mockReturnValue('blob:preview')
+    URL.revokeObjectURL = vi.fn()
   })
 
   it('navigates back to /pantry when the close button is clicked', async () => {
@@ -58,7 +59,7 @@ describe('PhotoCapture Page', () => {
     expect(navigateMock).toHaveBeenCalledWith('/pantry')
   })
 
-  it('shows a unified scanning message while uploading and analyzing', async () => {
+  it('shows a per-image scanning screen while processing', async () => {
     mockedService.getPhotoUploadUrl.mockImplementation(
       () => new Promise((resolve) => setTimeout(() => resolve({ uploadUrl: 'https://upload', key: 'photo-key', expiresIn: 60 }), 100))
     )
@@ -70,12 +71,13 @@ describe('PhotoCapture Page', () => {
     const file = new File(['photo'], 'pantry.jpg', { type: 'image/jpeg' })
     const input = screen.getByLabelText('Take or upload a photo')
     await user.upload(input, file)
-    await user.click(screen.getByRole('button', { name: 'Use Photo' }))
+    await user.click(screen.getByRole('button', { name: 'Scan 1 photo' }))
 
-    expect(await screen.findByText('Scanning your pantry…')).toBeInTheDocument()
+    expect(await screen.findByText('Scanning…')).toBeInTheDocument()
+    expect(screen.getByText('Photo 1')).toBeInTheDocument()
   })
 
-  it('uploads and analyzes a captured photo, then navigates to the review screen', async () => {
+  it('uploads and analyzes photos then shows a review button', async () => {
     mockedService.getPhotoUploadUrl.mockResolvedValue({ uploadUrl: 'https://upload', key: 'photo-key', expiresIn: 60 })
     const suggestions = [
       { ingredientId: 'ing-1', name: 'Rice', matchedExisting: true, quantity: 1, unit: 'kg', confidence: 0.9 },
@@ -88,10 +90,12 @@ describe('PhotoCapture Page', () => {
     const file = new File(['photo'], 'pantry.jpg', { type: 'image/jpeg' })
     const input = screen.getByLabelText('Take or upload a photo')
     await user.upload(input, file)
-    await user.click(screen.getByRole('button', { name: 'Use Photo' }))
+    await user.click(screen.getByRole('button', { name: 'Scan 1 photo' }))
 
     await waitFor(() =>
-      expect(navigateMock).toHaveBeenCalledWith('/pantry/capture/review', { state: { suggestions } })
+      expect(screen.getByRole('button', { name: 'Review 1 items found' })).toBeInTheDocument()
     )
+    await user.click(screen.getByRole('button', { name: 'Review 1 items found' }))
+    expect(navigateMock).toHaveBeenCalledWith('/pantry/capture/review', { state: { suggestions } })
   })
 })

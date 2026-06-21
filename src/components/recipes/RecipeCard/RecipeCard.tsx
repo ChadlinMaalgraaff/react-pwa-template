@@ -41,7 +41,7 @@ const RecipeCard = ({
         {matchInfo && (
           <span className="recipe-card-ribbon">
             <Badge variant={matchInfo.isFullyMakeable ? 'success' : 'accent'}>
-              {matchInfo.isFullyMakeable ? 'Makeable' : `Missing ${matchInfo.missingCount}`}
+              {matchInfo.isFullyMakeable ? 'Makeable' : `Pantry is missing ${matchInfo.missingCount} ingredients for this recipe`}
             </Badge>
           </span>
         )}

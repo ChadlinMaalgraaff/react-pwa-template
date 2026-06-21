@@ -51,3 +51,30 @@
 .photo-capture-actions {
   @apply flex w-full max-w-[280px] flex-col gap-2.5 mt-6;
 }
+
+/* Multi-image selected state */
+
+.photo-capture-selected {
+  @apply flex w-full flex-col items-center gap-5 px-5 pt-6;
+}
+
+.photo-capture-grid {
+  @apply grid w-full grid-cols-3 gap-2;
+}
+
+.photo-capture-thumb {
+  @apply relative aspect-square overflow-hidden rounded-2xl bg-surface-2;
+}
+
+.photo-capture-thumb-img {
+  @apply h-full w-full object-cover;
+}
+
+.photo-capture-thumb-remove {
+  @apply absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full text-white;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.photo-capture-add-more {
+  @apply aspect-square flex items-center justify-center rounded-2xl border-2 border-dashed border-line-strong bg-surface-2;
+}

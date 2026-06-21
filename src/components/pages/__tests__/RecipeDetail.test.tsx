@@ -128,66 +128,11 @@ describe('RecipeDetail Page', () => {
     expect(screen.getByText('Brown the mince')).toBeInTheDocument()
   })
 
-  it('hides the "Add missing to shopping list" button when fully makeable', () => {
-    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
-    renderRecipeDetail()
-    expect(screen.queryByRole('button', { name: 'Add missing to shopping list' })).not.toBeInTheDocument()
-  })
-
-  it('shows the cost panel and sticky button when ingredients are missing', () => {
+  it('shows the missing ingredients panel when ingredients are missing', () => {
     mockedUseRecipeDetail.mockReturnValue({ recipe: recipeWithMissing, isLoading: false, error: null })
     mockedUseRecipeCost.mockReturnValue({ cost, fetchCost: vi.fn() })
     renderRecipeDetail()
-    expect(screen.getByRole('button', { name: 'Add missing to shopping list' })).toBeInTheDocument()
-    expect(screen.getByText('Cost Breakdown')).toBeInTheDocument()
-  })
-
-  it('adds directly to the only shopping list and navigates to it', async () => {
-    mockedUseRecipeDetail.mockReturnValue({ recipe: recipeWithMissing, isLoading: false, error: null })
-    mockedUseRecipeCost.mockReturnValue({ cost, fetchCost: vi.fn() })
-    mockedUseShoppingLists.mockReturnValue({ lists: [{ id: 'list-1', name: 'My list', itemCount: 0, createdAt: '2026-01-01T00:00:00Z' }] })
-    const user = userEvent.setup()
-    renderRecipeDetail()
-
-    await user.click(screen.getByRole('button', { name: 'Add missing to shopping list' }))
-
-    await waitFor(() => expect(mockedShoppingListsService.addRecipeToShoppingList).toHaveBeenCalledWith('list-1', 'recipe-1'))
-    expect(navigateMock).toHaveBeenCalledWith('/shopping-lists/list-1')
-  })
-
-  it('creates a new shopping list when the user has none, then adds the recipe', async () => {
-    mockedUseRecipeDetail.mockReturnValue({ recipe: recipeWithMissing, isLoading: false, error: null })
-    mockedUseRecipeCost.mockReturnValue({ cost, fetchCost: vi.fn() })
-    mockedUseShoppingLists.mockReturnValue({ lists: [] })
-    const user = userEvent.setup()
-    renderRecipeDetail()
-
-    await user.click(screen.getByRole('button', { name: 'Add missing to shopping list' }))
-
-    await waitFor(() => expect(mockedShoppingListsService.createShoppingList).toHaveBeenCalled())
-    await waitFor(() => expect(mockedShoppingListsService.addRecipeToShoppingList).toHaveBeenCalledWith('list-1', 'recipe-1'))
-    expect(navigateMock).toHaveBeenCalledWith('/shopping-lists/list-1')
-  })
-
-  it('opens a picker when the user has multiple shopping lists', async () => {
-    mockedUseRecipeDetail.mockReturnValue({ recipe: recipeWithMissing, isLoading: false, error: null })
-    mockedUseRecipeCost.mockReturnValue({ cost, fetchCost: vi.fn() })
-    mockedUseShoppingLists.mockReturnValue({
-      lists: [
-        { id: 'list-1', name: 'List One', itemCount: 0, createdAt: '2026-01-01T00:00:00Z' },
-        { id: 'list-2', name: 'List Two', itemCount: 0, createdAt: '2026-01-01T00:00:00Z' },
-      ],
-    })
-    const user = userEvent.setup()
-    renderRecipeDetail()
-
-    await user.click(screen.getByRole('button', { name: 'Add missing to shopping list' }))
-
-    expect(screen.getByRole('dialog', { name: 'Choose a shopping list' })).toBeInTheDocument()
-    await user.click(screen.getByText('List Two'))
-
-    await waitFor(() => expect(mockedShoppingListsService.addRecipeToShoppingList).toHaveBeenCalledWith('list-2', 'recipe-1'))
-    expect(navigateMock).toHaveBeenCalledWith('/shopping-lists/list-2')
+    expect(screen.getByText('Missing ingredients in pantry')).toBeInTheDocument()
   })
 
   it('shows the I made this button when recipe has in-pantry ingredients', () => {

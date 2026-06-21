@@ -38,13 +38,13 @@ function App() {
           {/* Full-screen customer flows - no shell */}
           <Route path="/pantry/capture" element={<PhotoCapture />} />
           <Route path="/pantry/capture/review" element={<PhotoReview />} />
+          <Route path="/recipes/:id" element={<RecipeDetail />} />
 
           {/* Customer shell routes */}
           <Route element={<CustomerShell />}>
             <Route path="/pantry" element={<Pantry />} />
             <Route path="/recipes" element={<RecipeMatch />} />
             <Route path="/recipes/browse" element={<RecipeBrowse />} />
-            <Route path="/recipes/:id" element={<RecipeDetail />} />
             <Route path="/specials" element={<Specials />} />
             <Route path="/shopping-lists" element={<ShoppingLists />} />
             <Route path="/shopping-lists/:id" element={<ShoppingListDetail />} />

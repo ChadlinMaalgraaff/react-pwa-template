@@ -35,19 +35,16 @@ const cost: RecipeCostResponse = {
 describe('CostBreakdownPanel Component', () => {
   it('is collapsed by default', () => {
     render(<CostBreakdownPanel cost={cost} />)
-    expect(screen.queryByText('Cheapest Single Retailer')).not.toBeInTheDocument()
+    expect(screen.queryByText('Saffron (1 pinch)')).not.toBeInTheDocument()
   })
 
-  it('expands to show cost details when toggled', async () => {
+  it('expands to show missing ingredients when toggled', async () => {
     const user = userEvent.setup()
     render(<CostBreakdownPanel cost={cost} />)
 
-    await user.click(screen.getByRole('button', { name: /cost breakdown/i }))
+    await user.click(screen.getByRole('button', { name: /missing ingredients in pantry/i }))
 
-    expect(screen.getByText('Cheapest Single Retailer')).toBeInTheDocument()
-    expect(screen.getByText(/Checkers — R89.99/)).toBeInTheDocument()
-    expect(screen.getByText('Cheapest Combination')).toBeInTheDocument()
-    expect(screen.getByText('Total: R89.99')).toBeInTheDocument()
+    expect(screen.getByText('Saffron (1 pinch)')).toBeInTheDocument()
     expect(screen.getByText('Saffron 1g')).toBeInTheDocument()
   })
 })

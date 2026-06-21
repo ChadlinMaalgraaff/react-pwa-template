@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, BottomSheet, EmptyState, Spinner } from '@components/shared'
+import { ArrowLeft, UtensilsCrossed } from 'lucide-react'
+import { Button, BottomSheet, Badge, EmptyState, Spinner } from '@components/shared'
 import { RecipeIngredientRow, CostBreakdownPanel } from '@components/recipes'
 import { ShoppingListSummaryCard } from '@components/shopping-lists'
 import { useRecipeDetail } from '@hooks/useRecipeDetail'
@@ -29,7 +30,9 @@ const RecipeDetail = () => {
   const [selectedIngredientIds, setSelectedIngredientIds] = useState<Set<string>>(new Set())
   const [isRemoving, setIsRemoving] = useState(false)
 
-  const hasMissing = recipe?.ingredients.some((ingredient) => !ingredient.inPantry) ?? false
+  const missingIngredients = recipe?.ingredients.filter((i) => !i.inPantry) ?? []
+  const hasMissing = missingIngredients.length > 0
+  const missingCount = missingIngredients.length
   const inPantryIngredients = recipe?.ingredients.filter((i) => i.inPantry) ?? []
 
   useEffect(() => {
@@ -46,11 +49,8 @@ const RecipeDetail = () => {
   const toggleIngredient = (ingredientId: string) => {
     setSelectedIngredientIds((prev) => {
       const next = new Set(prev)
-      if (next.has(ingredientId)) {
-        next.delete(ingredientId)
-      } else {
-        next.add(ingredientId)
-      }
+      if (next.has(ingredientId)) next.delete(ingredientId)
+      else next.add(ingredientId)
       return next
     })
   }
@@ -99,66 +99,74 @@ const RecipeDetail = () => {
     }
   }
 
-  const handleAddMissing = () => {
-    if (lists.length === 0) {
-      createAndAddList()
-    } else if (lists.length === 1) {
-      addToList(lists[0].id)
-    } else {
-      setIsPickerOpen(true)
-    }
-  }
+  if (isLoading) return <Spinner fullScreen />
+  if (!recipe) return <EmptyState title="Recipe not found" />
 
-  if (isLoading) {
-    return <Spinner fullScreen />
-  }
-
-  if (!recipe) {
-    return <EmptyState title="Recipe not found" />
-  }
+  const totalTime = (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0)
 
   return (
     <div className="recipe-detail-page">
-      {recipe.imageUrl && <img src={recipe.imageUrl} alt={recipe.title} className="recipe-detail-hero" />}
-      <h1 className="recipe-detail-title">{recipe.title}</h1>
-      <div className="recipe-detail-meta">
-        {recipe.cuisine && <span>{recipe.cuisine}</span>}
-        {recipe.prepTimeMinutes != null && <span>Prep {recipe.prepTimeMinutes} min</span>}
-        {recipe.cookTimeMinutes != null && <span>Cook {recipe.cookTimeMinutes} min</span>}
-        {recipe.servings != null && <span>{recipe.servings} servings</span>}
+      <div className="recipe-detail-hero">
+        {recipe.imageUrl ? (
+          <img src={recipe.imageUrl} alt={recipe.title} className="recipe-detail-hero-img" />
+        ) : (
+          <UtensilsCrossed className="h-24 w-24 text-accent opacity-40" strokeWidth={1.2} />
+        )}
+        <button
+          type="button"
+          aria-label="Back"
+          className="recipe-detail-back"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        {hasMissing && (
+          <span className="recipe-detail-hero-ribbon">
+            <Badge variant="accent">Missing {missingCount}</Badge>
+          </span>
+        )}
       </div>
 
-      <section>
-        <h2 className="recipe-detail-section-title">Ingredients</h2>
-        {recipe.ingredients.map((ingredient) => (
-          <RecipeIngredientRow key={ingredient.ingredientId} ingredient={ingredient} />
-        ))}
-      </section>
-
-      {hasMissing && cost && <CostBreakdownPanel cost={cost} defaultOpen />}
-
-      <section>
-        <h2 className="recipe-detail-section-title">Instructions</h2>
-        <ol className="recipe-detail-instructions">
-          {recipe.instructions.map((step, index) => (
-            <li key={index}>{step}</li>
-          ))}
-        </ol>
-      </section>
-
-      {inPantryIngredients.length > 0 && (
-        <Button variant="secondary" onClick={openMadeSheet} className="w-full">
-          I made this
-        </Button>
-      )}
-
-      {hasMissing && (
-        <div className="recipe-detail-sticky-bar">
-          <Button onClick={handleAddMissing} isLoading={isAdding} className="w-full">
-            Add missing to shopping list
-          </Button>
+      <div className="recipe-detail-body">
+        <h1 className="recipe-detail-title">{recipe.title}</h1>
+        <div className="recipe-detail-meta">
+          {recipe.cuisine && <span>{recipe.cuisine}</span>}
+          {recipe.cuisine && (totalTime > 0 || recipe.servings != null) && (
+            <span className="recipe-detail-meta-dot" />
+          )}
+          {totalTime > 0 && <span>{totalTime} min</span>}
+          {totalTime > 0 && recipe.servings != null && <span className="recipe-detail-meta-dot" />}
+          {recipe.servings != null && <span>Serves {recipe.servings}</span>}
         </div>
-      )}
+
+        <section className="recipe-detail-section">
+          <p className="recipe-detail-eyebrow">Ingredients</p>
+          <div>
+            {recipe.ingredients.map((ingredient) => (
+              <RecipeIngredientRow key={ingredient.ingredientId} ingredient={ingredient} />
+            ))}
+          </div>
+        </section>
+
+        {hasMissing && cost && <CostBreakdownPanel cost={cost} defaultOpen />}
+
+        <section className="recipe-detail-section">
+          <p className="recipe-detail-eyebrow">Method</p>
+          {recipe.instructions.map((step, index) => (
+            <div key={index} className="recipe-detail-step">
+              <span className="recipe-detail-step-n">{index + 1}</span>
+              <p className="recipe-detail-step-text">{step}</p>
+            </div>
+          ))}
+        </section>
+
+        {inPantryIngredients.length > 0 && (
+          <Button variant="secondary" onClick={openMadeSheet} className="w-full">
+            I made this
+          </Button>
+        )}
+      </div>
+
 
       <BottomSheet isOpen={isPickerOpen} onClose={() => setIsPickerOpen(false)} title="Choose a shopping list">
         <div className="recipe-detail-picker-list">
@@ -187,12 +195,7 @@ const RecipeDetail = () => {
               </label>
             ))}
           </div>
-          <Button
-            onClick={handleMadeConfirm}
-            isLoading={isRemoving}
-            disabled={selectedIngredientIds.size === 0}
-            className="w-full"
-          >
+          <Button onClick={handleMadeConfirm} isLoading={isRemoving} disabled={selectedIngredientIds.size === 0} className="w-full">
             Remove selected
           </Button>
           <Button variant="secondary" onClick={() => setIsMadeOpen(false)} className="w-full">
