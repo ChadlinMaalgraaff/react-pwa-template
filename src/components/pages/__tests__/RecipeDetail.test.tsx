@@ -12,11 +12,14 @@ import RecipeDetail from '@components/pages/RecipeDetail/RecipeDetail'
 import { useRecipeDetail } from '@hooks/useRecipeDetail'
 import { useRecipeCost } from '@hooks/useRecipeCost'
 import { useShoppingLists } from '@hooks/useShoppingLists'
+import { usePantry } from '@hooks/usePantry'
 import { RecipeDetail as RecipeDetailType } from '@/types/recipes.types'
+import { PantryItem } from '@/types/pantry.types'
 
 vi.mock('@hooks/useRecipeDetail')
 vi.mock('@hooks/useRecipeCost')
 vi.mock('@hooks/useShoppingLists')
+vi.mock('@hooks/usePantry')
 
 vi.mock('@/services/shopping-lists.service', () => ({
   default: {
@@ -28,6 +31,7 @@ vi.mock('@/services/shopping-lists.service', () => ({
 const mockedUseRecipeDetail = useRecipeDetail as unknown as ReturnType<typeof vi.fn>
 const mockedUseRecipeCost = useRecipeCost as unknown as ReturnType<typeof vi.fn>
 const mockedUseShoppingLists = useShoppingLists as unknown as ReturnType<typeof vi.fn>
+const mockedUsePantry = usePantry as unknown as ReturnType<typeof vi.fn>
 const mockedShoppingListsService = shoppingListsService as unknown as Record<
   'addRecipeToShoppingList' | 'createShoppingList',
   ReturnType<typeof vi.fn>
@@ -53,6 +57,10 @@ const renderRecipeDetail = () =>
       </MemoryRouter>
     </Provider>
   )
+
+const pantryItems: PantryItem[] = [
+  { id: 'pantry-item-1', ingredientId: 'ing-1', ingredientName: 'Mince', category: 'Meat', quantity: 500, unit: 'g', source: 'manual', addedAt: '2026-01-01T00:00:00Z' },
+]
 
 const fullyMakeableRecipe: RecipeDetailType = {
   id: 'recipe-1',
@@ -94,6 +102,7 @@ describe('RecipeDetail Page', () => {
     navigateMock.mockClear()
     mockedUseRecipeCost.mockReturnValue({ cost: null, fetchCost: vi.fn() })
     mockedUseShoppingLists.mockReturnValue({ lists: [] })
+    mockedUsePantry.mockReturnValue({ items: pantryItems, isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem: vi.fn(), clearAll: vi.fn() })
     mockedShoppingListsService.addRecipeToShoppingList.mockResolvedValue({ addedItems: [{ id: 'item-1' }], skippedAlreadyInPantry: [] })
     mockedShoppingListsService.createShoppingList.mockResolvedValue({ id: 'list-1', name: 'My list', items: [], createdAt: '2026-01-01T00:00:00Z' })
   })
@@ -179,5 +188,25 @@ describe('RecipeDetail Page', () => {
 
     await waitFor(() => expect(mockedShoppingListsService.addRecipeToShoppingList).toHaveBeenCalledWith('list-2', 'recipe-1'))
     expect(navigateMock).toHaveBeenCalledWith('/shopping-lists/list-2')
+  })
+
+  it('shows the I made this button when recipe has in-pantry ingredients', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+    expect(screen.getByRole('button', { name: 'I made this' })).toBeInTheDocument()
+  })
+
+  it('opens the Mark as cooked sheet and calls removeItem for selected ingredients', async () => {
+    const removeItem = vi.fn().mockResolvedValue(undefined)
+    mockedUsePantry.mockReturnValue({ items: pantryItems, isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem, clearAll: vi.fn() })
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    const user = userEvent.setup()
+    renderRecipeDetail()
+
+    await user.click(screen.getByRole('button', { name: 'I made this' }))
+    expect(screen.getByRole('dialog', { name: 'Mark as cooked' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Remove selected' }))
+    await waitFor(() => expect(removeItem).toHaveBeenCalledWith('pantry-item-1'))
   })
 })

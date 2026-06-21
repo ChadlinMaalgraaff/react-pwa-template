@@ -1,11 +1,15 @@
 /* Pantry Page Styles */
 
 .pantry-page {
-  @apply flex flex-col gap-4 p-4;
+  @apply flex flex-col gap-4 p-4 pb-28;
 }
 
 .pantry-actions {
-  @apply flex justify-end gap-3 text-neutral-600;
+  @apply flex items-center justify-end gap-3 text-neutral-600;
+}
+
+.pantry-clear-btn {
+  @apply flex items-center gap-1 text-sm text-danger hover:text-danger/80;
 }
 
 .pantry-groups {
@@ -20,10 +24,42 @@
   @apply text-sm font-semibold uppercase tracking-wide text-neutral-500;
 }
 
+.pantry-empty {
+  @apply flex flex-col items-center gap-4 py-16 text-center;
+}
+
+.pantry-empty-title {
+  @apply text-lg font-semibold text-neutral-800;
+}
+
+.pantry-empty-message {
+  @apply text-sm text-neutral-500;
+}
+
+.pantry-empty-actions {
+  @apply flex w-full gap-3;
+}
+
+.pantry-fab {
+  @apply fixed bottom-20 right-4 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-medium text-white shadow-lg;
+}
+
 .pantry-add-form {
   @apply flex flex-col gap-4;
 }
 
 .pantry-add-selected {
   @apply flex items-center justify-between gap-3;
+}
+
+.pantry-add-confirmation {
+  @apply rounded-md bg-primary-light px-3 py-2 text-sm font-medium text-primary;
+}
+
+.pantry-clear-confirm {
+  @apply flex flex-col gap-3;
+}
+
+.pantry-clear-message {
+  @apply text-sm text-neutral-600;
 }

@@ -43,6 +43,10 @@ class PantryService {
     const response = await apiClient.post<PhotoAnalyzeResponse>('/pantry/photo-analyze', { key })
     return response.data
   }
+
+  async clearPantry(): Promise<void> {
+    await apiClient.delete('/pantry')
+  }
 }
 
 export default new PantryService()

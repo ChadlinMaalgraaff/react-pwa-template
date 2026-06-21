@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Tabs, EmptyState, Spinner, type TabOption } from '@components/shared'
+import { Camera } from 'lucide-react'
+import { Tabs, Button, Chip, Spinner, type TabOption } from '@components/shared'
 import { RecipeCard } from '@components/recipes'
 import { useRecipeMatch } from '@hooks/useRecipeMatch'
 import './RecipeMatch.css'
@@ -9,9 +11,20 @@ const RECIPE_TABS: TabOption[] = [
   { value: 'browse', label: 'Browse' },
 ]
 
+type MaxMissingOption = { label: string; value: number | undefined }
+
+const MAX_MISSING_OPTIONS: MaxMissingOption[] = [
+  { label: '0', value: 0 },
+  { label: '1', value: 1 },
+  { label: '2', value: 2 },
+  { label: '5', value: 5 },
+  { label: 'Any', value: undefined },
+]
+
 const RecipeMatch = () => {
   const navigate = useNavigate()
-  const { matches, isLoading } = useRecipeMatch({ maxMissing: 2 })
+  const [maxMissing, setMaxMissing] = useState<number | undefined>(2)
+  const { matches, isLoading } = useRecipeMatch({ maxMissing })
 
   const handleTabChange = (value: string) => {
     if (value === 'browse') navigate('/recipes/browse')
@@ -23,26 +36,58 @@ const RecipeMatch = () => {
     <div className="recipe-match-page">
       <Tabs tabs={RECIPE_TABS} value="match" onChange={handleTabChange} />
 
+      <div className="recipe-match-filter">
+        <span className="recipe-match-filter-label">Missing up to:</span>
+        <div className="recipe-match-filter-chips">
+          {MAX_MISSING_OPTIONS.map((option) => (
+            <Chip
+              key={option.label}
+              selected={maxMissing === option.value}
+              onClick={() => setMaxMissing(option.value)}
+            >
+              {option.label}
+            </Chip>
+          ))}
+        </div>
+      </div>
+
       {isLoading ? (
         <Spinner fullScreen />
       ) : sortedMatches.length === 0 ? (
-        <EmptyState
-          title="Add items to your pantry to see recipe matches"
-          actionLabel="Go to Pantry"
-          onAction={() => navigate('/pantry')}
-        />
-      ) : (
-        <div className="recipe-match-list">
-          {sortedMatches.map((match) => (
-            <RecipeCard
-              key={match.id}
-              title={match.title}
-              imageUrl={match.imageUrl}
-              matchInfo={{ isFullyMakeable: match.isFullyMakeable, missingCount: match.missingIngredients.length }}
-              onClick={() => navigate(`/recipes/${match.id}`)}
-            />
-          ))}
+        <div className="recipe-match-empty">
+          <p className="recipe-match-empty-title">No recipes found yet</p>
+          <p className="recipe-match-empty-message">
+            Snap a photo of your pantry and we&apos;ll find recipes you can make right now.
+          </p>
+          <div className="recipe-match-empty-actions">
+            <Button onClick={() => navigate('/pantry/capture')} className="flex-1">
+              <Camera className="h-4 w-4" />
+              Scan Your Pantry
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/pantry')} className="flex-1">
+              Add Items Manually
+            </Button>
+          </div>
         </div>
+      ) : (
+        <>
+          {sortedMatches.length < 3 && maxMissing !== undefined && (
+            <p className="recipe-match-nudge">
+              Try &quot;Any&quot; to see more recipes.
+            </p>
+          )}
+          <div className="recipe-match-list">
+            {sortedMatches.map((match) => (
+              <RecipeCard
+                key={match.id}
+                title={match.title}
+                imageUrl={match.imageUrl}
+                matchInfo={{ isFullyMakeable: match.isFullyMakeable, missingCount: match.missingIngredients.length }}
+                onClick={() => navigate(`/recipes/${match.id}`)}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

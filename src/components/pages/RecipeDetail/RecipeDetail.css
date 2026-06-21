@@ -31,3 +31,23 @@
 .recipe-detail-picker-list {
   @apply flex flex-col gap-2;
 }
+
+.recipe-detail-made-sheet {
+  @apply flex flex-col gap-4;
+}
+
+.recipe-detail-made-message {
+  @apply text-sm text-neutral-600;
+}
+
+.recipe-detail-made-list {
+  @apply flex flex-col gap-3;
+}
+
+.recipe-detail-made-row {
+  @apply flex cursor-pointer items-center gap-3 text-sm text-neutral-800;
+}
+
+.recipe-detail-made-checkbox {
+  @apply h-4 w-4 accent-primary;
+}

@@ -7,3 +7,35 @@
 .recipe-match-list {
   @apply flex flex-col gap-3;
 }
+
+.recipe-match-empty {
+  @apply flex flex-col items-center gap-4 py-16 text-center;
+}
+
+.recipe-match-empty-title {
+  @apply text-lg font-semibold text-neutral-800;
+}
+
+.recipe-match-empty-message {
+  @apply text-sm text-neutral-500;
+}
+
+.recipe-match-empty-actions {
+  @apply flex w-full gap-3;
+}
+
+.recipe-match-filter {
+  @apply flex flex-col gap-2;
+}
+
+.recipe-match-filter-label {
+  @apply text-xs font-medium text-neutral-500;
+}
+
+.recipe-match-filter-chips {
+  @apply flex flex-wrap gap-2;
+}
+
+.recipe-match-nudge {
+  @apply text-center text-xs text-neutral-500;
+}

@@ -15,11 +15,12 @@ vi.mock('@/services/pantry.service', () => ({
     addPantryItems: vi.fn(),
     updatePantryItem: vi.fn(),
     deletePantryItem: vi.fn(),
+    clearPantry: vi.fn(),
   },
 }))
 
 const mockedService = pantryService as unknown as Record<
-  'listPantryItems' | 'addPantryItems' | 'updatePantryItem' | 'deletePantryItem',
+  'listPantryItems' | 'addPantryItems' | 'updatePantryItem' | 'deletePantryItem' | 'clearPantry',
   ReturnType<typeof vi.fn>
 >
 
@@ -110,6 +111,25 @@ describe('usePantry', () => {
 
     await act(async () => {
       await result.current.removeItem('item-1')
+    })
+
+    expect(result.current.items).toEqual([])
+    expect(store.getState().pantry.itemCount).toBe(0)
+  })
+
+  it('clearAll clears all items and resets pantry item count', async () => {
+    mockedService.listPantryItems.mockResolvedValue([item])
+    mockedService.clearPantry.mockResolvedValue(undefined)
+    const store = buildStore()
+
+    const { result } = renderHook(() => usePantry(), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    })
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    await act(async () => {
+      await result.current.clearAll()
     })
 
     expect(result.current.items).toEqual([])

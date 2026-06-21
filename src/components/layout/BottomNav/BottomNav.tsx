@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Package, ChefHat, Tag, ListChecks, User } from 'lucide-react'
+import { Package, ChefHat, ListChecks, User } from 'lucide-react'
 import './BottomNav.css'
 
 interface NavItem {
@@ -11,7 +11,6 @@ interface NavItem {
 const navItems: NavItem[] = [
   { to: '/pantry', label: 'Pantry', icon: Package },
   { to: '/recipes', label: 'Recipes', icon: ChefHat },
-  { to: '/specials', label: 'Specials', icon: Tag },
   { to: '/shopping-lists', label: 'Lists', icon: ListChecks },
   { to: '/profile', label: 'Profile', icon: User },
 ]

@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import BottomNav from '@components/layout/BottomNav/BottomNav'
 
 describe('BottomNav Component', () => {
-  it('renders all 5 tabs', () => {
+  it('renders all 4 tabs', () => {
     render(
       <MemoryRouter initialEntries={['/pantry']}>
         <BottomNav />
@@ -12,7 +12,7 @@ describe('BottomNav Component', () => {
     )
     expect(screen.getByRole('link', { name: /pantry/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /recipes/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /specials/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /specials/i })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: /lists/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /profile/i })).toBeInTheDocument()
   })

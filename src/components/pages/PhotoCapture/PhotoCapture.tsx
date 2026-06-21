@@ -33,7 +33,7 @@ const PhotoCapture = () => {
       {isBusy ? (
         <div className="photo-capture-status">
           <Spinner size="lg" />
-          <p>{isUploading ? 'Uploading photo…' : 'Looking at your pantry…'}</p>
+          <p>Scanning your pantry…</p>
         </div>
       ) : (
         <PhotoCaptureFrame onCapture={handleCapture} />

@@ -86,5 +86,18 @@ export const usePantry = () => {
     [dispatch]
   )
 
-  return { items, isLoading, error, addItem, updateItem, removeItem }
+  const clearAll = useCallback(async () => {
+    try {
+      await pantryService.clearPantry()
+      setItems([])
+      dispatch(setPantryItemCount(0))
+    } catch (err) {
+      const message = getErrorMessage(err)
+      setError(message)
+      dispatch(setNotification({ message, type: 'error' }))
+      throw err
+    }
+  }, [dispatch])
+
+  return { items, isLoading, error, addItem, updateItem, removeItem, clearAll }
 }

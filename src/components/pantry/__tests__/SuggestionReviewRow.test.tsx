@@ -36,12 +36,12 @@ describe('SuggestionReviewRow Component', () => {
 
   it('shows a low-confidence badge when confidence is below the threshold', () => {
     render(<SuggestionReviewRow suggestion={newSuggestion} onChange={vi.fn()} onRemove={vi.fn()} />)
-    expect(screen.getByText('Low confidence')).toBeInTheDocument()
+    expect(screen.getByText('Not sure — please check')).toBeInTheDocument()
   })
 
   it('does not show a low-confidence badge for high-confidence suggestions', () => {
     render(<SuggestionReviewRow suggestion={matchedSuggestion} onChange={vi.fn()} onRemove={vi.fn()} />)
-    expect(screen.queryByText('Low confidence')).not.toBeInTheDocument()
+    expect(screen.queryByText('Not sure — please check')).not.toBeInTheDocument()
   })
 
   it('calls onChange when the quantity stepper is used', async () => {

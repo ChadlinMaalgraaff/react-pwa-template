@@ -5,7 +5,15 @@
 }
 
 .photo-capture-placeholder {
-  @apply flex cursor-pointer flex-col items-center gap-3 text-neutral-300;
+  @apply flex cursor-pointer flex-col items-center gap-3 px-8 text-center text-neutral-300;
+}
+
+.photo-capture-placeholder-title {
+  @apply text-base font-semibold text-neutral-200;
+}
+
+.photo-capture-placeholder-tip {
+  @apply text-sm text-neutral-400;
 }
 
 .photo-capture-preview {

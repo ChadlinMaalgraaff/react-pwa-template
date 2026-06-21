@@ -58,6 +58,23 @@ describe('PhotoCapture Page', () => {
     expect(navigateMock).toHaveBeenCalledWith('/pantry')
   })
 
+  it('shows a unified scanning message while uploading and analyzing', async () => {
+    mockedService.getPhotoUploadUrl.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve({ uploadUrl: 'https://upload', key: 'photo-key', expiresIn: 60 }), 100))
+    )
+    mockedService.analyzePhoto.mockResolvedValue({ suggestions: [] })
+
+    const user = userEvent.setup()
+    renderPhotoCapture()
+
+    const file = new File(['photo'], 'pantry.jpg', { type: 'image/jpeg' })
+    const input = screen.getByLabelText('Take or upload a photo')
+    await user.upload(input, file)
+    await user.click(screen.getByRole('button', { name: 'Use Photo' }))
+
+    expect(await screen.findByText('Scanning your pantry…')).toBeInTheDocument()
+  })
+
   it('uploads and analyzes a captured photo, then navigates to the review screen', async () => {
     mockedService.getPhotoUploadUrl.mockResolvedValue({ uploadUrl: 'https://upload', key: 'photo-key', expiresIn: 60 })
     const suggestions = [

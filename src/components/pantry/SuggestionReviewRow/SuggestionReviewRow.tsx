@@ -16,7 +16,7 @@ const SuggestionReviewRow = ({ suggestion, onChange, onRemove }: SuggestionRevie
   const isLowConfidence = suggestion.confidence < LOW_CONFIDENCE_THRESHOLD
 
   return (
-    <div className="suggestion-review-row">
+    <div className={`suggestion-review-row${isLowConfidence ? ' suggestion-review-row--low-confidence' : ''}`}>
       <div className="suggestion-review-info">
         {suggestion.matchedExisting ? (
           <p className="suggestion-review-name">{suggestion.name}</p>
@@ -29,7 +29,7 @@ const SuggestionReviewRow = ({ suggestion, onChange, onRemove }: SuggestionRevie
             aria-label="Ingredient name"
           />
         )}
-        {isLowConfidence && <Badge variant="accent">Low confidence</Badge>}
+        {isLowConfidence && <Badge variant="accent">Not sure — please check</Badge>}
       </div>
       <QuantityStepper
         value={suggestion.quantity}

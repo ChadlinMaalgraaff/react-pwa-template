@@ -6,6 +6,7 @@ import { ShoppingListSummaryCard } from '@components/shopping-lists'
 import { useRecipeDetail } from '@hooks/useRecipeDetail'
 import { useRecipeCost } from '@hooks/useRecipeCost'
 import { useShoppingLists } from '@hooks/useShoppingLists'
+import { usePantry } from '@hooks/usePantry'
 import { useAppDispatch, useAppSelector } from '@hooks/redux.hooks'
 import { selectUser } from '@store/selectors/auth.selectors'
 import { setNotification } from '@store/slices/ui.slice'
@@ -21,16 +22,56 @@ const RecipeDetail = () => {
   const { recipe, isLoading } = useRecipeDetail(id)
   const { cost, fetchCost } = useRecipeCost()
   const { lists } = useShoppingLists()
+  const { items: pantryItems, removeItem: removePantryItem } = usePantry()
   const [isPickerOpen, setIsPickerOpen] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
+  const [isMadeOpen, setIsMadeOpen] = useState(false)
+  const [selectedIngredientIds, setSelectedIngredientIds] = useState<Set<string>>(new Set())
+  const [isRemoving, setIsRemoving] = useState(false)
 
   const hasMissing = recipe?.ingredients.some((ingredient) => !ingredient.inPantry) ?? false
+  const inPantryIngredients = recipe?.ingredients.filter((i) => i.inPantry) ?? []
 
   useEffect(() => {
     if (recipe && hasMissing) {
       fetchCost(recipe.id, user?.preferredArea ?? undefined)
     }
   }, [recipe, hasMissing, user?.preferredArea, fetchCost])
+
+  const openMadeSheet = () => {
+    setSelectedIngredientIds(new Set(inPantryIngredients.map((i) => i.ingredientId)))
+    setIsMadeOpen(true)
+  }
+
+  const toggleIngredient = (ingredientId: string) => {
+    setSelectedIngredientIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(ingredientId)) {
+        next.delete(ingredientId)
+      } else {
+        next.add(ingredientId)
+      }
+      return next
+    })
+  }
+
+  const handleMadeConfirm = async () => {
+    if (selectedIngredientIds.size === 0) {
+      setIsMadeOpen(false)
+      return
+    }
+    setIsRemoving(true)
+    try {
+      const toRemove = pantryItems.filter((item) => selectedIngredientIds.has(item.ingredientId))
+      await Promise.all(toRemove.map((item) => removePantryItem(item.id)))
+      dispatch(setNotification({ message: `${toRemove.length} ingredient${toRemove.length !== 1 ? 's' : ''} removed from your pantry`, type: 'success' }))
+      setIsMadeOpen(false)
+    } catch (err) {
+      dispatch(setNotification({ message: getErrorMessage(err), type: 'error' }))
+    } finally {
+      setIsRemoving(false)
+    }
+  }
 
   const addToList = async (listId: string) => {
     if (!recipe) return
@@ -105,6 +146,12 @@ const RecipeDetail = () => {
         </ol>
       </section>
 
+      {inPantryIngredients.length > 0 && (
+        <Button variant="secondary" onClick={openMadeSheet} className="w-full">
+          I made this
+        </Button>
+      )}
+
       {hasMissing && (
         <div className="recipe-detail-sticky-bar">
           <Button onClick={handleAddMissing} isLoading={isAdding} className="w-full">
@@ -120,6 +167,36 @@ const RecipeDetail = () => {
           ))}
           <Button variant="secondary" onClick={createAndAddList} isLoading={isAdding} className="w-full">
             New list
+          </Button>
+        </div>
+      </BottomSheet>
+
+      <BottomSheet isOpen={isMadeOpen} onClose={() => setIsMadeOpen(false)} title="Mark as cooked">
+        <div className="recipe-detail-made-sheet">
+          <p className="recipe-detail-made-message">Remove the ingredients you used from your pantry?</p>
+          <div className="recipe-detail-made-list">
+            {inPantryIngredients.map((ingredient) => (
+              <label key={ingredient.ingredientId} className="recipe-detail-made-row">
+                <input
+                  type="checkbox"
+                  checked={selectedIngredientIds.has(ingredient.ingredientId)}
+                  onChange={() => toggleIngredient(ingredient.ingredientId)}
+                  className="recipe-detail-made-checkbox"
+                />
+                <span>{ingredient.name}</span>
+              </label>
+            ))}
+          </div>
+          <Button
+            onClick={handleMadeConfirm}
+            isLoading={isRemoving}
+            disabled={selectedIngredientIds.size === 0}
+            className="w-full"
+          >
+            Remove selected
+          </Button>
+          <Button variant="secondary" onClick={() => setIsMadeOpen(false)} className="w-full">
+            Just dismiss
           </Button>
         </div>
       </BottomSheet>

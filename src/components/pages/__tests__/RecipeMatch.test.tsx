@@ -52,12 +52,20 @@ describe('RecipeMatch Page', () => {
     expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument()
   })
 
-  it('shows an empty state with a link to the pantry when there are no matches', async () => {
+  it('shows an empty state with scan and manual add CTAs when there are no matches', async () => {
     mockedUseRecipeMatch.mockReturnValue({ matches: [], isLoading: false, refetch: vi.fn() })
     const user = userEvent.setup()
     renderRecipeMatch()
-    expect(screen.getByText('Add items to your pantry to see recipe matches')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Go to Pantry' }))
+    expect(screen.getByText('No recipes found yet')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /scan your pantry/i }))
+    expect(navigateMock).toHaveBeenCalledWith('/pantry/capture')
+  })
+
+  it('navigates to pantry when Add Items Manually is clicked on empty state', async () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches: [], isLoading: false, refetch: vi.fn() })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+    await user.click(screen.getByRole('button', { name: /add items manually/i }))
     expect(navigateMock).toHaveBeenCalledWith('/pantry')
   })
 
@@ -84,5 +92,21 @@ describe('RecipeMatch Page', () => {
     renderRecipeMatch()
     await user.click(screen.getByRole('tab', { name: 'Browse' }))
     expect(navigateMock).toHaveBeenCalledWith('/recipes/browse')
+  })
+
+  it('shows maxMissing filter chips and the selected chip is marked active', () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    renderRecipeMatch()
+    const chip2 = screen.getByRole('button', { name: '2' })
+    expect(chip2).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('changes the maxMissing filter when a chip is clicked', async () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+    await user.click(screen.getByRole('button', { name: 'Any' }))
+    expect(screen.getByRole('button', { name: 'Any' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: '2' })).toHaveAttribute('aria-pressed', 'false')
   })
 })

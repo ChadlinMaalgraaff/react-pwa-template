@@ -40,7 +40,10 @@ const PhotoCaptureFrame = ({ onCapture }: PhotoCaptureFrameProps) => {
       ) : (
         <label className="photo-capture-placeholder">
           <Camera className="h-12 w-12 text-neutral-400" />
-          <span>Take or upload a photo</span>
+          <span className="photo-capture-placeholder-title">Scan your pantry</span>
+          <span className="photo-capture-placeholder-tip">
+            Point at your shelf or lay items flat — we&apos;ll identify what you have.
+          </span>
           <input
             ref={inputRef}
             type="file"

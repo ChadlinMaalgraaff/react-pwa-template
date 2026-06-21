@@ -19,8 +19,10 @@ const PhotoReview = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { addItem } = usePantry()
-  const initialSuggestions = (location.state as PhotoReviewLocationState | null)?.suggestions ?? []
-  const [suggestions, setSuggestions] = useState<PantrySuggestion[]>(initialSuggestions)
+  const rawSuggestions = (location.state as PhotoReviewLocationState | null)?.suggestions ?? []
+  const [suggestions, setSuggestions] = useState<PantrySuggestion[]>(
+    [...rawSuggestions].sort((a, b) => b.confidence - a.confidence)
+  )
   const [isSaving, setIsSaving] = useState(false)
 
   const handleChange = (index: number, suggestion: PantrySuggestion) => {
@@ -38,6 +40,8 @@ const PhotoReview = () => {
         : { ingredientId: null, name: selection.ingredientName, matchedExisting: false, quantity: 1, unit: '', confidence: 1 }
     setSuggestions((prev) => [...prev, newSuggestion])
   }
+
+  const lowConfidenceCount = suggestions.filter((s) => s.confidence < 0.5).length
 
   const handleSubmit = async () => {
     setIsSaving(true)
@@ -91,7 +95,9 @@ const PhotoReview = () => {
         isLoading={isSaving}
         className="w-full"
       >
-        Add {suggestions.length} items to pantry
+        {lowConfidenceCount > 0
+          ? `Add ${suggestions.length} items to pantry (${lowConfidenceCount} to review)`
+          : `Add ${suggestions.length} items to pantry`}
       </Button>
     </div>
   )

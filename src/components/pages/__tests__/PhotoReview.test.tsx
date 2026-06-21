@@ -68,13 +68,29 @@ describe('PhotoReview Page', () => {
     expect(screen.getByText("We couldn't identify any items")).toBeInTheDocument()
   })
 
-  it('renders suggestion rows with the submit button count', () => {
+  it('renders suggestion rows with the submit button showing low-confidence count', () => {
     locationState = { suggestions }
     mockedUsePantry.mockReturnValue({ addItem: vi.fn() })
     renderPhotoReview()
     expect(screen.getByText('Rice')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Mystery Sauce')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Add 2 items to pantry' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add 2 items to pantry (1 to review)' })).toBeInTheDocument()
+  })
+
+  it('sorts high-confidence suggestions before low-confidence ones', () => {
+    locationState = { suggestions }
+    mockedUsePantry.mockReturnValue({ addItem: vi.fn() })
+    renderPhotoReview()
+    const rows = screen.getAllByRole('button', { name: 'Remove suggestion' })
+    const names = rows.map((btn) => btn.closest('div')?.textContent ?? '')
+    expect(names[0]).toMatch(/Rice/)
+  })
+
+  it('shows Not sure badge for low-confidence suggestions', () => {
+    locationState = { suggestions }
+    mockedUsePantry.mockReturnValue({ addItem: vi.fn() })
+    renderPhotoReview()
+    expect(screen.getByText('Not sure — please check')).toBeInTheDocument()
   })
 
   it('removes a suggestion row when its remove button is clicked', async () => {
@@ -86,7 +102,7 @@ describe('PhotoReview Page', () => {
     const removeButtons = screen.getAllByRole('button', { name: 'Remove suggestion' })
     await user.click(removeButtons[0])
 
-    expect(screen.getByRole('button', { name: 'Add 1 items to pantry' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add 1 items to pantry (1 to review)' })).toBeInTheDocument()
   })
 
   it('submits the suggestions and navigates to /pantry', async () => {
@@ -96,7 +112,7 @@ describe('PhotoReview Page', () => {
     const user = userEvent.setup()
     renderPhotoReview()
 
-    await user.click(screen.getByRole('button', { name: 'Add 2 items to pantry' }))
+    await user.click(screen.getByRole('button', { name: 'Add 2 items to pantry (1 to review)' }))
 
     await waitFor(() => expect(addItem).toHaveBeenCalledTimes(2))
     expect(addItem).toHaveBeenCalledWith({ ingredientId: 'ing-1', quantity: 2, unit: 'kg' })
