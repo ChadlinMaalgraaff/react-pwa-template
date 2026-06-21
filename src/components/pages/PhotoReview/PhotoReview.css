@@ -1,17 +1,33 @@
 /* PhotoReview Page Styles */
 
 .photo-review-page {
-  @apply flex flex-col gap-4 p-4;
+  @apply flex flex-col gap-4 p-5 pb-28;
 }
 
 .photo-review-progress {
-  @apply mb-2;
+  @apply mb-1;
+}
+
+.photo-review-summary {
+  @apply text-[13.5px] text-ink-soft leading-relaxed;
 }
 
 .photo-review-list {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col;
+}
+
+.photo-review-list-card {
+  @apply card overflow-hidden p-0;
+}
+
+.photo-review-low-label {
+  @apply text-[11px] font-bold uppercase tracking-[.14em] text-[#9A6510] mt-4 mb-1 px-1;
 }
 
 .photo-review-manual {
-  @apply mt-2;
+  @apply mt-3;
+}
+
+.photo-review-submit {
+  @apply fixed bottom-3.5 left-3.5 right-3.5 z-30;
 }

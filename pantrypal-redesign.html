@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PantryPal — Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Canvas & surfaces */
+  --canvas:#F3F1EA;        /* warm oat app background */
+  --surface:#FFFFFF;
+  --surface-2:#FBF8F1;     /* faint warm panel */
+  /* Brand — deep herb green (have it / fresh / makeable) */
+  --pine:#1E5C45;
+  --pine-press:#16452F;
+  --pine-soft:#3C7A60;
+  --pine-tint:#E7EFE8;
+  /* Accent — honey (missing / check this / warm highlight) */
+  --honey:#CC8A1E;
+  --honey-ink:#9A6510;
+  --honey-tint:#F7EBCF;
+  /* Ink */
+  --ink:#23211C;
+  --ink-soft:#6B6458;
+  --ink-mute:#9C9486;
+  /* Lines & states */
+  --line:#EAE4D8;
+  --line-strong:#DCD5C6;
+  --danger:#C25A45;
+  --danger-tint:#F6E5DF;
+  /* Shape */
+  --r-card:22px; --r-lg:28px; --r-sheet:30px;
+  --sh-sm:0 1px 2px rgba(35,33,28,.05);
+  --sh:0 10px 28px rgba(35,33,28,.07);
+  --sh-nav:0 8px 26px rgba(35,33,28,.13);
+  --sh-pop:0 -12px 44px rgba(20,18,14,.18);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 15% -5%, #EFEADC 0%, transparent 60%),
+    radial-gradient(1000px 600px at 100% 0%, #ECEFE6 0%, transparent 55%),
+    #E9E6DC;
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+.serif{font-family:'Fraunces',Georgia,serif;font-optical-sizing:auto}
+
+/* ---------- Page chrome ---------- */
+.page{max-width:1280px;margin:0 auto;padding:56px 28px 96px}
+.masthead{margin-bottom:14px}
+.brandline{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.brandmark{width:40px;height:40px;border-radius:12px;background:var(--pine);display:grid;place-items:center;box-shadow:var(--sh-sm)}
+.brandmark svg{width:22px;height:22px}
+.kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--pine);font-weight:700}
+h1.title{font-family:'Fraunces';font-weight:600;font-size:clamp(34px,5vw,56px);line-height:1.02;letter-spacing:-.02em;margin:6px 0 14px;color:var(--ink)}
+.lede{max-width:680px;font-size:17px;line-height:1.55;color:var(--ink-soft)}
+.lede b{color:var(--ink);font-weight:600}
+
+/* ---------- Design system reference ---------- */
+.system{
+  margin:38px 0 12px;background:rgba(255,255,255,.66);backdrop-filter:blur(6px);
+  border:1px solid rgba(220,213,198,.8);border-radius:24px;padding:26px 28px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:30px 40px;box-shadow:var(--sh-sm)
+}
+.sys-h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mute);font-weight:700;margin:0 0 14px}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}
+.sw{display:flex;flex-direction:column;gap:6px;width:64px}
+.sw i{height:42px;border-radius:12px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.sw span{font-size:11px;color:var(--ink-soft);font-weight:600}
+.sw code{font-size:10px;color:var(--ink-mute);font-family:ui-monospace,monospace}
+.typerow{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.typerow .lbl{font-size:11px;color:var(--ink-mute);width:54px;flex:none;font-weight:600}
+.note{font-size:13px;line-height:1.6;color:var(--ink-soft);margin:0}
+.note b{color:var(--ink);font-weight:600}
+.pillrow{display:flex;flex-wrap:wrap;gap:8px}
+.demo-chip{padding:7px 14px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid var(--line)}
+
+/* ---------- Gallery ---------- */
+.gallery{display:flex;flex-wrap:wrap;gap:56px 48px;justify-content:center;margin-top:54px}
+.frame{display:flex;flex-direction:column;align-items:center;gap:16px;width:390px}
+.cap{text-align:center}
+.cap b{display:block;font-size:15px;font-weight:600;color:var(--ink)}
+.cap span{font-size:13px;color:var(--ink-mute)}
+
+/* ---------- Device ---------- */
+.device{
+  width:390px;height:812px;border-radius:48px;background:#101010;padding:9px;
+  box-shadow:0 50px 90px -40px rgba(20,18,14,.55), 0 12px 24px rgba(20,18,14,.18);
+  position:relative;flex:none
+}
+.screen{
+  width:100%;height:100%;border-radius:40px;overflow:hidden;background:var(--canvas);
+  position:relative;display:flex;flex-direction:column
+}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:128px;height:30px;background:#101010;border-radius:0 0 18px 18px;z-index:60}
+
+/* status bar */
+.status{height:50px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 6px;font-size:14px;font-weight:600;color:var(--ink);position:relative;z-index:50}
+.status .sig{display:flex;align-items:center;gap:6px}
+.status .sig svg{display:block}
+
+/* app bar */
+.appbar{flex:none;padding:8px 20px 14px;display:flex;align-items:center;justify-content:space-between;background:var(--canvas);border-bottom:1px solid var(--line)}
+.appbar .h{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.appbar .acts{display:flex;align-items:center;gap:6px}
+.iconbtn{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;border:0;background:transparent;color:var(--ink-soft)}
+.iconbtn.solid{background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-sm)}
+.linkbtn{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--danger);background:transparent;border:0;padding:6px 8px}
+
+/* scroll body */
+.body{flex:1;overflow:hidden;position:relative}
+.scroll{height:100%;overflow:auto;padding:18px 20px 120px}
+.scroll::-webkit-scrollbar{width:0}
+
+/* generic bits */
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);font-weight:700}
+.muted{color:var(--ink-mute)}
+
+/* buttons */
+.btn{height:52px;border-radius:999px;font-size:15.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;cursor:pointer;width:100%}
+.btn svg{width:18px;height:18px}
+.btn-primary{background:var(--pine);color:#fff;box-shadow:0 8px 18px -6px rgba(30,92,69,.5)}
+.btn-primary:active{background:var(--pine-press)}
+.btn-secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);box-shadow:var(--sh-sm)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-soft{background:var(--pine-tint);color:var(--pine)}
+.btn-ghost{background:transparent;color:var(--ink-soft)}
+.btn-disabled{background:#E7E2D6;color:#B4AD9E;box-shadow:none}
+.btn-sm{height:44px;font-size:14px}
+
+/* chips */
+.chip{padding:9px 15px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--ink-soft);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.chip.on{background:var(--pine);color:#fff;border-color:var(--pine)}
+.chip.num{min-width:42px;justify-content:center;padding:9px 0}
+.chip-row{display:flex;gap:9px;flex-wrap:wrap}
+.chip-scroll{display:flex;gap:9px;overflow:auto;padding-bottom:2px;margin:0 -20px;padding-left:20px;padding-right:20px}
+.chip-scroll::-webkit-scrollbar{height:0}
+
+/* segmented tabs */
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px}
+.seg button{flex:1;height:40px;border:0;background:transparent;border-radius:10px;font-size:14.5px;font-weight:600;color:var(--ink-soft)}
+.seg button.on{background:var(--pine);color:#fff;box-shadow:0 4px 10px -4px rgba(30,92,69,.5)}
+
+/* search field */
+.search{display:flex;align-items:center;gap:10px;height:50px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0 16px;color:var(--ink-mute)}
+.search input,.search .ph{border:0;background:transparent;font-size:15px;color:var(--ink);width:100%;font-family:inherit}
+.search .ph{color:var(--ink-mute)}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh-sm)}
+
+/* pantry rows */
+.cat-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mute);font-weight:700;margin:18px 4px 6px}
+.prow{display:flex;align-items:center;gap:12px;padding:14px 14px;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.pthumb{width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;background:var(--pine-tint);color:var(--pine)}
+.pname{flex:1;min-width:0}
+.pname b{display:block;font-size:15px;font-weight:600;color:var(--ink);line-height:1.2}
+.pname span{font-size:12px;color:var(--ink-mute)}
+.stepper{display:flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px}
+.stepper button{width:30px;height:30px;border-radius:999px;border:0;background:transparent;color:var(--ink-soft);display:grid;place-items:center}
+.stepper .v{min-width:46px;text-align:center;font-size:13px;font-weight:600;color:var(--ink)}
+.del{width:34px;height:34px;border-radius:10px;border:0;background:transparent;color:var(--ink-mute);display:grid;place-items:center;flex:none}
+
+/* FAB */
+.fab{position:absolute;right:18px;bottom:96px;height:52px;padding:0 20px;border-radius:999px;background:var(--pine);color:#fff;display:inline-flex;align-items:center;gap:9px;font-size:15px;font-weight:600;border:0;box-shadow:0 12px 26px -8px rgba(30,92,69,.6);z-index:30}
+.fab svg{width:18px;height:18px}
+
+/* bottom nav */
+.nav{position:absolute;left:14px;right:14px;bottom:14px;height:66px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;display:flex;box-shadow:var(--sh-nav);z-index:40}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--ink-mute);text-decoration:none;font-size:11px;font-weight:600}
+.nav a.on{color:var(--pine)}
+.nav a .pip{position:absolute;top:9px;width:26px;height:3px;border-radius:3px;background:var(--pine);opacity:0}
+.nav a.on .pip{opacity:1}
+.nav svg{width:23px;height:23px}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:700}
+.badge svg{width:13px;height:13px}
+.badge-make{background:var(--pine-tint);color:var(--pine)}
+.badge-miss{background:var(--honey-tint);color:var(--honey-ink)}
+
+/* recipe card */
+.recipe{border-radius:var(--r-card);overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-sm);margin-bottom:16px}
+.rimg{height:150px;position:relative;display:grid;place-items:center}
+.rimg svg{width:70px;height:70px;opacity:.5}
+.rimg .ribbon{position:absolute;left:12px;bottom:12px}
+.rimg .save{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,.9);display:grid;place-items:center;color:var(--ink-soft);box-shadow:var(--sh-sm)}
+.rbody{padding:14px 16px 16px}
+.rtitle{font-family:'Fraunces';font-weight:600;font-size:19px;line-height:1.15;letter-spacing:-.01em;color:var(--ink);margin:0 0 4px}
+.rmeta{font-size:13px;color:var(--ink-mute);display:flex;align-items:center;gap:8px}
+.dot{width:3px;height:3px;border-radius:99px;background:var(--ink-mute);display:inline-block}
+.ph-greens{background:linear-gradient(140deg,#DCEBDD 0%,#C4DCC6 100%);color:#3C7A60}
+.ph-honey{background:linear-gradient(140deg,#F6E7C6 0%,#EFD49B 100%);color:#B07F2A}
+.ph-clay{background:linear-gradient(140deg,#EEDFCF 0%,#E2C9AE 100%);color:#A87B52}
+.ph-sage{background:linear-gradient(140deg,#E2E8DA 0%,#CAD6BF 100%);color:#6E8460}
+
+/* AI recommendation card */
+.aicard{position:relative;background:linear-gradient(160deg,#23624A 0%,#1A4D38 100%);color:#fff;border-radius:var(--r-card);padding:18px 18px 18px;box-shadow:0 14px 30px -12px rgba(26,77,56,.6);overflow:hidden}
+.aicard .glow{position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(204,138,30,.5),transparent 65%)}
+.aicard .eb{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#EAD4A0;display:flex;align-items:center;gap:7px}
+.aicard h4{font-family:'Fraunces';font-weight:600;font-size:21px;margin:10px 0 6px;letter-spacing:-.01em}
+.aicard p{font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.82);margin:0 0 16px}
+.aicard .x{position:absolute;right:14px;top:14px;width:28px;height:28px;border-radius:999px;background:rgba(255,255,255,.16);display:grid;place-items:center;color:#fff}
+.aicard .btn{height:46px;background:#fff;color:var(--pine)}
+
+/* skeleton */
+.skel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:18px}
+.sk{height:12px;border-radius:6px;background:linear-gradient(90deg,#EFEADD,#E6E0D2,#EFEADD);background-size:200% 100%;animation:sh 1.3s infinite;margin-bottom:12px}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* progress steps */
+.steps{display:flex;align-items:center;gap:0;margin:4px 4px 18px}
+.step{display:flex;flex-direction:column;align-items:center;gap:7px;flex:none}
+.step .ring{width:30px;height:30px;border-radius:999px;display:grid;place-items:center;font-size:13px;font-weight:700}
+.step.done .ring{background:var(--pine);color:#fff}
+.step.now .ring{background:#fff;color:var(--pine);border:2px solid var(--pine)}
+.step .t{font-size:12px;font-weight:600;color:var(--ink-soft)}
+.step.now .t{color:var(--pine)}
+.bar{flex:1;height:3px;border-radius:3px;background:var(--pine);margin:0 8px;margin-bottom:22px}
+
+/* review row */
+.rev{display:flex;align-items:center;gap:10px;padding:13px 14px;border-bottom:1px solid var(--line)}
+.rev .nm{flex:1;font-size:15px;font-weight:600}
+.rev.low{background:var(--honey-tint);border-left:3px solid var(--honey);border-radius:12px;margin:6px 0;border-bottom:0;padding-left:13px}
+.rev .check{font-size:11px;font-weight:700;color:var(--honey-ink);display:inline-flex;align-items:center;gap:5px;margin-top:3px}
+.rev .nm small{display:block;font-weight:500}
+.unit{font-size:13px;font-weight:600;color:var(--ink-soft);min-width:54px;text-align:center}
+
+/* scan idle */
+.scanwrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 28px}
+.scanframe{width:230px;height:230px;border-radius:32px;border:2px dashed var(--line-strong);background:var(--surface-2);display:grid;place-items:center;position:relative;margin-bottom:26px}
+.scanframe .corner{position:absolute;width:26px;height:26px;border:3px solid var(--pine)}
+.scanframe svg{width:54px;height:54px;color:var(--pine-soft)}
+.c-tl{top:14px;left:14px;border-right:0;border-bottom:0;border-radius:8px 0 0 0}
+.c-tr{top:14px;right:14px;border-left:0;border-bottom:0;border-radius:0 8px 0 0}
+.c-bl{bottom:14px;left:14px;border-right:0;border-top:0;border-radius:0 0 0 8px}
+.c-br{bottom:14px;right:14px;border-left:0;border-top:0;border-radius:0 0 8px 0}
+
+/* recipe detail */
+.hero{height:230px;position:relative;display:grid;place-items:center;margin:-18px -20px 0}
+.hero svg{width:96px;height:96px;opacity:.55}
+.hero .back{position:absolute;left:16px;top:14px;width:40px;height:40px;border-radius:999px;background:rgba(255,255,255,.9);display:grid;place-items:center;color:var(--ink);box-shadow:var(--sh-sm)}
+.hero .ribbon{position:absolute;left:16px;bottom:16px}
+.ing{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.ing .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;font-size:13px}
+.ing.have .ico{background:var(--pine-tint);color:var(--pine)}
+.ing.miss .ico{background:var(--honey-tint);color:var(--honey-ink)}
+.ing .nm{flex:1;font-size:15px;font-weight:600}
+.ing .amt{font-size:13px;color:var(--ink-mute)}
+.cost{background:var(--surface-2);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:16px 0}
+.cost .hd{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:14px}
+.instr{display:flex;gap:12px;margin:14px 0}
+.instr .n{width:26px;height:26px;border-radius:999px;background:var(--pine-tint);color:var(--pine);font-size:13px;font-weight:700;display:grid;place-items:center;flex:none}
+.instr p{margin:1px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink-soft)}
+
+/* profile */
+.avatar{width:64px;height:64px;border-radius:20px;background:var(--pine);color:#fff;display:grid;place-items:center;font-family:'Fraunces';font-weight:600;font-size:26px;flex:none}
+.uinfo{display:flex;align-items:center;gap:14px;padding:6px 2px 22px}
+.uinfo b{font-size:20px;font-weight:700;display:block}
+.uinfo span{font-size:14px;color:var(--ink-mute)}
+
+/* sheet */
+.scrim{position:absolute;inset:0;background:rgba(28,26,22,.5);z-index:70}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--r-sheet) var(--r-sheet) 0 0;padding:14px 20px 26px;box-shadow:var(--sh-pop);z-index:80}
+.grab{width:40px;height:5px;border-radius:99px;background:var(--line-strong);margin:0 auto 14px}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sheet-h b{font-size:18px;font-weight:700}
+.toast{background:var(--pine-tint);color:var(--pine);border-radius:14px;padding:11px 14px;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.selrow{display:flex;align-items:center;justify-content:space-between;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:12px 0}
+.selrow b{font-size:15px;font-weight:600}
+
+.stack{display:flex;flex-direction:column;gap:10px}
+.section-gap{height:4px}
+
+@media (max-width:520px){
+  .page{padding:34px 16px 70px}
+  .device{transform:scale(.92);transform-origin:top center}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="brandline">
+      <span class="brandmark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 22V12"/></svg>
+      </span>
+      <span class="kicker">PantryPal · Visual Redesign</span>
+    </div>
+    <h1 class="title">A warm, premium look<br>for cooking what you have.</h1>
+    <p class="lede">A complete restyle moving from bright retail green and flat white cards to a <b>“modern larder”</b> palette: deep herb green for what you <b>have</b>, warm honey for what's <b>missing</b>, set on a soft oat canvas with Fraunces dish titles. Every screen from <span style="white-space:nowrap">SCREENS.md</span> is mocked below, ready to hand to your build agent.</p>
+  </header>
+
+  <!-- DESIGN SYSTEM REFERENCE -->
+  <section class="system">
+    <div>
+      <p class="sys-h">Palette</p>
+      <div class="swatches">
+        <div class="sw"><i style="background:#1E5C45"></i><span>Pine</span><code>#1E5C45</code></div>
+        <div class="sw"><i style="background:#3C7A60"></i><span>Pine soft</span><code>#3C7A60</code></div>
+        <div class="sw"><i style="background:#CC8A1E"></i><span>Honey</span><code>#CC8A1E</code></div>
+        <div class="sw"><i style="background:#F3F1EA"></i><span>Oat</span><code>#F3F1EA</code></div>
+        <div class="sw"><i style="background:#23211C"></i><span>Ink</span><code>#23211C</code></div>
+        <div class="sw"><i style="background:#C25A45"></i><span>Danger</span><code>#C25A45</code></div>
+      </div>
+    </div>
+    <div>
+      <p class="sys-h">Typography</p>
+      <div class="typerow"><span class="lbl">Display</span><span class="serif" style="font-size:24px;font-weight:600">Fraunces</span></div>
+      <div class="typerow"><span class="lbl">UI / body</span><span style="font-size:18px;font-weight:600">Inter</span></div>
+      <p class="note"><b>Fraunces</b> for dish names &amp; empty-state headlines only. <b>Inter</b> 400–700 for everything functional — titles, labels, buttons, data.</p>
+    </div>
+    <div>
+      <p class="sys-h">Semantic colour</p>
+      <div class="pillrow" style="margin-bottom:12px">
+        <span class="demo-chip" style="background:#E7EFE8;color:#1E5C45;border-color:transparent">✓ Makeable</span>
+        <span class="demo-chip" style="background:#F7EBCF;color:#9A6510;border-color:transparent">Missing 2</span>
+      </div>
+      <p class="note">Green = in your pantry / fresh / ready. Honey = missing / needs a check. The colour does the work, so badges stay quiet.</p>
+    </div>
+    <div>
+      <p class="sys-h">Shape &amp; depth</p>
+      <p class="note"><b>Radii</b> — cards 22px · sheets 30px · chips &amp; buttons full pill.<br><b>Shadows</b> — soft, warm-tinted, low spread. No hard grey drop-shadows.<br><b>Canvas</b> — oat <code style="font-size:11px">#F3F1EA</code>, never stark white.</p>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <div class="gallery">
+
+    <!-- 1. PANTRY EMPTY -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><span class="h">Pantry</span><div class="acts"><button class="iconbtn solid"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+        <div class="body"><div class="scroll" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-top:0">
+          <div style="width:96px;height:96px;border-radius:28px;background:var(--pine-tint);display:grid;place-items:center;margin-bottom:24px">
+            <svg viewBox="0 0 24 24" width="44" fill="none" stroke="#1E5C45" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 22V12"/></svg>
+          </div>
+          <h2 class="serif" style="font-size:26px;font-weight:600;margin:0 0 8px;letter-spacing:-.01em">Let's stock your pantry</h2>
+          <p style="font-size:15px;color:var(--ink-soft);line-height:1.5;margin:0 0 28px;max-width:260px">Snap a photo of your shelf, or add items one at a time.</p>
+          <div class="stack" style="width:100%">
+            <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19V8a2 2 0 0 0-2-2h-3l-2-3H8L6 6H3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2z"/><circle cx="12" cy="13" r="4"/></svg>Scan pantry</button>
+            <button class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add manually</button>
+          </div>
+        </div></div>
+        <nav class="nav">
+          <a class="on"><span class="pip"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 22V12"/></svg>Pantry</a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14h12v6a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M17 14a4 4 0 0 0 1-7.5A4.5 4.5 0 0 0 9.5 5 4 4 0 0 0 7 14"/></svg>Recipes</a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
+        </nav>
+      </div></div>
+      <div class="cap"><b>Pantry · Empty state</b><span>Invitation, not a dead end</span></div>
+    </div>
+
+    <!-- 2. PANTRY POPULATED -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><span class="h">Pantry</span><div class="acts">
+          <button class="linkbtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>Clear</button>
+          <button class="iconbtn solid"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div></div>
+        <div class="body"><div class="scroll">
+          <div style="display:flex;align-items:center;gap:8px;margin:2px 2px 4px"><span class="badge badge-make"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>24 items fresh</span></div>
+          <p class="cat-label">Produce</p>
+          <div class="card">
+            <div class="prow"><span class="pthumb"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c4 0 7 3 7 7a7 7 0 0 1-14 0c0-4 3-7 7-7z"/><path d="M12 6c0-2 1.5-4 4-4"/></svg></span><div class="pname"><b>Avocado</b><span>2 each</span></div><div class="stepper"><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button><span class="v">2</span><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+            <div class="prow"><span class="pthumb"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10c0-3 2-5 6-5s6 2 6 5-2 9-6 9-6-6-6-9z"/></svg></span><div class="pname"><b>Broccoli</b><span>1 head</span></div><div class="stepper"><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button><span class="v">1</span><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+            <div class="prow"><span class="pthumb"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="6"/><path d="M12 7c0-2 1-4 3-4"/></svg></span><div class="pname"><b>Lemon</b><span>3 each</span></div><div class="stepper"><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button><span class="v">3</span><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+          </div>
+          <p class="cat-label">Protein</p>
+          <div class="card">
+            <div class="prow"><span class="pthumb"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13c0-4 3-7 8-7s7 2 7 5-3 6-7 6c-3 0-4 2-6 2s-2-3-2-6z"/></svg></span><div class="pname"><b>Chicken breast</b><span>1 each</span></div><div class="stepper"><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button><span class="v">1</span><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+            <div class="prow"><span class="pthumb"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c3-4 7-5 11-5 4 0 7 2 7 5s-3 5-7 5c-4 0-8-1-11-5z"/><circle cx="8" cy="12" r="1"/></svg></span><div class="pname"><b>Salmon</b><span>1 fillet</span></div><div class="stepper"><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button><span class="v">1</span><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+          </div>
+          <p class="cat-label">Grains</p>
+          <div class="card">
+            <div class="prow"><span class="pthumb"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4c2 4 2 12 0 16M12 4c2 4 2 12 0 16M17 4c2 4 2 12 0 16"/></svg></span><div class="pname"><b>Brown rice</b><span>500 g</span></div><div class="stepper"><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button><span class="v">500g</span><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+          </div>
+        </div></div>
+        <button class="fab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19V8a2 2 0 0 0-2-2h-3l-2-3H8L6 6H3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2z"/><circle cx="12" cy="13" r="4"/></svg>Scan &amp; add</button>
+        <nav class="nav">
+          <a class="on"><span class="pip"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 22V12"/></svg>Pantry</a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14h12v6a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M17 14a4 4 0 0 0 1-7.5A4.5 4.5 0 0 0 9.5 5 4 4 0 0 0 7 14"/></svg>Recipes</a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
+        </nav>
+      </div></div>
+      <div class="cap"><b>Pantry · Populated</b><span>Larder-style category groups, soft steppers, Scan &amp; Add</span></div>
+    </div>
+
+    <!-- 3. ADD ITEM SHEET -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><span class="h">Pantry</span><div class="acts"><button class="iconbtn solid"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+        <div class="body" style="filter:saturate(.9)">
+          <div class="scroll">
+            <p class="cat-label">Produce</p>
+            <div class="card"><div class="prow"><span class="pthumb"></span><div class="pname"><b>Avocado</b><span>2 each</span></div></div><div class="prow"><span class="pthumb"></span><div class="pname"><b>Broccoli</b><span>1 head</span></div></div></div>
+          </div>
+        </div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="sheet-h"><b>Add item</b><button class="iconbtn"><svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+          <div class="toast"><svg viewBox="0 0 24 24" width="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Spinach added</div>
+          <div class="search"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="ph">Search ingredients…</span></div>
+          <div class="selrow"><div><span class="eyebrow" style="color:var(--pine)">Selected</span><b style="display:block;margin-top:2px">Chickpeas</b></div><div class="stepper"><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button><span class="v">1 can</span><button><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div></div>
+          <div class="stack" style="margin-top:6px">
+            <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add to pantry</button>
+            <button class="btn btn-ghost">Done</button>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Pantry · Add item sheet</b><span>Stays open to add quickly; green confirmation toast</span></div>
+    </div>
+
+    <!-- 4. SCAN IDLE -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><div style="display:flex;align-items:center;gap:10px"><button class="iconbtn"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button><span class="h">Scan pantry</span></div></div>
+        <div class="body"><div class="scanwrap">
+          <div class="scanframe">
+            <span class="corner c-tl"></span><span class="corner c-tr"></span><span class="corner c-bl"></span><span class="corner c-br"></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19V8a2 2 0 0 0-2-2h-3l-2-3H8L6 6H3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <h2 class="serif" style="font-size:25px;font-weight:600;margin:0 0 8px;letter-spacing:-.01em">Scan your shelf</h2>
+          <p style="font-size:15px;color:var(--ink-soft);line-height:1.5;margin:0 0 26px;max-width:280px">Point at your shelf or lay items flat — we'll identify what you have.</p>
+          <button class="btn btn-primary" style="max-width:280px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19V8a2 2 0 0 0-2-2h-3l-2-3H8L6 6H3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2z"/><circle cx="12" cy="13" r="4"/></svg>Open camera</button>
+          <button class="btn btn-ghost" style="max-width:280px;margin-top:6px">Choose from library</button>
+        </div></div>
+      </div></div>
+      <div class="cap"><b>Scan &amp; Add · Idle</b><span>Viewfinder framing makes the tap target obvious</span></div>
+    </div>
+
+    <!-- 5. REVIEW ITEMS -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><div style="display:flex;align-items:center;gap:10px"><button class="iconbtn"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button><span class="h">Review</span></div></div>
+        <div class="body"><div class="scroll" style="padding-bottom:96px">
+          <div class="steps">
+            <div class="step done"><span class="ring"><svg viewBox="0 0 24 24" width="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="t">Capture</span></div>
+            <div class="bar"></div>
+            <div class="step now"><span class="ring">2</span><span class="t">Review</span></div>
+          </div>
+          <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 8px">We found <b style="color:var(--ink)">12 items</b>. Tap a name to fix it, then save.</p>
+          <div class="card" style="padding:2px 14px">
+            <div class="rev"><div class="nm">Avocado</div><span class="unit">2 each</span><button class="iconbtn"><svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+            <div class="rev"><div class="nm">Broccoli</div><span class="unit">1 head</span><button class="iconbtn"><svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+            <div class="rev"><div class="nm">Brown rice</div><span class="unit">1 bag</span><button class="iconbtn"><svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+          </div>
+          <p class="cat-label" style="color:var(--honey-ink)">Please check these</p>
+          <div class="rev low"><div class="nm">Turmeric<span class="check"><svg viewBox="0 0 24 24" width="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>Not sure — please check</span></div><span class="unit">1 jar</span><button class="iconbtn" style="color:var(--honey-ink)"><svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+          <div class="rev low"><div class="nm">Hazelnuts<span class="check"><svg viewBox="0 0 24 24" width="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>Not sure — please check</span></div><span class="unit">1 bowl</span><button class="iconbtn" style="color:var(--honey-ink)"><svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+          <div class="search" style="margin-top:14px"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span class="ph">Add an item we missed…</span></div>
+        </div></div>
+        <div style="position:absolute;left:14px;right:14px;bottom:14px;z-index:30">
+          <button class="btn btn-primary">Add 12 items <span style="opacity:.8;font-weight:500">· 2 to review</span></button>
+        </div>
+      </div></div>
+      <div class="cap"><b>Review items</b><span>Low-confidence rows pulled out &amp; flagged in honey</span></div>
+    </div>
+
+    <!-- 6. RECIPES — COOK NOW -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><span class="h">Recipes</span></div>
+        <div class="body"><div class="scroll">
+          <div class="seg" style="margin-bottom:16px"><button class="on">Cook now</button><button>Browse</button></div>
+          <p class="eyebrow" style="margin:0 0 8px">Missing up to</p>
+          <div class="chip-row" style="margin-bottom:18px">
+            <span class="chip num on">0</span><span class="chip num">1</span><span class="chip num">2</span><span class="chip num">5</span><span class="chip">Any</span>
+          </div>
+          <div class="aicard">
+            <span class="glow"></span>
+            <button class="x"><svg viewBox="0 0 24 24" width="14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            <span class="eb"><svg viewBox="0 0 24 24" width="13" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg>Tonight's pick</span>
+            <h4>Lemon &amp; herb salmon</h4>
+            <p>High in protein and ready in 20 minutes — and you already have every ingredient on hand.</p>
+            <button class="btn">View recipe →</button>
+          </div>
+          <p class="eyebrow" style="margin:18px 0 8px">What's your goal tonight?</p>
+          <div class="chip-scroll" style="margin-bottom:18px">
+            <span class="chip on">High protein</span><span class="chip">Cost-effective</span><span class="chip">Light meal</span><span class="chip">Quick cook</span>
+          </div>
+          <div class="recipe">
+            <div class="rimg ph-greens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 12c3-4 7-5 11-5 4 0 7 2 7 5s-3 5-7 5c-4 0-8-1-11-5z"/><circle cx="8" cy="12" r="1.2" fill="currentColor"/></svg><span class="ribbon"><span class="badge badge-make"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Makeable</span></span></div>
+            <div class="rbody"><h3 class="rtitle">Lemon &amp; herb salmon</h3><div class="rmeta">Pescatarian <span class="dot"></span> 20 min</div></div>
+          </div>
+          <div class="recipe">
+            <div class="rimg ph-honey"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="13" r="7"/><path d="M12 6c0-2 1-4 3-4"/></svg><span class="ribbon"><span class="badge badge-miss">Missing 2</span></span></div>
+            <div class="rbody"><h3 class="rtitle">Ugali — Kenyan cornmeal</h3><div class="rmeta">Kenyan <span class="dot"></span> 25 min</div></div>
+          </div>
+        </div></div>
+        <nav class="nav">
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 22V12"/></svg>Pantry</a>
+          <a class="on"><span class="pip"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14h12v6a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M17 14a4 4 0 0 0 1-7.5A4.5 4.5 0 0 0 9.5 5 4 4 0 0 0 7 14"/></svg>Recipes</a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
+        </nav>
+      </div></div>
+      <div class="cap"><b>Recipes · Cook Now</b><span>AI pick as a deep-green hero card; goal chips drive it</span></div>
+    </div>
+
+    <!-- 7. RECIPES — BROWSE -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><span class="h">Recipes</span></div>
+        <div class="body"><div class="scroll">
+          <div class="seg" style="margin-bottom:16px"><button>Cook now</button><button class="on">Browse</button></div>
+          <div class="search" style="margin-bottom:16px"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="ph">Search recipes…</span></div>
+          <div class="chip-scroll" style="margin-bottom:18px">
+            <span class="chip on">South African</span><span class="chip">Italian</span><span class="chip">Indian</span><span class="chip">Chinese</span><span class="chip">Mexican</span>
+          </div>
+          <div class="recipe">
+            <div class="rimg ph-clay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4 13h16a8 8 0 0 1-16 0z"/><path d="M9 8c0-1.5 1-2 1.5-3M13 8c0-1.5 1-2 1.5-3"/></svg><span class="save"><svg viewBox="0 0 24 24" width="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4z"/></svg></span></div>
+            <div class="rbody"><h3 class="rtitle">Bubble &amp; squeak</h3><div class="rmeta">British <span class="dot"></span> 30 min</div></div>
+          </div>
+          <div class="recipe">
+            <div class="rimg ph-sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16" stroke-dasharray="2 3"/></svg><span class="save"><svg viewBox="0 0 24 24" width="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4z"/></svg></span></div>
+            <div class="rbody"><h3 class="rtitle">Šúľance s makom</h3><div class="rmeta">Slovakia <span class="dot"></span> 40 min</div></div>
+          </div>
+        </div></div>
+        <nav class="nav">
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 22V12"/></svg>Pantry</a>
+          <a class="on"><span class="pip"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14h12v6a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M17 14a4 4 0 0 0 1-7.5A4.5 4.5 0 0 0 9.5 5 4 4 0 0 0 7 14"/></svg>Recipes</a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
+        </nav>
+      </div></div>
+      <div class="cap"><b>Recipes · Browse</b><span>Search + cuisine chips, save-for-later bookmark</span></div>
+    </div>
+
+    <!-- 8. RECIPE DETAIL -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="body"><div class="scroll" style="padding-top:0;padding-bottom:100px">
+          <div class="hero ph-honey">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
+            <button class="back"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+            <span class="ribbon"><span class="badge badge-miss">Missing 2</span></span>
+          </div>
+          <h1 class="serif" style="font-size:27px;font-weight:600;letter-spacing:-.01em;margin:18px 0 4px">Ugali — Kenyan cornmeal</h1>
+          <div class="rmeta" style="margin-bottom:6px">Kenyan <span class="dot"></span> 25 min <span class="dot"></span> Serves 4</div>
+          <p class="cat-label" style="margin-left:0">Ingredients</p>
+          <div class="ing miss"><span class="ico"><svg viewBox="0 0 24 24" width="15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="nm">White cornmeal</span><span class="amt">1 cup</span></div>
+          <div class="ing miss"><span class="ico"><svg viewBox="0 0 24 24" width="15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="nm">Water</span><span class="amt">2 cups</span></div>
+          <div class="ing have"><span class="ico"><svg viewBox="0 0 24 24" width="15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="nm">Salt</span><span class="amt">to taste</span></div>
+          <div class="cost">
+            <div class="hd"><span>Cost to finish this dish</span><svg viewBox="0 0 24 24" width="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"><path d="m6 9 6 6 6-6"/></svg></div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px"><span style="font-size:13px;color:var(--ink-soft)">2 missing ingredients</span><span class="serif" style="font-size:22px;font-weight:600;color:var(--pine)">R24.50</span></div>
+          </div>
+          <p class="cat-label" style="margin-left:0">Method</p>
+          <div class="instr"><span class="n">1</span><p>Bring the water to a boil in a medium saucepan.</p></div>
+          <div class="instr"><span class="n">2</span><p>Reduce the heat to low. Stirring constantly with a whisk, slowly add the cornmeal to the boiling water.</p></div>
+          <div class="instr"><span class="n">3</span><p>Keep stirring with a sturdy wooden spoon until the ugali pulls away from the sides.</p></div>
+        </div></div>
+        <div style="position:absolute;left:14px;right:14px;bottom:14px;z-index:30">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add 2 items to list</button>
+        </div>
+      </div></div>
+      <div class="cap"><b>Recipe detail</b><span>Editorial serif title, have/missing ingredients, cost-to-finish</span></div>
+    </div>
+
+    <!-- 9. PROFILE -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><span class="h">Profile</span></div>
+        <div class="body"><div class="scroll">
+          <div class="uinfo">
+            <span class="avatar">CM</span>
+            <div><b>Chadlin Maalgraaff</b><span>chadlinmaalgraaff@gmail.com</span></div>
+          </div>
+          <div class="card" style="padding:18px 18px 20px">
+            <p class="eyebrow" style="margin:0 0 14px">Dietary preferences</p>
+            <div class="chip-row">
+              <span class="chip on">Vegetarian</span><span class="chip">Vegan</span><span class="chip on">Halaal</span><span class="chip">Pescatarian</span><span class="chip on">No pork</span><span class="chip">Dairy-free</span><span class="chip">Gluten-free</span><span class="chip">Nut-free</span>
+            </div>
+          </div>
+          <div class="stack" style="margin-top:18px">
+            <button class="btn btn-primary">Save changes</button>
+          </div>
+          <div style="height:1px;background:var(--line);margin:22px 2px"></div>
+          <button class="btn btn-secondary"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
+        </div></div>
+        <nav class="nav">
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M3 7l9 5 9-5"/><path d="M12 22V12"/></svg>Pantry</a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14h12v6a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M17 14a4 4 0 0 0 1-7.5A4.5 4.5 0 0 0 9.5 5 4 4 0 0 0 7 14"/></svg>Recipes</a>
+          <a class="on"><span class="pip"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
+        </nav>
+      </div></div>
+      <div class="cap"><b>Profile</b><span>Initials avatar, preference chips, calm sign-out</span></div>
+    </div>
+
+    <!-- 10. CLEAR CONFIRM SHEET -->
+    <div class="frame">
+      <div class="device"><div class="notch"></div><div class="screen">
+        <div class="status"><span>9:41</span><span class="sig">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="22" height="11" viewBox="0 0 24 12" fill="none"><rect x="1" y="1" width="19" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.2" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span></div>
+        <div class="appbar"><span class="h">Pantry</span><div class="acts"><button class="linkbtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>Clear</button></div></div>
+        <div class="body" style="filter:saturate(.9)"><div class="scroll">
+          <p class="cat-label">Produce</p>
+          <div class="card"><div class="prow"><span class="pthumb"></span><div class="pname"><b>Avocado</b><span>2 each</span></div></div><div class="prow"><span class="pthumb"></span><div class="pname"><b>Broccoli</b><span>1 head</span></div></div></div>
+        </div></div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div style="width:54px;height:54px;border-radius:16px;background:var(--danger-tint);display:grid;place-items:center;margin:4px 0 14px;color:var(--danger)">
+            <svg viewBox="0 0 24 24" width="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>
+          </div>
+          <b style="font-size:19px;display:block;margin-bottom:6px">Clear your pantry?</b>
+          <p style="font-size:14.5px;color:var(--ink-soft);line-height:1.55;margin:0 0 18px">This removes all <b style="color:var(--ink)">24 items</b>. You can re-scan or add them again whenever you like.</p>
+          <div class="stack">
+            <button class="btn btn-danger">Clear pantry</button>
+            <button class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap"><b>Clear pantry · Confirm</b><span>Destructive action isolated behind a calm sheet</span></div>
+    </div>
+
+  </div>
+
+  <p style="text-align:center;margin:64px auto 0;max-width:640px;font-size:13px;color:var(--ink-mute);line-height:1.6">
+    Recipe images shown as warm gradient placeholders — drop real photography into the <code style="font-family:ui-monospace,monospace">.rimg</code> / <code style="font-family:ui-monospace,monospace">.hero</code> areas. All colour, type, radius and shadow tokens are declared as CSS variables at the top of this file for direct reuse.
+  </p>
+</div>
+</body>
+</html>

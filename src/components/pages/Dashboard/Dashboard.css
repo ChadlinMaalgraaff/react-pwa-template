@@ -13,7 +13,7 @@
 }
 
 .dashboard-stat-card {
-  @apply card;
+  @apply bg-surface rounded-2xl shadow-sm p-6;
 }
 
 .dashboard-stat-value {

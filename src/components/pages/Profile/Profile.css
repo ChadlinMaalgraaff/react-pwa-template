@@ -1,27 +1,31 @@
 /* Profile Page Styles */
 
 .profile-page {
-  @apply flex flex-col gap-6 p-4;
+  @apply flex flex-col gap-5 p-5;
 }
 
-.profile-header {
-  @apply flex flex-col gap-1;
+.profile-user-info {
+  @apply flex items-center gap-3.5 pb-1;
+}
+
+.profile-avatar {
+  @apply flex h-16 w-16 flex-none items-center justify-center rounded-[20px] bg-primary font-fraunces text-[26px] font-semibold text-white;
 }
 
 .profile-name {
-  @apply text-lg font-semibold text-neutral-900;
+  @apply block text-[20px] font-bold text-ink;
 }
 
 .profile-email {
-  @apply text-sm text-neutral-500;
+  @apply text-sm text-ink-mute;
 }
 
-.profile-section {
-  @apply flex flex-col gap-2;
+.profile-prefs-card {
+  @apply bg-surface rounded-card border border-line shadow-sm p-[18px];
 }
 
 .profile-section-title {
-  @apply text-sm font-semibold uppercase tracking-wide text-neutral-500;
+  @apply mb-3.5 text-[11px] font-bold uppercase tracking-[.14em] text-ink-mute;
 }
 
 .profile-chip-group {
@@ -29,5 +33,5 @@
 }
 
 .profile-divider {
-  @apply border-t border-neutral-100;
+  @apply border-t border-line;
 }

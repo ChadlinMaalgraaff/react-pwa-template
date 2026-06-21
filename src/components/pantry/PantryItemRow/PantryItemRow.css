@@ -1,21 +1,25 @@
 /* PantryItemRow Component Styles */
 
 .pantry-item-row {
-  @apply flex items-center justify-between gap-4 border-b border-neutral-100 py-3;
+  @apply flex items-center gap-3 border-b border-line px-3.5 py-3.5 last:border-b-0;
+}
+
+.pantry-item-thumb {
+  @apply flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-primary-light text-primary;
 }
 
 .pantry-item-info {
-  @apply flex-1;
+  @apply flex-1 min-w-0;
 }
 
 .pantry-item-name {
-  @apply text-sm font-medium text-neutral-900;
+  @apply block text-[15px] font-semibold text-ink leading-snug;
 }
 
 .pantry-item-category {
-  @apply text-xs text-neutral-500;
+  @apply text-[12px] text-ink-mute;
 }
 
 .pantry-item-delete {
-  @apply text-neutral-400 hover:text-danger;
+  @apply flex h-[34px] w-[34px] items-center justify-center rounded-[10px] text-ink-mute hover:text-danger flex-none;
 }

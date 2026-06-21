@@ -25,8 +25,9 @@ const BottomNav = () => {
             `bottom-nav-link ${isActive ? 'bottom-nav-link-active' : ''}`
           }
         >
-          <Icon className="h-6 w-6" />
-          <span className="text-xs">{label}</span>
+          <span className="bottom-nav-pip" />
+          <Icon className="h-[23px] w-[23px]" />
+          {label}
         </NavLink>
       ))}
     </nav>

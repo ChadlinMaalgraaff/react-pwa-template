@@ -74,7 +74,7 @@ describe('PhotoReview Page', () => {
     renderPhotoReview()
     expect(screen.getByText('Rice')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Mystery Sauce')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Add 2 items to pantry (1 to review)' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Add 2 items.*to review/ })).toBeInTheDocument()
   })
 
   it('sorts high-confidence suggestions before low-confidence ones', () => {
@@ -102,7 +102,7 @@ describe('PhotoReview Page', () => {
     const removeButtons = screen.getAllByRole('button', { name: 'Remove suggestion' })
     await user.click(removeButtons[0])
 
-    expect(screen.getByRole('button', { name: 'Add 1 items to pantry (1 to review)' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Add 1 items.*to review/ })).toBeInTheDocument()
   })
 
   it('submits the suggestions and navigates to /pantry', async () => {
@@ -112,7 +112,7 @@ describe('PhotoReview Page', () => {
     const user = userEvent.setup()
     renderPhotoReview()
 
-    await user.click(screen.getByRole('button', { name: 'Add 2 items to pantry (1 to review)' }))
+    await user.click(screen.getByRole('button', { name: /Add 2 items.*to review/ }))
 
     await waitFor(() => expect(addItem).toHaveBeenCalledTimes(2))
     expect(addItem).toHaveBeenCalledWith({ ingredientId: 'ing-1', quantity: 2, unit: 'kg' })

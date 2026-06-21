@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Camera, X } from 'lucide-react'
+import { Camera, Sparkles, X } from 'lucide-react'
 import { Tabs, Button, Chip, Spinner, type TabOption } from '@components/shared'
 import { RecipeCard } from '@components/recipes'
 import { useRecipeMatch } from '@hooks/useRecipeMatch'
@@ -9,7 +9,7 @@ import { RecommendGoal } from '@/types/recipes.types'
 import './RecipeMatch.css'
 
 const RECIPE_TABS: TabOption[] = [
-  { value: 'match', label: 'Cook Now' },
+  { value: 'match', label: 'Cook now' },
   { value: 'browse', label: 'Browse' },
 ]
 
@@ -77,7 +77,7 @@ const RecipeMatch = () => {
       <Tabs tabs={RECIPE_TABS} value="match" onChange={handleTabChange} />
 
       <div className="recipe-match-filter">
-        <span className="recipe-match-filter-label">Missing up to:</span>
+        <span className="recipe-match-filter-label">Missing up to</span>
         <div className="recipe-match-filter-chips">
           {MAX_MISSING_OPTIONS.map((option) => (
             <Chip
@@ -100,11 +100,11 @@ const RecipeMatch = () => {
             Snap a photo of your pantry and we&apos;ll find recipes you can make right now.
           </p>
           <div className="recipe-match-empty-actions">
-            <Button onClick={() => navigate('/pantry/capture')} className="flex-1">
-              <Camera className="h-4 w-4" />
+            <Button onClick={() => navigate('/pantry/capture')}>
+              <Camera className="h-[18px] w-[18px]" />
               Scan Your Pantry
             </Button>
-            <Button variant="secondary" onClick={() => navigate('/pantry')} className="flex-1">
+            <Button variant="secondary" onClick={() => navigate('/pantry')}>
               Add Items Manually
             </Button>
           </div>
@@ -136,25 +136,30 @@ const RecipeMatch = () => {
 
           {!isRecommending && recommendation && recommendedRecipe && (
             <div className="recipe-match-recommendation">
+              <span className="recipe-match-recommendation-glow" />
               <div className="recipe-match-recommendation-header">
-                <span className="recipe-match-recommendation-eyebrow">✨ Tonight&apos;s pick</span>
+                <span className="recipe-match-recommendation-eyebrow">
+                  <Sparkles className="h-3 w-3" />
+                  Tonight&apos;s pick
+                </span>
                 <button
                   type="button"
                   aria-label="Dismiss recommendation"
                   onClick={handleDismiss}
                   className="recipe-match-recommendation-dismiss"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </div>
               <p className="recipe-match-recommendation-title">{recommendedRecipe.title}</p>
               <p className="recipe-match-recommendation-rationale">{recommendation.rationale}</p>
-              <Button
-                className="w-full"
+              <button
+                type="button"
+                className="recipe-match-recommendation-btn"
                 onClick={() => navigate(`/recipes/${recommendation.recommendedRecipeId}`)}
               >
                 View Recipe →
-              </Button>
+              </button>
             </div>
           )}
 

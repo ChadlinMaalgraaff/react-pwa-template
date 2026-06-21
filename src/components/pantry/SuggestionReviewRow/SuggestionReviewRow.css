@@ -1,21 +1,21 @@
 /* SuggestionReviewRow Component Styles */
 
 .suggestion-review-row {
-  @apply flex items-center justify-between gap-4 border-b border-neutral-100 py-3;
+  @apply flex items-center gap-3 border-b border-line px-3.5 py-3 last:border-b-0;
 }
 
 .suggestion-review-row--low-confidence {
-  @apply border-l-2 border-l-amber-400 bg-amber-50/50 pl-3;
+  @apply rounded-xl border-0 border-l-[3px] border-l-[#CC8A1E] bg-[#F7EBCF] pl-[13px] my-1.5;
 }
 
 .suggestion-review-info {
-  @apply flex flex-1 items-center gap-2;
+  @apply flex flex-1 flex-col gap-0.5 min-w-0;
 }
 
 .suggestion-review-name {
-  @apply text-sm font-medium text-neutral-900;
+  @apply text-[15px] font-semibold text-ink;
 }
 
 .suggestion-review-remove {
-  @apply text-neutral-400 hover:text-danger;
+  @apply flex h-9 w-9 items-center justify-center rounded-[10px] text-ink-mute hover:text-danger flex-none;
 }

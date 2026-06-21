@@ -1,21 +1,41 @@
 /* RecipeCard Component Styles */
 
 .recipe-card {
-  @apply flex flex-col gap-2;
+  @apply overflow-hidden rounded-card border border-line bg-surface shadow-sm mb-4;
 }
 
 .recipe-card-button {
   @apply block w-full text-left;
 }
 
+.recipe-card-image-wrap {
+  @apply relative h-[150px] bg-primary-light flex items-center justify-center;
+}
+
 .recipe-card-image {
-  @apply -mx-6 -mt-6 mb-2 h-32 w-[calc(100%+3rem)] rounded-t-lg object-cover;
+  @apply h-full w-full object-cover;
+}
+
+.recipe-card-image-placeholder {
+  @apply h-[70px] w-[70px] opacity-50 text-primary-soft;
+}
+
+.recipe-card-ribbon {
+  @apply absolute bottom-3 left-3;
+}
+
+.recipe-card-body {
+  @apply px-4 py-3.5;
 }
 
 .recipe-card-title {
-  @apply text-base font-semibold text-neutral-900;
+  @apply font-fraunces text-[19px] font-semibold leading-snug tracking-[-0.01em] text-ink mb-1;
 }
 
 .recipe-card-meta {
-  @apply flex gap-3 text-xs text-neutral-500;
+  @apply flex items-center gap-2 text-[13px] text-ink-mute;
+}
+
+.recipe-card-meta-dot {
+  @apply inline-block h-[3px] w-[3px] rounded-full bg-ink-mute;
 }

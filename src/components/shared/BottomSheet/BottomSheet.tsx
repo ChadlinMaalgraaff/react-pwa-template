@@ -27,16 +27,17 @@ const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, child
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 bg-[rgba(28,26,22,.5)]" onClick={onClose} aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative w-full max-w-lg rounded-t-2xl bg-surface p-6 shadow-xl ${className}`}
+        className={`relative w-full max-w-lg rounded-t-sheet bg-surface px-5 pb-7 pt-3.5 shadow-pop ${className}`}
       >
+        <div className="mx-auto mb-3.5 h-[5px] w-10 rounded-full bg-line-strong" />
         <div className="mb-4 flex items-center justify-between">
-          {title && <h2 className="text-lg font-semibold text-neutral-900">{title}</h2>}
-          <button type="button" aria-label="Close" onClick={onClose} className="text-neutral-400 hover:text-neutral-600">
+          {title && <h2 className="text-lg font-bold text-ink">{title}</h2>}
+          <button type="button" aria-label="Close" onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-xl text-ink-mute hover:text-ink">
             <X className="h-5 w-5" />
           </button>
         </div>

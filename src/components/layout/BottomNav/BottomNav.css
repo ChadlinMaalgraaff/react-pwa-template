@@ -1,13 +1,21 @@
 /* BottomNav Component Styles */
 
 .bottom-nav {
-  @apply fixed bottom-0 left-0 right-0 z-10 flex items-center justify-around border-t border-neutral-200 bg-surface py-2;
+  @apply fixed bottom-3.5 left-3.5 right-3.5 z-10 flex h-[66px] items-center justify-around rounded-[22px] border border-line bg-[rgba(255,255,255,.94)] shadow-nav backdrop-blur-[10px];
 }
 
 .bottom-nav-link {
-  @apply flex flex-1 flex-col items-center gap-1 text-neutral-500;
+  @apply relative flex flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold text-ink-mute transition-colors;
 }
 
 .bottom-nav-link-active {
   @apply text-primary;
+}
+
+.bottom-nav-pip {
+  @apply absolute top-2 h-[3px] w-[26px] rounded-full bg-primary opacity-0;
+}
+
+.bottom-nav-link-active .bottom-nav-pip {
+  @apply opacity-100;
 }

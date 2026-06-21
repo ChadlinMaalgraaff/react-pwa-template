@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { LogOut } from 'lucide-react'
 import { Button, Chip, Spinner } from '@components/shared'
 import { useProfile } from '@hooks/useProfile'
 import { useAppDispatch } from '@hooks/redux.hooks'
@@ -7,6 +8,13 @@ import { logout } from '@store/slices/auth.slice'
 import { setNotification } from '@store/slices/ui.slice'
 import { DIETARY_PREFERENCE_OPTIONS } from '@utils/dietaryOptions'
 import './Profile.css'
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('')
 
 const Profile = () => {
   const dispatch = useAppDispatch()
@@ -50,13 +58,16 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
-      <div className="profile-header">
-        <p className="profile-name">{profile.name}</p>
-        <p className="profile-email">{profile.email}</p>
+      <div className="profile-user-info">
+        <span className="profile-avatar">{initials(profile.name)}</span>
+        <div>
+          <strong className="profile-name">{profile.name}</strong>
+          <p className="profile-email">{profile.email}</p>
+        </div>
       </div>
 
-      <div className="profile-section">
-        <h2 className="profile-section-title">Dietary preferences</h2>
+      <div className="profile-prefs-card">
+        <p className="profile-section-title">Dietary preferences</p>
         <div className="profile-chip-group">
           {DIETARY_PREFERENCE_OPTIONS.map((option) => (
             <Chip
@@ -77,6 +88,7 @@ const Profile = () => {
       <hr className="profile-divider" />
 
       <Button type="button" variant="secondary" onClick={handleLogout} className="w-full">
+        <LogOut className="h-[18px] w-[18px]" />
         Log out
       </Button>
     </div>

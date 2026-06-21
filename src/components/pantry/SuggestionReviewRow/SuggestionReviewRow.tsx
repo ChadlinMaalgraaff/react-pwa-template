@@ -1,6 +1,6 @@
-import { X } from 'lucide-react'
+import { AlertCircle, X } from 'lucide-react'
 import { PantrySuggestion } from '@/types/pantry.types'
-import { QuantityStepper, Badge } from '@components/shared'
+import { QuantityStepper } from '@components/shared'
 import '@styles/shared.css'
 import './SuggestionReviewRow.css'
 
@@ -29,7 +29,12 @@ const SuggestionReviewRow = ({ suggestion, onChange, onRemove }: SuggestionRevie
             aria-label="Ingredient name"
           />
         )}
-        {isLowConfidence && <Badge variant="accent">Not sure — please check</Badge>}
+        {isLowConfidence && (
+          <span className="flex items-center gap-1 text-[11px] font-bold text-[#9A6510]">
+            <AlertCircle className="h-3 w-3" />
+            Not sure — please check
+          </span>
+        )}
       </div>
       <QuantityStepper
         value={suggestion.quantity}

@@ -1,19 +1,47 @@
 /* PhotoCaptureFrame Component Styles */
 
 .photo-capture-frame {
-  @apply flex h-full flex-col items-center justify-center gap-6 bg-neutral-900 text-white;
+  @apply flex h-full flex-col items-center justify-center gap-0 bg-canvas text-ink;
 }
 
-.photo-capture-placeholder {
-  @apply flex cursor-pointer flex-col items-center gap-3 px-8 text-center text-neutral-300;
+.photo-capture-scanwrap {
+  @apply flex flex-col items-center justify-center text-center px-7;
+}
+
+.photo-capture-viewfinder {
+  @apply relative flex h-[230px] w-[230px] items-center justify-center rounded-[32px] border-2 border-dashed border-line-strong bg-surface-2 mb-6;
+}
+
+.photo-capture-corner {
+  @apply absolute h-[26px] w-[26px] border-[3px] border-primary;
+}
+
+.photo-capture-corner--tl {
+  @apply top-3.5 left-3.5 rounded-tl-[8px] border-r-0 border-b-0;
+}
+
+.photo-capture-corner--tr {
+  @apply top-3.5 right-3.5 rounded-tr-[8px] border-l-0 border-b-0;
+}
+
+.photo-capture-corner--bl {
+  @apply bottom-3.5 left-3.5 rounded-bl-[8px] border-r-0 border-t-0;
+}
+
+.photo-capture-corner--br {
+  @apply bottom-3.5 right-3.5 rounded-br-[8px] border-l-0 border-t-0;
 }
 
 .photo-capture-placeholder-title {
-  @apply text-base font-semibold text-neutral-200;
+  @apply font-fraunces text-[25px] font-semibold tracking-[-0.01em] text-ink mb-2;
 }
 
 .photo-capture-placeholder-tip {
-  @apply text-sm text-neutral-400;
+  @apply text-[15px] leading-relaxed text-ink-soft max-w-[280px] mb-6;
+}
+
+.photo-capture-placeholder {
+  @apply sr-only;
 }
 
 .photo-capture-preview {
@@ -21,5 +49,5 @@
 }
 
 .photo-capture-actions {
-  @apply flex gap-4;
+  @apply flex w-full max-w-[280px] flex-col gap-2.5 mt-6;
 }

@@ -20,12 +20,12 @@ describe('Button Component', () => {
 
   it('renders in primary variant by default', () => {
     const { container } = render(<Button>Primary</Button>)
-    expect(container.querySelector('button')).toHaveClass('bg-blue-600')
+    expect(container.querySelector('button')).toHaveClass('bg-primary')
   })
 
   it('renders in secondary variant', () => {
     const { container } = render(<Button variant="secondary">Secondary</Button>)
-    expect(container.querySelector('button')).toHaveClass('bg-gray-200')
+    expect(container.querySelector('button')).toHaveClass('bg-surface')
   })
 
   it('disables button when disabled prop is true', () => {

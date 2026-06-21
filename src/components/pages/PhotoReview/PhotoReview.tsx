@@ -41,7 +41,9 @@ const PhotoReview = () => {
     setSuggestions((prev) => [...prev, newSuggestion])
   }
 
-  const lowConfidenceCount = suggestions.filter((s) => s.confidence < 0.5).length
+  const highConfidence = suggestions.filter((s) => s.confidence >= 0.5)
+  const lowConfidence = suggestions.filter((s) => s.confidence < 0.5)
+  const lowConfidenceCount = lowConfidence.length
 
   const handleSubmit = async () => {
     setIsSaving(true)
@@ -66,6 +68,12 @@ const PhotoReview = () => {
     <div className="photo-review-page">
       <ProgressSteps steps={STEPS} currentStep={2} className="photo-review-progress" />
 
+      {suggestions.length > 0 && (
+        <p className="photo-review-summary">
+          We found <strong className="text-ink">{suggestions.length} items</strong>. Tap a name to fix it, then save.
+        </p>
+      )}
+
       {suggestions.length === 0 ? (
         <EmptyState
           title="We couldn't identify any items"
@@ -73,32 +81,60 @@ const PhotoReview = () => {
         />
       ) : (
         <div className="photo-review-list">
-          {suggestions.map((suggestion, index) => (
-            <SuggestionReviewRow
-              key={`${suggestion.name}-${index}`}
-              suggestion={suggestion}
-              onChange={(value) => handleChange(index, value)}
-              onRemove={() => handleRemove(index)}
-            />
-          ))}
+          {highConfidence.length > 0 && (
+            <div className="photo-review-list-card">
+              {highConfidence.map((suggestion) => {
+                const index = suggestions.indexOf(suggestion)
+                return (
+                  <SuggestionReviewRow
+                    key={`${suggestion.name}-${index}`}
+                    suggestion={suggestion}
+                    onChange={(value) => handleChange(index, value)}
+                    onRemove={() => handleRemove(index)}
+                  />
+                )
+              })}
+            </div>
+          )}
+
+          {lowConfidence.length > 0 && (
+            <>
+              <p className="photo-review-low-label">Please check these</p>
+              {lowConfidence.map((suggestion) => {
+                const index = suggestions.indexOf(suggestion)
+                return (
+                  <SuggestionReviewRow
+                    key={`${suggestion.name}-${index}`}
+                    suggestion={suggestion}
+                    onChange={(value) => handleChange(index, value)}
+                    onRemove={() => handleRemove(index)}
+                  />
+                )
+              })}
+            </>
+          )}
         </div>
       )}
 
       <div className="photo-review-manual">
-        <IngredientAutocomplete onSelect={handleManualAdd} placeholder="Add item manually..." />
+        <IngredientAutocomplete onSelect={handleManualAdd} placeholder="Add an item we missed…" />
       </div>
 
-      <Button
-        type="button"
-        onClick={handleSubmit}
-        disabled={suggestions.length === 0}
-        isLoading={isSaving}
-        className="w-full"
-      >
-        {lowConfidenceCount > 0
-          ? `Add ${suggestions.length} items to pantry (${lowConfidenceCount} to review)`
-          : `Add ${suggestions.length} items to pantry`}
-      </Button>
+      <div className="photo-review-submit">
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          disabled={suggestions.length === 0}
+          isLoading={isSaving}
+        >
+          {lowConfidenceCount > 0
+            ? `Add ${suggestions.length} items`
+            : `Add ${suggestions.length} items to pantry`}
+          {lowConfidenceCount > 0 && (
+            <span className="font-normal opacity-80"> · {lowConfidenceCount} to review</span>
+          )}
+        </Button>
+      </div>
     </div>
   )
 }

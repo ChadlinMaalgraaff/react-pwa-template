@@ -1,4 +1,5 @@
-import { Card, Badge } from '@components/shared'
+import { UtensilsCrossed } from 'lucide-react'
+import { Badge } from '@components/shared'
 import './RecipeCard.css'
 
 export interface RecipeCardMatchInfo {
@@ -30,25 +31,35 @@ const RecipeCard = ({
   const totalTime = (prepTimeMinutes ?? 0) + (cookTimeMinutes ?? 0)
 
   const content = (
-    <Card className="recipe-card">
-      {imageUrl && <img src={imageUrl} alt={title} className="recipe-card-image" />}
-      <h3 className="recipe-card-title">{title}</h3>
-      <div className="recipe-card-meta">
-        {cuisine && <span>{cuisine}</span>}
-        {totalTime > 0 && <span>{totalTime} min</span>}
-        {servings && <span>{servings} servings</span>}
+    <div className="recipe-card">
+      <div className="recipe-card-image-wrap">
+        {imageUrl ? (
+          <img src={imageUrl} alt={title} className="recipe-card-image" />
+        ) : (
+          <UtensilsCrossed className="recipe-card-image-placeholder" strokeWidth={1.2} />
+        )}
+        {matchInfo && (
+          <span className="recipe-card-ribbon">
+            <Badge variant={matchInfo.isFullyMakeable ? 'success' : 'accent'}>
+              {matchInfo.isFullyMakeable ? 'Makeable' : `Missing ${matchInfo.missingCount}`}
+            </Badge>
+          </span>
+        )}
       </div>
-      {matchInfo && (
-        <Badge variant={matchInfo.isFullyMakeable ? 'success' : 'accent'}>
-          {matchInfo.isFullyMakeable ? 'Makeable' : `Missing ${matchInfo.missingCount}`}
-        </Badge>
-      )}
-    </Card>
+      <div className="recipe-card-body">
+        <h3 className="recipe-card-title">{title}</h3>
+        <div className="recipe-card-meta">
+          {cuisine && <span>{cuisine}</span>}
+          {cuisine && totalTime > 0 && <span className="recipe-card-meta-dot" />}
+          {totalTime > 0 && <span>{totalTime} min</span>}
+          {servings && totalTime > 0 && <span className="recipe-card-meta-dot" />}
+          {servings && <span>{servings} servings</span>}
+        </div>
+      </div>
+    </div>
   )
 
-  if (!onClick) {
-    return content
-  }
+  if (!onClick) return content
 
   return (
     <button type="button" onClick={onClick} className="recipe-card-button">

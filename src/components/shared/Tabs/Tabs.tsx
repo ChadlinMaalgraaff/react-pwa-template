@@ -16,7 +16,7 @@ interface TabsProps {
 
 const Tabs: React.FC<TabsProps> = ({ tabs, value, onChange, className = '' }) => {
   return (
-    <div role="tablist" className={`inline-flex rounded-lg bg-neutral-100 p-1 ${className}`}>
+    <div role="tablist" className={`flex bg-surface border border-line rounded-[14px] p-1 gap-1 ${className}`}>
       {tabs.map((tab) => {
         const isActive = tab.value === value
         return (
@@ -26,8 +26,8 @@ const Tabs: React.FC<TabsProps> = ({ tabs, value, onChange, className = '' }) =>
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(tab.value)}
-            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
-              isActive ? 'bg-surface text-primary shadow-sm' : 'text-neutral-600 hover:text-neutral-900'
+            className={`flex-1 h-10 rounded-[10px] text-sm font-semibold transition-colors ${
+              isActive ? 'bg-primary text-white shadow-[0_4px_10px_-4px_rgba(30,92,69,.5)]' : 'text-ink-soft hover:text-ink'
             }`}
           >
             {tab.label}

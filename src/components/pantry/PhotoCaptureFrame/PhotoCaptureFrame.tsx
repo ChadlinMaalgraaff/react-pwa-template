@@ -36,33 +36,41 @@ const PhotoCaptureFrame = ({ onCapture }: PhotoCaptureFrameProps) => {
   return (
     <div className="photo-capture-frame">
       {previewUrl ? (
-        <img src={previewUrl} alt="Captured pantry items" className="photo-capture-preview" />
+        <>
+          <img src={previewUrl} alt="Captured pantry items" className="photo-capture-preview" />
+          <div className="photo-capture-actions">
+            <Button variant="secondary" onClick={handleRetake}>Retake</Button>
+            <Button variant="primary" onClick={handleUsePhoto}>Use Photo</Button>
+          </div>
+        </>
       ) : (
-        <label className="photo-capture-placeholder">
-          <Camera className="h-12 w-12 text-neutral-400" />
-          <span className="photo-capture-placeholder-title">Scan your pantry</span>
-          <span className="photo-capture-placeholder-tip">
+        <div className="photo-capture-scanwrap">
+          <div className="photo-capture-viewfinder">
+            <span className="photo-capture-corner photo-capture-corner--tl" />
+            <span className="photo-capture-corner photo-capture-corner--tr" />
+            <span className="photo-capture-corner photo-capture-corner--bl" />
+            <span className="photo-capture-corner photo-capture-corner--br" />
+            <Camera className="h-[54px] w-[54px] text-primary-soft" strokeWidth={1.5} />
+          </div>
+          <p className="photo-capture-placeholder-title">Scan your shelf</p>
+          <p className="photo-capture-placeholder-tip">
             Point at your shelf or lay items flat — we&apos;ll identify what you have.
-          </span>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={handleFileChange}
-            className="sr-only"
-            aria-label="Take or upload a photo"
-          />
-        </label>
-      )}
-      {previewUrl && (
-        <div className="photo-capture-actions">
-          <Button variant="secondary" onClick={handleRetake}>
-            Retake
-          </Button>
-          <Button variant="primary" onClick={handleUsePhoto}>
-            Use Photo
-          </Button>
+          </p>
+          <label className="photo-capture-actions">
+            <Button variant="primary" onClick={() => inputRef.current?.click()}>
+              <Camera className="h-[18px] w-[18px]" />
+              Open camera
+            </Button>
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleFileChange}
+              className="sr-only"
+              aria-label="Take or upload a photo"
+            />
+          </label>
         </div>
       )}
     </div>

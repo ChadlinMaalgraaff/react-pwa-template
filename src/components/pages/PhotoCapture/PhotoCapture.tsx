@@ -26,9 +26,12 @@ const PhotoCapture = () => {
 
   return (
     <div className="photo-capture-page">
-      <button type="button" aria-label="Close" className="photo-capture-close" onClick={() => navigate('/pantry')}>
-        <ArrowLeft className="h-6 w-6" />
-      </button>
+      <div className="photo-capture-appbar">
+        <button type="button" aria-label="Close" className="photo-capture-close" onClick={() => navigate('/pantry')}>
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <span className="photo-capture-appbar-title">Scan pantry</span>
+      </div>
 
       {isBusy ? (
         <div className="photo-capture-status">

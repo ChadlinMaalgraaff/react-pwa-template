@@ -13,10 +13,10 @@ interface ChipProps {
 
 const Chip: React.FC<ChipProps> = ({ children, selected = false, onClick, onRemove, className = '' }) => {
   const baseStyles =
-    'inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition-colors'
+    'inline-flex items-center gap-1 rounded-full px-[15px] py-[9px] text-sm font-semibold transition-colors border whitespace-nowrap'
   const stateStyles = selected
-    ? 'bg-primary text-white'
-    : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+    ? 'bg-primary text-white border-primary'
+    : 'bg-surface text-ink-soft border-line hover:bg-neutral-50'
 
   const content = (
     <>

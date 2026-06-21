@@ -10,7 +10,7 @@ describe('PhotoCaptureFrame Component', () => {
 
   it('renders the upload prompt initially', () => {
     render(<PhotoCaptureFrame onCapture={vi.fn()} />)
-    expect(screen.getByText('Scan your pantry')).toBeInTheDocument()
+    expect(screen.getByText('Scan your shelf')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Use Photo' })).not.toBeInTheDocument()
   })
 
@@ -49,6 +49,6 @@ describe('PhotoCaptureFrame Component', () => {
     await user.upload(input, file)
     await user.click(screen.getByRole('button', { name: 'Retake' }))
 
-    expect(screen.getByText('Scan your pantry')).toBeInTheDocument()
+    expect(screen.getByText('Scan your shelf')).toBeInTheDocument()
   })
 })

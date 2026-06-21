@@ -64,7 +64,7 @@ describe('Pantry Page', () => {
   it('shows an empty state when there are no items', () => {
     mockedUsePantry.mockReturnValue({ items: [], isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem: vi.fn(), clearAll: vi.fn() })
     renderPantry()
-    expect(screen.getByText('Your pantry is empty')).toBeInTheDocument()
+    expect(screen.getByText("Let's stock your pantry")).toBeInTheDocument()
   })
 
   it('shows Scan Pantry and Add Manually buttons on empty state', async () => {
@@ -115,7 +115,7 @@ describe('Pantry Page', () => {
     await user.type(screen.getByRole('searchbox'), 'Flour')
     await waitFor(() => screen.getByText('Flour'), { timeout: 2000 })
     await user.click(screen.getByText('Flour'))
-    await user.click(screen.getByRole('button', { name: 'Add' }))
+    await user.click(screen.getByRole('button', { name: 'Add to pantry' }))
 
     await waitFor(() =>
       expect(addItem).toHaveBeenCalledWith({ ingredientId: 'ing-3', quantity: 1, unit: 'kg' })
@@ -132,7 +132,8 @@ describe('Pantry Page', () => {
     await user.click(screen.getByRole('button', { name: 'Clear pantry' }))
     expect(screen.getByText('Clear your pantry?')).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Clear Pantry' }))
+    const clearBtns = screen.getAllByRole('button', { name: 'Clear pantry' })
+    await user.click(clearBtns[clearBtns.length - 1])
     await waitFor(() => expect(clearAll).toHaveBeenCalled())
   })
 })
