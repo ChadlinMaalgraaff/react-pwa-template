@@ -18,6 +18,10 @@
   @apply sm:w-64;
 }
 
+.ingredient-catalog-header-actions {
+  @apply flex items-center gap-3;
+}
+
 .ingredient-catalog-form {
   @apply flex flex-col gap-4;
 }

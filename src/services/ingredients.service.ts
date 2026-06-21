@@ -5,6 +5,7 @@ import {
   ListIngredientsParams,
   CreateIngredientRequest,
   UpdateIngredientRequest,
+  NormalizeBulkResult,
 } from '@/types/ingredients.types'
 
 /**
@@ -29,6 +30,11 @@ class IngredientsService {
 
   async deleteIngredient(id: string): Promise<PartialEntityModel> {
     const response = await apiClient.delete<PartialEntityModel>(`/admin/ingredients/${id}`)
+    return response.data
+  }
+
+  async normalizeIngredientsBulk(): Promise<NormalizeBulkResult> {
+    const response = await apiClient.post<NormalizeBulkResult>('/admin/ingredients/normalize-bulk', {}, { timeout: 130000 })
     return response.data
   }
 }

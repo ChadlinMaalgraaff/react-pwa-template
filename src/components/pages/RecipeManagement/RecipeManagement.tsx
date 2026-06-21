@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, SearchBar, Chip, Badge, ConfirmDialog } from '@components/shared'
-import { DataTable, DataTableColumn } from '@components/admin'
+import { DataTable, DataTableColumn, TheMealDBImportModal } from '@components/admin'
 import { useRecipes } from '@hooks/useRecipes'
 import { useRecipeAdmin } from '@hooks/useRecipeAdmin'
 import { RecipeSummary } from '@/types/recipes.types'
@@ -21,6 +21,7 @@ const RecipeManagement = () => {
   const { deleteRecipe, isSaving } = useRecipeAdmin()
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set())
   const [deletingRecipe, setDeletingRecipe] = useState<RecipeSummary | null>(null)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   useEffect(() => {
     setParams({
@@ -76,8 +77,8 @@ const RecipeManagement = () => {
       <div className="recipe-management-header">
         <h1 className="recipe-management-title">Recipes</h1>
         <div className="recipe-management-actions">
-          <Button type="button" variant="secondary" onClick={() => navigate('/admin/recipes/import')}>
-            Import from TheMealDB
+          <Button type="button" variant="secondary" onClick={() => setIsImportModalOpen(true)}>
+            Browse TheMealDB
           </Button>
           <Button type="button" onClick={() => navigate('/admin/recipes/new')}>
             + New Recipe
@@ -111,6 +112,12 @@ const RecipeManagement = () => {
         pageSize={PAGE_SIZE}
         total={total}
         onPageChange={setPage}
+      />
+
+      <TheMealDBImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImportComplete={() => setParams({ page: 1, pageSize: PAGE_SIZE })}
       />
 
       <ConfirmDialog

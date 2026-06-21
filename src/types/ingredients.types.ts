@@ -24,3 +24,9 @@ export interface CreateIngredientRequest {
 }
 
 export type UpdateIngredientRequest = Partial<CreateIngredientRequest>
+
+export interface NormalizeBulkResult {
+  total: number
+  updated: number
+  failed: number
+}

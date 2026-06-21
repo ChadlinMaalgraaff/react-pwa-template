@@ -15,10 +15,16 @@ vi.mock('@/services/recipes.service', () => ({
   default: {
     listRecipes: vi.fn(),
     deleteRecipe: vi.fn(),
+    getTheMealDBCategories: vi.fn(),
+    browseTheMealDB: vi.fn(),
+    bulkImportRecipes: vi.fn(),
   },
 }))
 
-const mockedRecipesService = recipesService as unknown as Record<'listRecipes' | 'deleteRecipe', ReturnType<typeof vi.fn>>
+const mockedRecipesService = recipesService as unknown as Record<
+  'listRecipes' | 'deleteRecipe' | 'getTheMealDBCategories' | 'browseTheMealDB' | 'bulkImportRecipes',
+  ReturnType<typeof vi.fn>
+>
 
 const navigateMock = vi.fn()
 
@@ -50,6 +56,7 @@ describe('RecipeManagement Page', () => {
   beforeEach(() => {
     navigateMock.mockClear()
     mockedRecipesService.listRecipes.mockResolvedValue({ items: recipes, total: 2, page: 1, pageSize: 10 })
+    mockedRecipesService.getTheMealDBCategories.mockResolvedValue({ categories: ['Beef', 'Chicken'] })
   })
 
   it('renders recipe rows with SA staple badge', async () => {
@@ -68,13 +75,13 @@ describe('RecipeManagement Page', () => {
     expect(navigateMock).toHaveBeenCalledWith('/admin/recipes/new')
   })
 
-  it('navigates to the recipe import page', async () => {
+  it('opens the TheMealDB import modal', async () => {
     const user = userEvent.setup()
     renderRecipeManagement()
     await waitFor(() => expect(screen.getByText('Bobotie')).toBeInTheDocument())
 
-    await user.click(screen.getByRole('button', { name: 'Import from TheMealDB' }))
-    expect(navigateMock).toHaveBeenCalledWith('/admin/recipes/import')
+    await user.click(screen.getByRole('button', { name: 'Browse TheMealDB' }))
+    expect(screen.getByRole('dialog', { name: 'Import from TheMealDB' })).toBeInTheDocument()
   })
 
   it('navigates to the recipe edit form', async () => {

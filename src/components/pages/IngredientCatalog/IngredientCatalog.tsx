@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { Button, SearchBar, Select, ConfirmDialog, Input } from '@components/shared'
 import { DataTable, AdminFormModal, DataTableColumn } from '@components/admin'
 import { useIngredients } from '@hooks/useIngredients'
+import { useAppDispatch } from '@hooks/redux.hooks'
+import { setNotification } from '@store/slices/ui.slice'
+import ingredientsService from '@/services/ingredients.service'
 import { Ingredient } from '@/types/ingredients.types'
 import './IngredientCatalog.css'
 
@@ -15,6 +18,7 @@ interface IngredientFormState {
 const EMPTY_FORM: IngredientFormState = { name: '', category: '', defaultUnit: '', aliases: '' }
 
 const IngredientCatalog = () => {
+  const dispatch = useAppDispatch()
   const { ingredients: allIngredients } = useIngredients()
   const { ingredients, isLoading, params, setParams, createIngredient, updateIngredient, deleteIngredient } =
     useIngredients()
@@ -26,6 +30,8 @@ const IngredientCatalog = () => {
   const [isSaving, setIsSaving] = useState(false)
   const [deletingIngredient, setDeletingIngredient] = useState<Ingredient | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isNormalizeConfirmOpen, setIsNormalizeConfirmOpen] = useState(false)
+  const [isNormalizing, setIsNormalizing] = useState(false)
 
   useEffect(() => {
     setParams({ search: search || undefined, category: category || undefined })
@@ -82,6 +88,30 @@ const IngredientCatalog = () => {
     }
   }
 
+  const handleNormalize = async () => {
+    setIsNormalizeConfirmOpen(false)
+    setIsNormalizing(true)
+    try {
+      const result = await ingredientsService.normalizeIngredientsBulk()
+      if (result.total === 0) {
+        dispatch(setNotification({ message: 'All ingredients are already normalized.', type: 'success' }))
+      } else if (result.failed > 0) {
+        dispatch(setNotification({ message: `Normalized ${result.updated} of ${result.total}. ${result.failed} could not be normalized.`, type: 'success' }))
+      } else {
+        dispatch(setNotification({ message: `Normalized ${result.updated} of ${result.total} ingredients.`, type: 'success' }))
+      }
+    } catch (err) {
+      const status = (err as { response?: { status: number } })?.response?.status
+      if (status === 403) {
+        dispatch(setNotification({ message: 'Access denied.', type: 'error' }))
+      } else {
+        dispatch(setNotification({ message: 'Normalization failed. Check server logs.', type: 'error' }))
+      }
+    } finally {
+      setIsNormalizing(false)
+    }
+  }
+
   const handleDelete = async () => {
     if (!deletingIngredient) return
     setIsDeleting(true)
@@ -106,9 +136,14 @@ const IngredientCatalog = () => {
     <div className="ingredient-catalog-page">
       <div className="ingredient-catalog-header">
         <h1 className="ingredient-catalog-title">Ingredients</h1>
-        <Button type="button" onClick={openCreateForm}>
-          + New Ingredient
-        </Button>
+        <div className="ingredient-catalog-header-actions">
+          <Button type="button" variant="secondary" onClick={() => setIsNormalizeConfirmOpen(true)} isLoading={isNormalizing}>
+            {isNormalizing ? 'Normalizing…' : 'Normalize Ingredients'}
+          </Button>
+          <Button type="button" onClick={openCreateForm}>
+            + New Ingredient
+          </Button>
+        </div>
       </div>
 
       <div className="ingredient-catalog-filters">
@@ -173,6 +208,16 @@ const IngredientCatalog = () => {
         isLoading={isDeleting}
         onConfirm={handleDelete}
         onCancel={() => setDeletingIngredient(null)}
+      />
+
+      <ConfirmDialog
+        isOpen={isNormalizeConfirmOpen}
+        title="Normalize ingredient names?"
+        message="This will use AI to populate the normalized name for all ingredients that don't have one yet. This helps recipe matching work across different brand names. This may take up to 2 minutes for large ingredient lists."
+        confirmText="Normalize"
+        isLoading={isNormalizing}
+        onConfirm={handleNormalize}
+        onCancel={() => setIsNormalizeConfirmOpen(false)}
       />
     </div>
   )

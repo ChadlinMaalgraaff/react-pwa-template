@@ -152,3 +152,34 @@ export interface AiRecommendResponse {
   rationale: string
   goal: string
 }
+
+export interface TheMealDBRecipe {
+  externalId: string
+  title: string
+  thumbnail: string | null
+  alreadyImported: boolean
+}
+
+export interface TheMealDBCategoriesResponse {
+  categories: string[]
+}
+
+export interface BrowseTheMealDBParams {
+  category?: string
+  search?: string
+}
+
+export interface BrowseTheMealDBResponse {
+  recipes: TheMealDBRecipe[]
+}
+
+export interface BulkImportFailure {
+  externalId: string
+  reason: string
+}
+
+export interface BulkImportResult {
+  imported: number
+  skipped: number
+  failed: BulkImportFailure[]
+}

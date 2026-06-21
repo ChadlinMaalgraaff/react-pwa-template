@@ -17,11 +17,12 @@ vi.mock('@/services/ingredients.service', () => ({
     createIngredient: vi.fn(),
     updateIngredient: vi.fn(),
     deleteIngredient: vi.fn(),
+    normalizeIngredientsBulk: vi.fn(),
   },
 }))
 
 const mockedIngredientsService = ingredientsService as unknown as Record<
-  'listIngredients' | 'createIngredient' | 'updateIngredient' | 'deleteIngredient',
+  'listIngredients' | 'createIngredient' | 'updateIngredient' | 'deleteIngredient' | 'normalizeIngredientsBulk',
   ReturnType<typeof vi.fn>
 >
 
@@ -47,6 +48,7 @@ const ingredients: Ingredient[] = [
 describe('IngredientCatalog Page', () => {
   beforeEach(() => {
     mockedIngredientsService.listIngredients.mockResolvedValue(ingredients)
+    mockedIngredientsService.normalizeIngredientsBulk.mockResolvedValue({ total: 10, updated: 10, failed: 0 })
   })
 
   it('renders ingredient rows', async () => {
@@ -118,6 +120,18 @@ describe('IngredientCatalog Page', () => {
         aliases: ['white rice'],
       })
     )
+  })
+
+  it('opens the normalize confirmation dialog and calls normalizeIngredientsBulk on confirm', async () => {
+    const user = userEvent.setup()
+    renderIngredientCatalog()
+    await waitFor(() => expect(screen.getByText('Rice')).toBeInTheDocument())
+
+    await user.click(screen.getByRole('button', { name: 'Normalize Ingredients' }))
+    expect(screen.getByRole('dialog', { name: 'Normalize ingredient names?' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Normalize' }))
+    await waitFor(() => expect(mockedIngredientsService.normalizeIngredientsBulk).toHaveBeenCalledTimes(1))
   })
 
   it('deletes an ingredient after confirmation', async () => {

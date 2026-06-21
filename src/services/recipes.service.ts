@@ -11,6 +11,10 @@ import {
   UpdateRecipeRequest,
   AiRecommendRequest,
   AiRecommendResponse,
+  TheMealDBCategoriesResponse,
+  BrowseTheMealDBParams,
+  BrowseTheMealDBResponse,
+  BulkImportResult,
 } from '@/types/recipes.types'
 
 /**
@@ -62,6 +66,21 @@ class RecipesService {
 
   async getAiRecommendation(data: AiRecommendRequest): Promise<AiRecommendResponse> {
     const response = await apiClient.post<AiRecommendResponse>('/recipes/ai-recommend', data)
+    return response.data
+  }
+
+  async getTheMealDBCategories(): Promise<TheMealDBCategoriesResponse> {
+    const response = await apiClient.get<TheMealDBCategoriesResponse>('/admin/recipes/themealdb/categories')
+    return response.data
+  }
+
+  async browseTheMealDB(params: BrowseTheMealDBParams): Promise<BrowseTheMealDBResponse> {
+    const response = await apiClient.get<BrowseTheMealDBResponse>('/admin/recipes/themealdb', { params })
+    return response.data
+  }
+
+  async bulkImportRecipes(externalIds: string[]): Promise<BulkImportResult> {
+    const response = await apiClient.post<BulkImportResult>('/admin/recipes/bulk-import', { externalIds })
     return response.data
   }
 }
