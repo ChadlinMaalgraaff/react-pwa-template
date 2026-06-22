@@ -1,0 +1,53 @@
+/* StaplesCheckIn Page Styles */
+
+.staples-checkin-page {
+  @apply flex min-h-screen items-center justify-center bg-neutral-50 p-4;
+}
+
+.staples-checkin-card {
+  @apply w-full max-w-md rounded-lg bg-surface p-6 shadow-sm;
+}
+
+.staples-checkin-logo {
+  @apply mb-1 text-center text-2xl font-bold text-primary;
+}
+
+.staples-checkin-heading {
+  @apply mb-2 text-lg font-semibold text-neutral-900;
+}
+
+.staples-checkin-hint {
+  @apply mb-4 text-[13px] leading-snug text-ink-soft;
+}
+
+.staples-checkin-groups {
+  @apply flex flex-col gap-4;
+}
+
+.staples-checkin-group-title {
+  @apply mb-2 text-[11px] font-bold uppercase tracking-[.12em] text-ink-mute;
+}
+
+.staples-checkin-chips {
+  @apply flex flex-wrap gap-2;
+}
+
+.staples-checkin-chip {
+  @apply flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-opacity disabled:opacity-40;
+}
+
+.staples-checkin-chip--active {
+  @apply border-primary bg-primary-light text-primary;
+}
+
+.staples-checkin-more {
+  @apply mt-4 flex items-center gap-1 text-[13px] font-semibold text-primary;
+}
+
+.staples-checkin-actions {
+  @apply mt-6 flex items-center justify-between;
+}
+
+.staples-checkin-skip {
+  @apply text-sm font-medium text-neutral-500 hover:text-neutral-700;
+}

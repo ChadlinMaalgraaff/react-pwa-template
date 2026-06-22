@@ -6,6 +6,7 @@ import Login from '@components/pages/Login/Login'
 import Register from '@components/pages/Register/Register'
 import Onboarding from '@components/pages/Onboarding/Onboarding'
 import Pantry from '@components/pages/Pantry/Pantry'
+import StaplesCheckIn from '@components/pages/StaplesCheckIn/StaplesCheckIn'
 import PhotoCapture from '@components/pages/PhotoCapture/PhotoCapture'
 import PhotoReview from '@components/pages/PhotoReview/PhotoReview'
 import RecipeMatch from '@components/pages/RecipeMatch/RecipeMatch'
@@ -36,6 +37,7 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           {/* Full-screen customer flows - no shell */}
+          <Route path="/staples" element={<StaplesCheckIn />} />
           <Route path="/pantry/capture" element={<PhotoCapture />} />
           <Route path="/pantry/capture/review" element={<PhotoReview />} />
           <Route path="/recipes/:id" element={<RecipeDetail />} />

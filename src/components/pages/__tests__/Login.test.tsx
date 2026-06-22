@@ -71,7 +71,7 @@ describe('Login Page', () => {
     expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
   })
 
-  it('navigates to /pantry on successful login for a regular user', async () => {
+  it('navigates to /staples on successful login for a regular user', async () => {
     mockedAuthService.login.mockResolvedValue({
       accessToken: 'access-token-123',
       idToken: 'id-token-123',
@@ -87,7 +87,7 @@ describe('Login Page', () => {
     await user.type(screen.getByLabelText('Password', { exact: false }), 'password123')
     await user.click(screen.getByRole('button', { name: 'Log in' }))
 
-    await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/pantry'))
+    await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/staples'))
   })
 
   it('navigates to /admin on successful login for an admin user', async () => {

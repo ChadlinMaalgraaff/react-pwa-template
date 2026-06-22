@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronUp, Check, Plus } from 'lucide-react'
 import { PantryItem } from '@/types/pantry.types'
-import { STAPLES } from './staples'
+import { STAPLES, Staple, groupStaplesByCategory } from './staples'
 import './PantryStaplesSection.css'
 
 interface PantryStaplesSectionProps {
@@ -37,6 +37,29 @@ const PantryStaplesSection = ({ items, onAdd, onRemove, defaultExpanded = false 
     }
   }
 
+  const renderChip = (staple: Staple) => {
+    const inPantry = !!findPantryItem(staple.name)
+    const isLoading = pending.has(staple.name)
+    return (
+      <button
+        key={staple.name}
+        type="button"
+        aria-label={`${inPantry ? 'Remove' : 'Add'} ${staple.name}`}
+        aria-pressed={inPantry}
+        disabled={isLoading}
+        className={`pantry-staple-chip${inPantry ? ' pantry-staple-chip--active' : ''}`}
+        onClick={() => handleToggle(staple.name, staple.quantity, staple.unit)}
+      >
+        {inPantry ? (
+          <Check className="h-3.5 w-3.5 flex-none" />
+        ) : (
+          <Plus className="h-3.5 w-3.5 flex-none" />
+        )}
+        {staple.name}
+      </button>
+    )
+  }
+
   return (
     <div className="pantry-staples">
       <button
@@ -58,29 +81,13 @@ const PantryStaplesSection = ({ items, onAdd, onRemove, defaultExpanded = false 
           <p className="pantry-staples-hint">
             Tap to mark what you usually have. These count toward recipe matching.
           </p>
-          <div className="pantry-staples-chips">
-            {STAPLES.map((staple) => {
-              const inPantry = !!findPantryItem(staple.name)
-              const isLoading = pending.has(staple.name)
-              return (
-                <button
-                  key={staple.name}
-                  type="button"
-                  aria-label={`${inPantry ? 'Remove' : 'Add'} ${staple.name}`}
-                  aria-pressed={inPantry}
-                  disabled={isLoading}
-                  className={`pantry-staple-chip${inPantry ? ' pantry-staple-chip--active' : ''}`}
-                  onClick={() => handleToggle(staple.name, staple.quantity, staple.unit)}
-                >
-                  {inPantry ? (
-                    <Check className="h-3.5 w-3.5 flex-none" />
-                  ) : (
-                    <Plus className="h-3.5 w-3.5 flex-none" />
-                  )}
-                  {staple.name}
-                </button>
-              )
-            })}
+          <div className="pantry-staples-groups">
+            {groupStaplesByCategory(STAPLES).map(([category, staples]) => (
+              <section key={category} className="pantry-staples-group">
+                <h3 className="pantry-staples-group-title">{category}</h3>
+                <div className="pantry-staples-chips">{staples.map(renderChip)}</div>
+              </section>
+            ))}
           </div>
         </div>
       )}

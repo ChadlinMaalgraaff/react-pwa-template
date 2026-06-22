@@ -24,7 +24,7 @@ const Login = () => {
       dispatch(setToken(accessToken))
       const profile = await profileService.getProfile()
       dispatch(setUser(profile))
-      navigate(profile.role === 'admin' ? '/admin' : '/pantry')
+      navigate(profile.role === 'admin' ? '/admin' : '/staples')
     } catch {
       setError('Invalid email or password')
     } finally {

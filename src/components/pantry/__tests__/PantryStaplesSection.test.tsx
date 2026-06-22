@@ -56,6 +56,18 @@ describe('PantryStaplesSection', () => {
     expect(screen.queryByText('Salt')).not.toBeInTheDocument()
   })
 
+  it('groups staples under category headings when expanded', () => {
+    renderSection([], true)
+    expect(screen.getByRole('heading', { name: 'Basics' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Produce' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Stock' })).toBeInTheDocument()
+  })
+
+  it('does not render category headings when collapsed', () => {
+    renderSection([], false)
+    expect(screen.queryByRole('heading', { name: 'Basics' })).not.toBeInTheDocument()
+  })
+
   it('shows inactive chips for staples not in pantry', () => {
     renderSection([], true)
     const saltBtn = screen.getByRole('button', { name: 'Add Salt' })

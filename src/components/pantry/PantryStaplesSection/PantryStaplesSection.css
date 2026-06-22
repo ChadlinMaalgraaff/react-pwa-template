@@ -20,6 +20,14 @@
   @apply mb-3 text-[13px] leading-snug text-ink-soft;
 }
 
+.pantry-staples-groups {
+  @apply flex flex-col gap-4;
+}
+
+.pantry-staples-group-title {
+  @apply mb-2 text-[11px] font-bold uppercase tracking-[.12em] text-ink-mute;
+}
+
 .pantry-staples-chips {
   @apply flex flex-wrap gap-2;
 }
