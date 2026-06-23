@@ -66,6 +66,13 @@ const recipe: RecipeDetail = {
   ingredients: [
     { ingredientId: 'ing-1', name: 'Mince', quantity: 500, unit: 'g', isOptional: false, notes: null, inPantry: true },
   ],
+  imageAuthor: null,
+  imageLicense: null,
+  imageSourceUrl: null,
+  sourceName: null,
+  sourceUrl: null,
+  sourceLicense: null,
+  source: null,
 }
 
 describe('RecipeEditor Page', () => {

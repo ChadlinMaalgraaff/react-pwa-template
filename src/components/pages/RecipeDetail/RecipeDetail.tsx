@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, UtensilsCrossed } from 'lucide-react'
 import { Button, BottomSheet, Badge, EmptyState, Spinner } from '@components/shared'
-import { RecipeIngredientRow, CostBreakdownPanel } from '@components/recipes'
+import { RecipeIngredientRow, CostBreakdownPanel, PhotoCredit, SourceCredit } from '@components/recipes'
 import { ShoppingListSummaryCard } from '@components/shopping-lists'
 import { useRecipeDetail } from '@hooks/useRecipeDetail'
 import { useRecipeCost } from '@hooks/useRecipeCost'
@@ -127,6 +127,12 @@ const RecipeDetail = () => {
         )}
       </div>
 
+      <PhotoCredit
+        imageAuthor={recipe.imageAuthor}
+        imageLicense={recipe.imageLicense}
+        imageSourceUrl={recipe.imageSourceUrl}
+      />
+
       <div className="recipe-detail-body">
         <h1 className="recipe-detail-title">{recipe.title}</h1>
         <div className="recipe-detail-meta">
@@ -165,6 +171,12 @@ const RecipeDetail = () => {
             I made this
           </Button>
         )}
+
+        <SourceCredit
+          sourceName={recipe.sourceName}
+          sourceUrl={recipe.sourceUrl}
+          sourceLicense={recipe.sourceLicense}
+        />
       </div>
 
 

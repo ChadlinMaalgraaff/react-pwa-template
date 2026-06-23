@@ -77,6 +77,13 @@ const fullyMakeableRecipe: RecipeDetailType = {
     { ingredientId: 'ing-1', name: 'Mince', quantity: 500, unit: 'g', isOptional: false, notes: null, inPantry: true },
     { ingredientId: 'ing-2', name: 'Bread', quantity: 2, unit: 'slices', isOptional: false, notes: null, inPantry: true },
   ],
+  imageAuthor: null,
+  imageLicense: null,
+  imageSourceUrl: null,
+  sourceName: null,
+  sourceUrl: null,
+  sourceLicense: null,
+  source: 'generated',
 }
 
 const recipeWithMissing: RecipeDetailType = {
@@ -85,6 +92,18 @@ const recipeWithMissing: RecipeDetailType = {
     fullyMakeableRecipe.ingredients[0],
     { ingredientId: 'ing-2', name: 'Bread', quantity: 2, unit: 'slices', isOptional: false, notes: null, inPantry: false },
   ],
+}
+
+const attributedRecipe: RecipeDetailType = {
+  ...fullyMakeableRecipe,
+  imageUrl: 'https://upload.wikimedia.org/Tomato_bredie.jpg',
+  imageAuthor: 'Olga Ernst',
+  imageLicense: 'CC BY-SA 4.0',
+  imageSourceUrl: 'https://commons.wikimedia.org/wiki/File:Tomato_bredie.jpg',
+  sourceName: 'Wikibooks Cookbook',
+  sourceUrl: 'https://en.wikibooks.org/wiki/Cookbook:Tomato_Bredie',
+  sourceLicense: 'CC BY-SA 4.0',
+  source: 'wikibooks',
 }
 
 const cost = {
@@ -153,5 +172,34 @@ describe('RecipeDetail Page', () => {
 
     await user.click(screen.getByRole('button', { name: 'Remove selected' }))
     await waitFor(() => expect(removeItem).toHaveBeenCalledWith('pantry-item-1'))
+  })
+
+  it('renders photo and recipe credits with working links when attribution is present', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: attributedRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    const commonsLink = screen.getByRole('link', { name: 'Wikimedia Commons' })
+    expect(commonsLink).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:Tomato_bredie.jpg')
+
+    expect(screen.getByText(/Photo: Olga Ernst/)).toBeInTheDocument()
+    expect(screen.getByText(/Recipe adapted from/)).toBeInTheDocument()
+    expect(screen.getByText(/Modified \(units converted to metric/)).toBeInTheDocument()
+
+    const sourceLink = screen.getByRole('link', { name: 'Wikibooks Cookbook' })
+    expect(sourceLink).toHaveAttribute('href', 'https://en.wikibooks.org/wiki/Cookbook:Tomato_Bredie')
+
+    const licenseLinks = screen.getAllByRole('link', { name: 'CC BY-SA 4.0' })
+    expect(licenseLinks).toHaveLength(2)
+    licenseLinks.forEach((link) =>
+      expect(link).toHaveAttribute('href', 'https://creativecommons.org/licenses/by-sa/4.0/')
+    )
+  })
+
+  it('renders no credit blocks for a recipe with null attribution', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.queryByText(/Photo:/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Recipe adapted from/)).not.toBeInTheDocument()
   })
 })

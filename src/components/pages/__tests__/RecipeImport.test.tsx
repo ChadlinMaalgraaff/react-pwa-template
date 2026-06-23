@@ -44,6 +44,13 @@ const importedRecipe: RecipeDetail = {
   ingredients: [
     { ingredientId: 'ing-1', name: 'Chicken', quantity: 500, unit: 'g', isOptional: false, notes: null, inPantry: false },
   ],
+  imageAuthor: null,
+  imageLicense: null,
+  imageSourceUrl: null,
+  sourceName: null,
+  sourceUrl: null,
+  sourceLicense: null,
+  source: null,
 }
 
 describe('RecipeImport Page', () => {

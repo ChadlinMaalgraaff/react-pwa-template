@@ -6,7 +6,22 @@
 
 import { PaginatedResult } from './common.types'
 
-export type RecipeSource = 'admin' | 'api'
+export type RecipeSource = 'admin' | 'api' | 'wikibooks' | 'usda' | 'generated'
+
+/**
+ * Attribution fields returned by GET /recipes/{id} (all nullable).
+ * Two independent works can require credit: the recipe text and the photo.
+ * Display is purely data-driven — branch on field presence, never on `source`.
+ */
+export interface RecipeAttribution {
+  imageAuthor: string | null
+  imageLicense: string | null
+  imageSourceUrl: string | null
+  sourceName: string | null
+  sourceUrl: string | null
+  sourceLicense: string | null
+  source: RecipeSource | null
+}
 
 export interface RecipeSummary {
   id: string
@@ -41,6 +56,13 @@ export interface RecipeDetail {
   servings: number | null
   isSaStaple: boolean
   ingredients: RecipeIngredientDetail[]
+  imageAuthor: string | null
+  imageLicense: string | null
+  imageSourceUrl: string | null
+  sourceName: string | null
+  sourceUrl: string | null
+  sourceLicense: string | null
+  source: RecipeSource | null
 }
 
 export interface ListRecipesParams {

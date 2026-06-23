@@ -34,6 +34,13 @@ const recipe: RecipeDetail = {
   servings: 4,
   isSaStaple: true,
   ingredients: [],
+  imageAuthor: null,
+  imageLicense: null,
+  imageSourceUrl: null,
+  sourceName: null,
+  sourceUrl: null,
+  sourceLicense: null,
+  source: null,
 }
 
 describe('useRecipeDetail', () => {

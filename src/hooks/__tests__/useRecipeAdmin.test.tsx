@@ -40,6 +40,13 @@ const recipe: RecipeDetail = {
   servings: null,
   isSaStaple: false,
   ingredients: [],
+  imageAuthor: null,
+  imageLicense: null,
+  imageSourceUrl: null,
+  sourceName: null,
+  sourceUrl: null,
+  sourceLicense: null,
+  source: null,
 }
 
 describe('useRecipeAdmin', () => {

@@ -1,0 +1,38 @@
+/* Recipe attribution (Creative Commons credits) */
+
+/* Photo credit — a small caption directly beneath the hero image */
+
+.recipe-photo-credit {
+  @apply flex items-start gap-1.5 px-5 py-2 text-[11px] leading-snug text-ink-mute;
+  background-color: rgba(247, 235, 207, 0.5);
+}
+
+.recipe-photo-credit-ico {
+  @apply mt-px h-3 w-3 flex-none opacity-70;
+}
+
+/* Recipe-text credit — a credits line at the foot of the recipe content */
+
+.recipe-source-credit {
+  @apply mt-2 flex items-start gap-2 rounded-xl px-3.5 py-3;
+  background-color: #F7F4EC;
+  border: 1px solid #EAE4D8;
+}
+
+.recipe-source-credit-ico {
+  @apply mt-px h-3.5 w-3.5 flex-none text-ink-mute;
+}
+
+.recipe-source-credit-text {
+  @apply text-[12px] leading-relaxed text-ink-mute;
+}
+
+/* Shared link + muted styling */
+
+.recipe-credit-link {
+  @apply font-medium text-primary underline underline-offset-2;
+}
+
+.recipe-credit-muted {
+  @apply text-ink-mute;
+}
