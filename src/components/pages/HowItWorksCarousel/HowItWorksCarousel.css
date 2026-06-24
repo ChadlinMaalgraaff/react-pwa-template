@@ -1,0 +1,49 @@
+/* HowItWorksCarousel Page Styles */
+
+.carousel-page {
+  @apply flex min-h-screen flex-col bg-canvas;
+}
+
+.carousel-image {
+  @apply w-full object-cover;
+  height: 52vh;
+  max-height: 420px;
+}
+
+.carousel-content {
+  @apply flex flex-1 flex-col px-6 pt-5 pb-10;
+}
+
+/* Progress dots */
+
+.carousel-dots {
+  @apply flex justify-center gap-2 mb-6;
+}
+
+.carousel-dot {
+  @apply h-2 w-2 rounded-full bg-ink-mute/30 transition-all duration-200;
+}
+
+.carousel-dot-active {
+  @apply w-5 bg-primary;
+}
+
+/* Copy */
+
+.carousel-headline {
+  @apply font-fraunces text-[26px] font-semibold leading-tight tracking-[-0.01em] text-ink mb-3;
+}
+
+.carousel-body {
+  @apply flex-1 text-[15px] leading-relaxed text-ink-soft;
+}
+
+/* Actions */
+
+.carousel-actions {
+  @apply mt-6 flex flex-col items-center gap-3;
+}
+
+.carousel-skip {
+  @apply text-[14px] font-medium text-ink-mute;
+}

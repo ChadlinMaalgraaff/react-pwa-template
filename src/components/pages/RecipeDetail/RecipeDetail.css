@@ -64,6 +64,30 @@
   @apply mt-0.5 text-[14.5px] leading-relaxed text-ink-soft;
 }
 
+/* Meal type chips */
+
+.recipe-detail-meal-types {
+  @apply mb-4 flex flex-wrap gap-2;
+}
+
+.recipe-detail-meal-chip {
+  @apply rounded-full px-3 py-1 text-[12px] font-medium bg-primary-light text-primary;
+}
+
+/* Nutrition block */
+
+.recipe-detail-nutrition {
+  @apply mb-5 rounded-xl bg-surface px-4 py-3;
+}
+
+.recipe-detail-nutrition-label {
+  @apply mb-1 text-[11px] font-bold uppercase tracking-[.1em] text-ink-mute;
+}
+
+.recipe-detail-nutrition-values {
+  @apply text-[14px] text-ink;
+}
+
 /* Sticky CTA bar */
 
 .recipe-detail-sticky-bar {

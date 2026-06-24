@@ -94,6 +94,28 @@ const recipeWithMissing: RecipeDetailType = {
   ],
 }
 
+const enrichedRecipe: RecipeDetailType = {
+  ...fullyMakeableRecipe,
+  prepTimeMinutes: 20,
+  cookTimeMinutes: 45,
+  servings: 6,
+  calories: 400,
+  protein: 25,
+  fat: 30,
+  carbs: 20,
+  mealTypes: ['lunch', 'supper'],
+}
+
+const noCookRecipe: RecipeDetailType = {
+  ...fullyMakeableRecipe,
+  cookTimeMinutes: 0,
+}
+
+const partialNutritionRecipe: RecipeDetailType = {
+  ...fullyMakeableRecipe,
+  calories: 350,
+}
+
 const attributedRecipe: RecipeDetailType = {
   ...fullyMakeableRecipe,
   imageUrl: 'https://upload.wikimedia.org/Tomato_bredie.jpg',
@@ -201,5 +223,62 @@ describe('RecipeDetail Page', () => {
 
     expect(screen.queryByText(/Photo:/)).not.toBeInTheDocument()
     expect(screen.queryByText(/Recipe adapted from/)).not.toBeInTheDocument()
+  })
+
+  it('renders labelled prep, cook, and total times from enrichment data', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: enrichedRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByText('Prep 20 min')).toBeInTheDocument()
+    expect(screen.getByText('Cook 45 min')).toBeInTheDocument()
+    expect(screen.getByText('Total 65 min')).toBeInTheDocument()
+    expect(screen.getByText('Serves 6')).toBeInTheDocument()
+  })
+
+  it('shows "No cook" when cookTimeMinutes is 0', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: noCookRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByText('No cook')).toBeInTheDocument()
+    expect(screen.queryByText(/Cook 0/)).not.toBeInTheDocument()
+  })
+
+  it('renders capitalised meal-type chips for each mealTypes entry', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: enrichedRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByText('Lunch')).toBeInTheDocument()
+    expect(screen.getByText('Supper')).toBeInTheDocument()
+  })
+
+  it('renders the nutrition block with estimated label and all macros', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: enrichedRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByText('Nutrition (per serving, estimated)')).toBeInTheDocument()
+    expect(screen.getByText('400 kcal · Protein 25 g · Fat 30 g · Carbs 20 g')).toBeInTheDocument()
+  })
+
+  it('renders the nutrition block when only calories are present', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: partialNutritionRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByText('Nutrition (per serving, estimated)')).toBeInTheDocument()
+    expect(screen.getByText('350 kcal')).toBeInTheDocument()
+  })
+
+  it('omits the nutrition block when no macro data is present', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.queryByText('Nutrition (per serving, estimated)')).not.toBeInTheDocument()
+  })
+
+  it('omits meal-type chips when mealTypes is absent', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.queryByText('Lunch')).not.toBeInTheDocument()
+    expect(screen.queryByText('Supper')).not.toBeInTheDocument()
   })
 })

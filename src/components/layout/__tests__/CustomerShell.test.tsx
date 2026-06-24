@@ -49,6 +49,6 @@ describe('getScreenTitle', () => {
   })
 
   it('returns a default title for unknown routes', () => {
-    expect(getScreenTitle('/unknown')).toBe('PantryPal')
+    expect(getScreenTitle('/unknown')).toBe("What's Lekker?")
   })
 })

@@ -108,4 +108,24 @@ describe('recipesService', () => {
     expect(mockedClient.post).toHaveBeenCalledWith('/admin/recipes/import', { externalId: '52772' })
     expect(result).toEqual(data)
   })
+
+  it('getMealData calls GET /recipes/meal-data', async () => {
+    const data = {
+      total: 1,
+      recipes: [
+        {
+          id: 'rec-1', title: 'Bobotie', cuisine: 'Cape Malay',
+          prepTimeMinutes: 20, cookTimeMinutes: 45, servings: 6,
+          calories: 400, protein: 25, fat: 30, carbs: 20,
+          mealTypes: ['lunch', 'supper'], isSaStaple: true,
+        },
+      ],
+    }
+    mockedClient.get.mockResolvedValue({ data })
+
+    const result = await recipesService.getMealData()
+
+    expect(mockedClient.get).toHaveBeenCalledWith('/recipes/meal-data')
+    expect(result).toEqual(data)
+  })
 })

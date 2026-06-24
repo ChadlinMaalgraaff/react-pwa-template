@@ -15,6 +15,7 @@ import {
   BrowseTheMealDBParams,
   BrowseTheMealDBResponse,
   BulkImportResult,
+  MealDataResponse,
 } from '@/types/recipes.types'
 
 /**
@@ -81,6 +82,11 @@ class RecipesService {
 
   async bulkImportRecipes(externalIds: string[]): Promise<BulkImportResult> {
     const response = await apiClient.post<BulkImportResult>('/admin/recipes/bulk-import', { externalIds })
+    return response.data
+  }
+
+  async getMealData(): Promise<MealDataResponse> {
+    const response = await apiClient.get<MealDataResponse>('/recipes/meal-data')
     return response.data
   }
 }

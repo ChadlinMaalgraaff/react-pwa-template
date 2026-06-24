@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, UtensilsCrossed } from 'lucide-react'
 import { Button, BottomSheet, Badge, EmptyState, Spinner } from '@components/shared'
@@ -102,7 +102,27 @@ const RecipeDetail = () => {
   if (isLoading) return <Spinner fullScreen />
   if (!recipe) return <EmptyState title="Recipe not found" />
 
-  const totalTime = (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0)
+  const metaSegments: string[] = []
+  if (recipe.cuisine) metaSegments.push(recipe.cuisine)
+  if (recipe.prepTimeMinutes != null) metaSegments.push(`Prep ${recipe.prepTimeMinutes} min`)
+  if (recipe.cookTimeMinutes != null) {
+    metaSegments.push(recipe.cookTimeMinutes === 0 ? 'No cook' : `Cook ${recipe.cookTimeMinutes} min`)
+  }
+  const totalTime =
+    recipe.prepTimeMinutes != null && recipe.cookTimeMinutes != null
+      ? recipe.prepTimeMinutes + recipe.cookTimeMinutes
+      : null
+  if (totalTime != null && totalTime > 0) metaSegments.push(`Total ${totalTime} min`)
+  if (recipe.servings != null) metaSegments.push(`Serves ${recipe.servings}`)
+
+  const hasNutrition =
+    recipe.calories != null || recipe.protein != null || recipe.fat != null || recipe.carbs != null
+  const nutritionParts = [
+    recipe.calories != null ? `${recipe.calories} kcal` : null,
+    recipe.protein != null ? `Protein ${recipe.protein} g` : null,
+    recipe.fat != null ? `Fat ${recipe.fat} g` : null,
+    recipe.carbs != null ? `Carbs ${recipe.carbs} g` : null,
+  ].filter((p): p is string => p !== null)
 
   return (
     <div className="recipe-detail-page">
@@ -136,14 +156,30 @@ const RecipeDetail = () => {
       <div className="recipe-detail-body">
         <h1 className="recipe-detail-title">{recipe.title}</h1>
         <div className="recipe-detail-meta">
-          {recipe.cuisine && <span>{recipe.cuisine}</span>}
-          {recipe.cuisine && (totalTime > 0 || recipe.servings != null) && (
-            <span className="recipe-detail-meta-dot" />
-          )}
-          {totalTime > 0 && <span>{totalTime} min</span>}
-          {totalTime > 0 && recipe.servings != null && <span className="recipe-detail-meta-dot" />}
-          {recipe.servings != null && <span>Serves {recipe.servings}</span>}
+          {metaSegments.map((seg, i) => (
+            <Fragment key={i}>
+              {i > 0 && <span className="recipe-detail-meta-dot" />}
+              <span>{seg}</span>
+            </Fragment>
+          ))}
         </div>
+
+        {recipe.mealTypes && recipe.mealTypes.length > 0 && (
+          <div className="recipe-detail-meal-types">
+            {recipe.mealTypes.map((type) => (
+              <span key={type} className="recipe-detail-meal-chip">
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {hasNutrition && (
+          <div className="recipe-detail-nutrition">
+            <p className="recipe-detail-nutrition-label">Nutrition (per serving, estimated)</p>
+            <p className="recipe-detail-nutrition-values">{nutritionParts.join(' · ')}</p>
+          </div>
+        )}
 
         <section className="recipe-detail-section">
           <p className="recipe-detail-eyebrow">Ingredients</p>

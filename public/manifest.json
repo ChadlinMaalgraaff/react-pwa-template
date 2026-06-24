@@ -1,6 +1,6 @@
 {
-  "name": "PantryPal",
-  "short_name": "PantryPal",
+  "name": "What's Lekker?",
+  "short_name": "Lekker",
   "description": "Track your pantry, find recipes you can cook, and save on groceries with weekly specials.",
   "start_url": "/",
   "display": "standalone",

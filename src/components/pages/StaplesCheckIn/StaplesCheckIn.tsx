@@ -101,7 +101,7 @@ const StaplesCheckIn = () => {
   return (
     <div className="staples-checkin-page">
       <div className="staples-checkin-card">
-        <h1 className="staples-checkin-logo">PantryPal</h1>
+        <h1 className="staples-checkin-logo">What&apos;s Lekker?</h1>
         <h2 className="staples-checkin-heading">What&apos;s in your pantry today?</h2>
         <p className="staples-checkin-hint">
           Tap the staples you usually have on hand. These count toward recipe matching — keep them

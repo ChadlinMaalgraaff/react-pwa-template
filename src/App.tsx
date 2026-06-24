@@ -25,6 +25,7 @@ import RetailerStoreManagement from '@components/pages/RetailerStoreManagement/R
 import SpecialsManagement from '@components/pages/SpecialsManagement/SpecialsManagement'
 import SpecialsUpload from '@components/pages/SpecialsUpload/SpecialsUpload'
 import UserManagement from '@components/pages/UserManagement/UserManagement'
+import HowItWorksCarousel from '@components/pages/HowItWorksCarousel/HowItWorksCarousel'
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           {/* Full-screen customer flows - no shell */}
+          <Route path="/how-it-works" element={<HowItWorksCarousel />} />
           <Route path="/staples" element={<StaplesCheckIn />} />
           <Route path="/pantry/capture" element={<PhotoCapture />} />
           <Route path="/pantry/capture/review" element={<PhotoReview />} />

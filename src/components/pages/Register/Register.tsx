@@ -34,7 +34,7 @@ const Register = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-logo">PantryPal</h1>
+        <h1 className="auth-logo">What&apos;s Lekker?</h1>
         <h2 className="auth-heading">Create your account</h2>
         {error && (
           <p role="alert" className="auth-error">

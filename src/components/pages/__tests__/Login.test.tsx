@@ -10,6 +10,7 @@ import pantryReducer from '@store/slices/pantry.slice'
 import authService from '@/services/auth.service'
 import profileService from '@/services/profile.service'
 import Login from '@components/pages/Login/Login'
+import { ONBOARDING_STORAGE_KEY } from '@components/pages/HowItWorksCarousel/HowItWorksCarousel'
 import { UserProfile } from '@/types/profile.types'
 
 vi.mock('@/services/auth.service', () => ({
@@ -62,6 +63,7 @@ const renderLogin = () =>
 describe('Login Page', () => {
   beforeEach(() => {
     navigateMock.mockClear()
+    localStorage.clear()
   })
 
   it('renders email and password fields with a submit button', () => {
@@ -71,7 +73,27 @@ describe('Login Page', () => {
     expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
   })
 
-  it('navigates to /staples on successful login for a regular user', async () => {
+  it('navigates to /how-it-works on first login for a regular user', async () => {
+    mockedAuthService.login.mockResolvedValue({
+      accessToken: 'access-token-123',
+      idToken: 'id-token-123',
+      refreshToken: 'refresh-token-123',
+      expiresIn: 3600,
+      tokenType: 'Bearer',
+    })
+    mockedProfileService.getProfile.mockResolvedValue(userProfile)
+    const user = userEvent.setup()
+    renderLogin()
+
+    await user.type(screen.getByLabelText('Email', { exact: false }), 'jane@example.com')
+    await user.type(screen.getByLabelText('Password', { exact: false }), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Log in' }))
+
+    await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/how-it-works'))
+  })
+
+  it('navigates to /staples on login when onboarding already seen', async () => {
+    localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true')
     mockedAuthService.login.mockResolvedValue({
       accessToken: 'access-token-123',
       idToken: 'id-token-123',

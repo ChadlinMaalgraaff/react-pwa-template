@@ -32,6 +32,11 @@ export interface RecipeSummary {
   cookTimeMinutes: number | null
   servings: number | null
   isSaStaple: boolean
+  calories?: number | null
+  protein?: number | null
+  fat?: number | null
+  carbs?: number | null
+  mealTypes?: string[] | null
 }
 
 export interface RecipeIngredientDetail {
@@ -63,6 +68,11 @@ export interface RecipeDetail {
   sourceUrl: string | null
   sourceLicense: string | null
   source: RecipeSource | null
+  calories?: number | null
+  protein?: number | null
+  fat?: number | null
+  carbs?: number | null
+  mealTypes?: string[] | null
 }
 
 export interface ListRecipesParams {
@@ -204,4 +214,24 @@ export interface BulkImportResult {
   imported: number
   skipped: number
   failed: BulkImportFailure[]
+}
+
+export interface RecipeMealData {
+  id: string
+  title: string
+  cuisine: string | null
+  prepTimeMinutes: number | null
+  cookTimeMinutes: number | null
+  servings: number | null
+  calories: number | null
+  protein: number | null
+  fat: number | null
+  carbs: number | null
+  mealTypes: string[] | null
+  isSaStaple: boolean
+}
+
+export interface MealDataResponse {
+  total: number
+  recipes: RecipeMealData[]
 }

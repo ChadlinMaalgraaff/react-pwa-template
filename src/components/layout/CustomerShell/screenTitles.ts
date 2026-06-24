@@ -17,5 +17,5 @@ export const getScreenTitle = (pathname: string): string => {
   if (pathname.startsWith('/shopping-lists/')) {
     return 'Shopping List'
   }
-  return 'PantryPal'
+  return "What's Lekker?"
 }

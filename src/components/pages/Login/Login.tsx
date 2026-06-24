@@ -5,6 +5,7 @@ import authService from '@/services/auth.service'
 import profileService from '@/services/profile.service'
 import { useAppDispatch } from '@hooks/redux.hooks'
 import { setToken, setUser } from '@store/slices/auth.slice'
+import { ONBOARDING_STORAGE_KEY } from '@components/pages/HowItWorksCarousel/HowItWorksCarousel'
 import './Login.css'
 
 const Login = () => {
@@ -24,7 +25,13 @@ const Login = () => {
       dispatch(setToken(accessToken))
       const profile = await profileService.getProfile()
       dispatch(setUser(profile))
-      navigate(profile.role === 'admin' ? '/admin' : '/staples')
+      if (profile.role === 'admin') {
+        navigate('/admin')
+      } else if (localStorage.getItem(ONBOARDING_STORAGE_KEY)) {
+        navigate('/staples')
+      } else {
+        navigate('/how-it-works')
+      }
     } catch {
       setError('Invalid email or password')
     } finally {
@@ -35,7 +42,7 @@ const Login = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-logo">PantryPal</h1>
+        <h1 className="auth-logo">What&apos;s Lekker?</h1>
         <h2 className="auth-heading">Welcome back</h2>
         {error && (
           <p role="alert" className="auth-error">
