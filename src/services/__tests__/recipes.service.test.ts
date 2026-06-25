@@ -128,4 +128,19 @@ describe('recipesService', () => {
     expect(mockedClient.get).toHaveBeenCalledWith('/recipes/meal-data')
     expect(result).toEqual(data)
   })
+
+  it('getCookingBrief calls POST /recipes/:id/cooking-brief', async () => {
+    const data = {
+      segments: [
+        { type: 'intro', index: 0, text: 'Welcome' },
+        { type: 'step', index: 1, stepIndex: 0, text: 'Brown the mince' },
+      ],
+    }
+    mockedClient.post.mockResolvedValue({ data })
+
+    const result = await recipesService.getCookingBrief('rec-1')
+
+    expect(mockedClient.post).toHaveBeenCalledWith('/recipes/rec-1/cooking-brief', {})
+    expect(result).toEqual(data)
+  })
 })

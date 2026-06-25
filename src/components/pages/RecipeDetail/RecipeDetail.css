@@ -64,6 +64,24 @@
   @apply mt-0.5 text-[14.5px] leading-relaxed text-ink-soft;
 }
 
+/* Cooking brief trigger */
+
+.cooking-brief-trigger {
+  @apply mb-5 flex w-full items-center justify-center gap-2 rounded-xl
+         border border-primary/30 bg-primary-light px-4 py-3
+         text-[14px] font-medium text-primary;
+}
+
+.cooking-brief-trigger--loading {
+  @apply pointer-events-none opacity-70;
+}
+
+/* Active step highlight (cooking brief) */
+
+.recipe-detail-step--active {
+  @apply rounded-xl bg-primary-light px-3 -mx-3 transition-colors duration-300;
+}
+
 /* Meal type chips */
 
 .recipe-detail-meal-types {

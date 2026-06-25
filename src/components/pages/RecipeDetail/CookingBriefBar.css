@@ -1,0 +1,29 @@
+/* CookingBriefBar — fixed bottom playback bar */
+
+.cooking-brief-bar {
+  @apply fixed bottom-0 left-0 right-0 z-20 flex items-center justify-between
+         bg-canvas px-5 py-4;
+  border-top: 1px solid #EAE4D8;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.cooking-brief-bar-left {
+  @apply flex items-center gap-2.5 min-w-0;
+}
+
+.cooking-brief-bar-icon {
+  @apply h-[18px] w-[18px] flex-none text-primary;
+}
+
+.cooking-brief-bar-label {
+  @apply truncate text-[14px] font-medium text-ink;
+}
+
+.cooking-brief-bar-controls {
+  @apply flex flex-none items-center gap-1;
+}
+
+.cooking-brief-bar-btn {
+  @apply flex h-9 w-9 items-center justify-center rounded-full text-ink
+         transition-colors hover:bg-neutral-100 active:bg-neutral-200;
+}

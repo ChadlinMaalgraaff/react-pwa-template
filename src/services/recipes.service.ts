@@ -16,6 +16,7 @@ import {
   BrowseTheMealDBResponse,
   BulkImportResult,
   MealDataResponse,
+  CookingBriefResponse,
 } from '@/types/recipes.types'
 
 /**
@@ -87,6 +88,11 @@ class RecipesService {
 
   async getMealData(): Promise<MealDataResponse> {
     const response = await apiClient.get<MealDataResponse>('/recipes/meal-data')
+    return response.data
+  }
+
+  async getCookingBrief(recipeId: string): Promise<CookingBriefResponse> {
+    const response = await apiClient.post<CookingBriefResponse>(`/recipes/${recipeId}/cooking-brief`, {})
     return response.data
   }
 }

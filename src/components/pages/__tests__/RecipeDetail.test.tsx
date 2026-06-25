@@ -13,13 +13,15 @@ import { useRecipeDetail } from '@hooks/useRecipeDetail'
 import { useRecipeCost } from '@hooks/useRecipeCost'
 import { useShoppingLists } from '@hooks/useShoppingLists'
 import { usePantry } from '@hooks/usePantry'
-import { RecipeDetail as RecipeDetailType } from '@/types/recipes.types'
+import { useCookingBrief } from '@hooks/useCookingBrief'
+import { RecipeDetail as RecipeDetailType, CookingBriefSegment } from '@/types/recipes.types'
 import { PantryItem } from '@/types/pantry.types'
 
 vi.mock('@hooks/useRecipeDetail')
 vi.mock('@hooks/useRecipeCost')
 vi.mock('@hooks/useShoppingLists')
 vi.mock('@hooks/usePantry')
+vi.mock('@hooks/useCookingBrief')
 
 vi.mock('@/services/shopping-lists.service', () => ({
   default: {
@@ -32,6 +34,16 @@ const mockedUseRecipeDetail = useRecipeDetail as unknown as ReturnType<typeof vi
 const mockedUseRecipeCost = useRecipeCost as unknown as ReturnType<typeof vi.fn>
 const mockedUseShoppingLists = useShoppingLists as unknown as ReturnType<typeof vi.fn>
 const mockedUsePantry = usePantry as unknown as ReturnType<typeof vi.fn>
+const mockedUseCookingBrief = useCookingBrief as unknown as ReturnType<typeof vi.fn>
+
+const idleBrief = {
+  status: 'idle' as const,
+  activeSegment: null,
+  start: vi.fn(),
+  pause: vi.fn(),
+  resume: vi.fn(),
+  stop: vi.fn(),
+}
 const mockedShoppingListsService = shoppingListsService as unknown as Record<
   'addRecipeToShoppingList' | 'createShoppingList',
   ReturnType<typeof vi.fn>
@@ -141,9 +153,11 @@ const cost = {
 describe('RecipeDetail Page', () => {
   beforeEach(() => {
     navigateMock.mockClear()
+    Element.prototype.scrollIntoView = vi.fn()
     mockedUseRecipeCost.mockReturnValue({ cost: null, fetchCost: vi.fn() })
     mockedUseShoppingLists.mockReturnValue({ lists: [] })
     mockedUsePantry.mockReturnValue({ items: pantryItems, isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem: vi.fn(), clearAll: vi.fn() })
+    mockedUseCookingBrief.mockReturnValue(idleBrief)
     mockedShoppingListsService.addRecipeToShoppingList.mockResolvedValue({ addedItems: [{ id: 'item-1' }], skippedAlreadyInPantry: [] })
     mockedShoppingListsService.createShoppingList.mockResolvedValue({ id: 'list-1', name: 'My list', items: [], createdAt: '2026-01-01T00:00:00Z' })
   })
@@ -280,5 +294,82 @@ describe('RecipeDetail Page', () => {
 
     expect(screen.queryByText('Lunch')).not.toBeInTheDocument()
     expect(screen.queryByText('Supper')).not.toBeInTheDocument()
+  })
+
+  it('shows the "Tell me about this dish" button when brief status is idle', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByRole('button', { name: /Tell me about this dish/i })).toBeInTheDocument()
+  })
+
+  it('calls brief.start when the trigger button is clicked', async () => {
+    const start = vi.fn()
+    mockedUseCookingBrief.mockReturnValue({ ...idleBrief, start })
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    const user = userEvent.setup()
+    renderRecipeDetail()
+
+    await user.click(screen.getByRole('button', { name: /Tell me about this dish/i }))
+
+    expect(start).toHaveBeenCalledOnce()
+  })
+
+  it('shows loading text and hides trigger button when brief status is loading', () => {
+    mockedUseCookingBrief.mockReturnValue({ ...idleBrief, status: 'loading' as const })
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByText(/Getting your cooking brief/i)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Tell me about this dish/i })).not.toBeInTheDocument()
+  })
+
+  it('renders CookingBriefBar when brief status is playing', () => {
+    const introSegment: CookingBriefSegment = { type: 'intro', index: 0, text: 'Intro' }
+    mockedUseCookingBrief.mockReturnValue({
+      ...idleBrief,
+      status: 'playing' as const,
+      activeSegment: introSegment,
+    })
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByRole('region', { name: 'Cooking brief playback' })).toBeInTheDocument()
+  })
+
+  it('renders CookingBriefBar when brief status is paused', () => {
+    const stepSegment: CookingBriefSegment = { type: 'step', index: 1, stepIndex: 0, text: 'Step 1' }
+    mockedUseCookingBrief.mockReturnValue({
+      ...idleBrief,
+      status: 'paused' as const,
+      activeSegment: stepSegment,
+    })
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.getByRole('region', { name: 'Cooking brief playback' })).toBeInTheDocument()
+    expect(screen.getByText('Paused · Step 1 of 2')).toBeInTheDocument()
+  })
+
+  it('does not render CookingBriefBar when brief status is idle', () => {
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    expect(screen.queryByRole('region', { name: 'Cooking brief playback' })).not.toBeInTheDocument()
+  })
+
+  it('applies active step class to the correct step when playing', () => {
+    const stepSegment: CookingBriefSegment = { type: 'step', index: 1, stepIndex: 0, text: 'Step 1' }
+    mockedUseCookingBrief.mockReturnValue({
+      ...idleBrief,
+      status: 'playing' as const,
+      activeSegment: stepSegment,
+    })
+    mockedUseRecipeDetail.mockReturnValue({ recipe: fullyMakeableRecipe, isLoading: false, error: null })
+    renderRecipeDetail()
+
+    const steps = document.querySelectorAll('.recipe-detail-step')
+    expect(steps[0].classList).toContain('recipe-detail-step--active')
+    expect(steps[1].classList).not.toContain('recipe-detail-step--active')
   })
 })

@@ -1,6 +1,6 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, UtensilsCrossed } from 'lucide-react'
+import { ArrowLeft, Headphones, UtensilsCrossed } from 'lucide-react'
 import { Button, BottomSheet, Badge, EmptyState, Spinner } from '@components/shared'
 import { RecipeIngredientRow, CostBreakdownPanel, PhotoCredit, SourceCredit } from '@components/recipes'
 import { ShoppingListSummaryCard } from '@components/shopping-lists'
@@ -8,11 +8,13 @@ import { useRecipeDetail } from '@hooks/useRecipeDetail'
 import { useRecipeCost } from '@hooks/useRecipeCost'
 import { useShoppingLists } from '@hooks/useShoppingLists'
 import { usePantry } from '@hooks/usePantry'
+import { useCookingBrief } from '@hooks/useCookingBrief'
 import { useAppDispatch, useAppSelector } from '@hooks/redux.hooks'
 import { selectUser } from '@store/selectors/auth.selectors'
 import { setNotification } from '@store/slices/ui.slice'
 import shoppingListsService from '@/services/shopping-lists.service'
 import { getErrorMessage } from '@utils/helpers'
+import CookingBriefBar from './CookingBriefBar'
 import './RecipeDetail.css'
 
 const RecipeDetail = () => {
@@ -24,6 +26,8 @@ const RecipeDetail = () => {
   const { cost, fetchCost } = useRecipeCost()
   const { lists } = useShoppingLists()
   const { items: pantryItems, removeItem: removePantryItem } = usePantry()
+  const brief = useCookingBrief(id)
+  const stepRefs = useRef<(HTMLDivElement | null)[]>([])
   const [isPickerOpen, setIsPickerOpen] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
   const [isMadeOpen, setIsMadeOpen] = useState(false)
@@ -40,6 +44,14 @@ const RecipeDetail = () => {
       fetchCost(recipe.id, user?.preferredArea ?? undefined)
     }
   }, [recipe, hasMissing, user?.preferredArea, fetchCost])
+
+  const activeStepIndex =
+    brief.activeSegment?.type === 'step' ? (brief.activeSegment.stepIndex ?? null) : null
+
+  useEffect(() => {
+    if (activeStepIndex === null) return
+    stepRefs.current[activeStepIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [activeStepIndex])
 
   const openMadeSheet = () => {
     setSelectedIngredientIds(new Set(inPantryIngredients.map((i) => i.ingredientId)))
@@ -181,6 +193,19 @@ const RecipeDetail = () => {
           </div>
         )}
 
+        {brief.status === 'idle' && (
+          <button type="button" className="cooking-brief-trigger" onClick={brief.start}>
+            <Headphones className="h-4 w-4" aria-hidden="true" />
+            Tell me about this dish
+          </button>
+        )}
+        {brief.status === 'loading' && (
+          <div className="cooking-brief-trigger cooking-brief-trigger--loading">
+            <Spinner size="sm" />
+            Getting your cooking brief…
+          </div>
+        )}
+
         <section className="recipe-detail-section">
           <p className="recipe-detail-eyebrow">Ingredients</p>
           <div>
@@ -195,7 +220,11 @@ const RecipeDetail = () => {
         <section className="recipe-detail-section">
           <p className="recipe-detail-eyebrow">Method</p>
           {recipe.instructions.map((step, index) => (
-            <div key={index} className="recipe-detail-step">
+            <div
+              key={index}
+              ref={(el) => { stepRefs.current[index] = el }}
+              className={`recipe-detail-step${activeStepIndex === index ? ' recipe-detail-step--active' : ''}`}
+            >
               <span className="recipe-detail-step-n">{index + 1}</span>
               <p className="recipe-detail-step-text">{step}</p>
             </div>
@@ -215,6 +244,17 @@ const RecipeDetail = () => {
         />
       </div>
 
+
+      {(brief.status === 'playing' || brief.status === 'paused') && (
+        <CookingBriefBar
+          activeSegment={brief.activeSegment}
+          totalSteps={recipe.instructions.length}
+          status={brief.status}
+          onPause={brief.pause}
+          onResume={brief.resume}
+          onStop={brief.stop}
+        />
+      )}
 
       <BottomSheet isOpen={isPickerOpen} onClose={() => setIsPickerOpen(false)} title="Choose a shopping list">
         <div className="recipe-detail-picker-list">

@@ -235,3 +235,14 @@ export interface MealDataResponse {
   total: number
   recipes: RecipeMealData[]
 }
+
+export interface CookingBriefSegment {
+  type: 'intro' | 'step'
+  index: number
+  stepIndex?: number
+  text: string
+}
+
+export interface CookingBriefResponse {
+  segments: CookingBriefSegment[]
+}
