@@ -16,6 +16,7 @@ const mockedClient = apiClient as unknown as Record<'get' | 'post' | 'put' | 'de
 describe('recipesService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    recipesService.clearBriefCache()
   })
 
   it('listRecipes calls GET /recipes with params', async () => {
@@ -142,5 +143,29 @@ describe('recipesService', () => {
 
     expect(mockedClient.post).toHaveBeenCalledWith('/recipes/rec-1/cooking-brief', {})
     expect(result).toEqual(data)
+  })
+
+  it('getCookingBrief returns cached result on second call without hitting the API', async () => {
+    const data = { segments: [{ type: 'intro', index: 0, text: 'Welcome' }] }
+    mockedClient.post.mockResolvedValue({ data })
+
+    const first = await recipesService.getCookingBrief('rec-1')
+    const second = await recipesService.getCookingBrief('rec-1')
+
+    expect(mockedClient.post).toHaveBeenCalledTimes(1)
+    expect(second).toBe(first)
+  })
+
+  it('getCookingBrief deduplicates concurrent calls for the same recipe', async () => {
+    const data = { segments: [{ type: 'intro', index: 0, text: 'Welcome' }] }
+    mockedClient.post.mockResolvedValue({ data })
+
+    const [a, b] = await Promise.all([
+      recipesService.getCookingBrief('rec-1'),
+      recipesService.getCookingBrief('rec-1'),
+    ])
+
+    expect(mockedClient.post).toHaveBeenCalledTimes(1)
+    expect(a).toBe(b)
   })
 })

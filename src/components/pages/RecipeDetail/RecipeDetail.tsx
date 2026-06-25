@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Headphones, UtensilsCrossed } from 'lucide-react'
+import { ArrowLeft, Flame, Headphones, UtensilsCrossed } from 'lucide-react'
 import { Button, BottomSheet, Badge, EmptyState, Spinner } from '@components/shared'
 import { RecipeIngredientRow, CostBreakdownPanel, PhotoCredit, SourceCredit } from '@components/recipes'
 import { ShoppingListSummaryCard } from '@components/shopping-lists'
@@ -9,12 +9,14 @@ import { useRecipeCost } from '@hooks/useRecipeCost'
 import { useShoppingLists } from '@hooks/useShoppingLists'
 import { usePantry } from '@hooks/usePantry'
 import { useCookingBrief } from '@hooks/useCookingBrief'
+import { useCookingMode } from '@hooks/useCookingMode'
 import { useAppDispatch, useAppSelector } from '@hooks/redux.hooks'
 import { selectUser } from '@store/selectors/auth.selectors'
 import { setNotification } from '@store/slices/ui.slice'
 import shoppingListsService from '@/services/shopping-lists.service'
 import { getErrorMessage } from '@utils/helpers'
 import CookingBriefBar from './CookingBriefBar'
+import CookingModeOverlay from './CookingModeOverlay'
 import './RecipeDetail.css'
 
 const RecipeDetail = () => {
@@ -27,6 +29,7 @@ const RecipeDetail = () => {
   const { lists } = useShoppingLists()
   const { items: pantryItems, removeItem: removePantryItem } = usePantry()
   const brief = useCookingBrief(id)
+  const cookingMode = useCookingMode(id)
   const stepRefs = useRef<(HTMLDivElement | null)[]>([])
   const [isPickerOpen, setIsPickerOpen] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
@@ -193,7 +196,7 @@ const RecipeDetail = () => {
           </div>
         )}
 
-        {brief.status === 'idle' && (
+        {cookingMode.status === 'idle' && brief.status === 'idle' && (
           <button type="button" className="cooking-brief-trigger" onClick={brief.start}>
             <Headphones className="h-4 w-4" aria-hidden="true" />
             Tell me about this dish
@@ -204,6 +207,13 @@ const RecipeDetail = () => {
             <Spinner size="sm" />
             Getting your cooking brief…
           </div>
+        )}
+
+        {cookingMode.status === 'idle' && brief.status === 'idle' && (
+          <button type="button" className="cooking-mode-trigger" onClick={cookingMode.start}>
+            <Flame className="h-4 w-4" aria-hidden="true" />
+            Start Cooking
+          </button>
         )}
 
         <section className="recipe-detail-section">
@@ -255,6 +265,13 @@ const RecipeDetail = () => {
           onStop={brief.stop}
         />
       )}
+
+      <CookingModeOverlay
+        instructions={recipe.instructions}
+        recipeTitle={recipe.title}
+        mode={cookingMode}
+        onMarkCooked={openMadeSheet}
+      />
 
       <BottomSheet isOpen={isPickerOpen} onClose={() => setIsPickerOpen(false)} title="Choose a shopping list">
         <div className="recipe-detail-picker-list">

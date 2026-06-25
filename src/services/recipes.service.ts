@@ -91,9 +91,36 @@ class RecipesService {
     return response.data
   }
 
+  private briefCache = new Map<string, CookingBriefResponse>()
+  private briefPending = new Map<string, Promise<CookingBriefResponse>>()
+
   async getCookingBrief(recipeId: string): Promise<CookingBriefResponse> {
-    const response = await apiClient.post<CookingBriefResponse>(`/recipes/${recipeId}/cooking-brief`, {})
-    return response.data
+    const hit = this.briefCache.get(recipeId)
+    if (hit) return hit
+
+    // Deduplicate concurrent callers — return the same in-flight promise
+    const inflight = this.briefPending.get(recipeId)
+    if (inflight) return inflight
+
+    const promise = apiClient
+      .post<CookingBriefResponse>(`/recipes/${recipeId}/cooking-brief`, {})
+      .then((response) => {
+        this.briefCache.set(recipeId, response.data)
+        this.briefPending.delete(recipeId)
+        return response.data
+      })
+      .catch((err: unknown) => {
+        this.briefPending.delete(recipeId)
+        throw err
+      })
+
+    this.briefPending.set(recipeId, promise)
+    return promise
+  }
+
+  clearBriefCache() {
+    this.briefCache.clear()
+    this.briefPending.clear()
   }
 }
 

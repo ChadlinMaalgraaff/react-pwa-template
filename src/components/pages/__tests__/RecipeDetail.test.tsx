@@ -14,6 +14,7 @@ import { useRecipeCost } from '@hooks/useRecipeCost'
 import { useShoppingLists } from '@hooks/useShoppingLists'
 import { usePantry } from '@hooks/usePantry'
 import { useCookingBrief } from '@hooks/useCookingBrief'
+import { useCookingMode } from '@hooks/useCookingMode'
 import { RecipeDetail as RecipeDetailType, CookingBriefSegment } from '@/types/recipes.types'
 import { PantryItem } from '@/types/pantry.types'
 
@@ -22,6 +23,7 @@ vi.mock('@hooks/useRecipeCost')
 vi.mock('@hooks/useShoppingLists')
 vi.mock('@hooks/usePantry')
 vi.mock('@hooks/useCookingBrief')
+vi.mock('@hooks/useCookingMode')
 
 vi.mock('@/services/shopping-lists.service', () => ({
   default: {
@@ -35,6 +37,7 @@ const mockedUseRecipeCost = useRecipeCost as unknown as ReturnType<typeof vi.fn>
 const mockedUseShoppingLists = useShoppingLists as unknown as ReturnType<typeof vi.fn>
 const mockedUsePantry = usePantry as unknown as ReturnType<typeof vi.fn>
 const mockedUseCookingBrief = useCookingBrief as unknown as ReturnType<typeof vi.fn>
+const mockedUseCookingMode = useCookingMode as unknown as ReturnType<typeof vi.fn>
 
 const idleBrief = {
   status: 'idle' as const,
@@ -43,6 +46,21 @@ const idleBrief = {
   pause: vi.fn(),
   resume: vi.fn(),
   stop: vi.fn(),
+}
+
+const idleCookingMode = {
+  status: 'idle' as const,
+  currentStepIndex: 0,
+  currentStep: null,
+  totalSteps: 0,
+  start: vi.fn(),
+  skipCountdown: vi.fn(),
+  pause: vi.fn(),
+  resume: vi.fn(),
+  replay: vi.fn(),
+  next: vi.fn(),
+  prev: vi.fn(),
+  exit: vi.fn(),
 }
 const mockedShoppingListsService = shoppingListsService as unknown as Record<
   'addRecipeToShoppingList' | 'createShoppingList',
@@ -158,6 +176,7 @@ describe('RecipeDetail Page', () => {
     mockedUseShoppingLists.mockReturnValue({ lists: [] })
     mockedUsePantry.mockReturnValue({ items: pantryItems, isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem: vi.fn(), clearAll: vi.fn() })
     mockedUseCookingBrief.mockReturnValue(idleBrief)
+    mockedUseCookingMode.mockReturnValue(idleCookingMode)
     mockedShoppingListsService.addRecipeToShoppingList.mockResolvedValue({ addedItems: [{ id: 'item-1' }], skippedAlreadyInPantry: [] })
     mockedShoppingListsService.createShoppingList.mockResolvedValue({ id: 'list-1', name: 'My list', items: [], createdAt: '2026-01-01T00:00:00Z' })
   })

@@ -89,6 +89,20 @@ describe('useCookingBrief', () => {
     expect(mockAudioInstances[0].play).toHaveBeenCalled()
   })
 
+  it('only plays the intro — does not advance to step segments', async () => {
+    mockedGetCookingBrief.mockResolvedValue(BRIEF)
+    const { result } = renderHook(() => useCookingBrief('recipe-1'), { wrapper })
+
+    act(() => { result.current.start() })
+    await waitFor(() => expect(result.current.activeSegment?.type).toBe('intro'))
+
+    // Simulate intro audio finishing
+    await act(async () => { mockAudioInstances[0].onended?.() })
+
+    await waitFor(() => expect(result.current.status).toBe('idle'))
+    expect(result.current.activeSegment).toBeNull()
+  })
+
   it('transitions to paused when pause() is called', async () => {
     mockedGetCookingBrief.mockResolvedValue(BRIEF)
     const { result } = renderHook(() => useCookingBrief('recipe-1'), { wrapper })
@@ -129,22 +143,6 @@ describe('useCookingBrief', () => {
     expect(result.current.activeSegment).toBeNull()
   })
 
-  it('advances to the next segment when audio ends', async () => {
-    mockedGetCookingBrief.mockResolvedValue(BRIEF)
-    const { result } = renderHook(() => useCookingBrief('recipe-1'), { wrapper })
-
-    act(() => { result.current.start() })
-    await waitFor(() => expect(result.current.activeSegment?.type).toBe('intro'))
-
-    await act(async () => {
-      mockAudioInstances[0].onended?.()
-    })
-
-    await waitFor(() => {
-      expect(result.current.activeSegment?.type).toBe('step')
-      expect(result.current.activeSegment?.stepIndex).toBe(0)
-    })
-  })
 
   it('returns to idle after the last segment finishes', async () => {
     const singleSegmentBrief = { segments: [BRIEF.segments[0]] }

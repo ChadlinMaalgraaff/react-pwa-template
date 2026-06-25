@@ -39,7 +39,7 @@ export const useCookingBrief = (recipeId: string | undefined) => {
   }, [])
 
   const revokeAll = useCallback(() => {
-    stateRef.current.cache.forEach((url) => URL.revokeObjectURL(url))
+    // URLs are owned by ttsService's cache and must not be revoked here
     stateRef.current.cache.clear()
   }, [])
 
@@ -49,8 +49,7 @@ export const useCookingBrief = (recipeId: string | undefined) => {
     ttsService
       .fetchAudio(s.segments[index].text)
       .then((url) => {
-        if (stateRef.current.stopped) URL.revokeObjectURL(url)
-        else stateRef.current.cache.set(index, url)
+        if (!stateRef.current.stopped) stateRef.current.cache.set(index, url)
       })
       .catch(() => {})
   }, [])
@@ -115,7 +114,8 @@ export const useCookingBrief = (recipeId: string | undefined) => {
     try {
       const brief = await recipesService.getCookingBrief(recipeId)
       if (stateRef.current.stopped) return
-      stateRef.current.segments = brief.segments
+      // "Tell me about this dish" plays only the intro narration
+      stateRef.current.segments = brief.segments.filter((s) => s.type === 'intro')
       playIndexRef.current(0)
     } catch {
       setStatus('idle')
@@ -155,7 +155,6 @@ export const useCookingBrief = (recipeId: string | undefined) => {
         state.audio.onended = null
         state.audio = null
       }
-      state.cache.forEach((url) => URL.revokeObjectURL(url))
       state.cache.clear()
     }
   }, [])
