@@ -40,8 +40,8 @@ const renderRecipeMatch = () =>
   )
 
 const matches: MatchedRecipe[] = [
-  { id: 'recipe-1', title: 'Almost Makeable', imageUrl: null, totalIngredients: 5, matchedIngredients: 3, missingIngredients: [{ ingredientId: 'ing-1', name: 'Flour' }, { ingredientId: 'ing-2', name: 'Eggs' }], isFullyMakeable: false },
-  { id: 'recipe-2', title: 'Fully Makeable', imageUrl: null, totalIngredients: 3, matchedIngredients: 3, missingIngredients: [], isFullyMakeable: true },
+  { id: 'recipe-1', title: 'Almost Makeable', imageUrl: null, totalIngredients: 5, matchedIngredients: 3, missingIngredients: [{ ingredientId: 'ing-1', name: 'Flour' }, { ingredientId: 'ing-2', name: 'Eggs' }], isFullyMakeable: false, mealTypes: ['lunch'] },
+  { id: 'recipe-2', title: 'Fully Makeable', imageUrl: null, totalIngredients: 3, matchedIngredients: 3, missingIngredients: [], isFullyMakeable: true, mealTypes: ['breakfast'] },
 ]
 
 const defaultRecommendation = {
@@ -55,6 +55,7 @@ const defaultRecommendation = {
 describe('RecipeMatch Page', () => {
   beforeEach(() => {
     navigateMock.mockClear()
+    sessionStorage.clear()
     mockedUseRecipeRecommendation.mockReturnValue({ ...defaultRecommendation, recommend: vi.fn(), clear: vi.fn() })
   })
 
@@ -81,13 +82,65 @@ describe('RecipeMatch Page', () => {
     expect(navigateMock).toHaveBeenCalledWith('/pantry')
   })
 
-  it('renders fully makeable recipes before almost makeable ones', () => {
+  it('renders every match with its makeable badge regardless of order', () => {
     mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
     renderRecipeMatch()
     const titles = screen.getAllByRole('heading', { level: 3 }).map((el) => el.textContent)
-    expect(titles).toEqual(['Fully Makeable', 'Almost Makeable'])
+    expect(titles).toHaveLength(2)
+    expect(titles).toContain('Fully Makeable')
+    expect(titles).toContain('Almost Makeable')
     expect(screen.getByText('Makeable')).toBeInTheDocument()
     expect(screen.getByText('Pantry is missing 2 ingredients for this recipe')).toBeInTheDocument()
+  })
+
+  it('keeps the same order when remounting so navigating back does not reshuffle', () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+
+    const { unmount } = renderRecipeMatch()
+    const firstOrder = screen.getAllByRole('heading', { level: 3 }).map((el) => el.textContent)
+    unmount()
+
+    // Simulates returning from the recipe detail screen — the seed persists in sessionStorage.
+    renderRecipeMatch()
+    const secondOrder = screen.getAllByRole('heading', { level: 3 }).map((el) => el.textContent)
+
+    expect(secondOrder).toEqual(firstOrder)
+    expect(firstOrder).toHaveLength(2)
+  })
+
+  it('filters the matches by the selected meal type', async () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+
+    await user.click(screen.getByRole('button', { name: 'Breakfast' }))
+
+    const titles = screen.getAllByRole('heading', { level: 3 }).map((el) => el.textContent)
+    expect(titles).toEqual(['Fully Makeable'])
+    expect(screen.queryByText('Almost Makeable')).not.toBeInTheDocument()
+  })
+
+  it('shows a message when no matches have the selected meal type', async () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+
+    await user.click(screen.getByRole('button', { name: 'Dessert' }))
+
+    expect(screen.getByText(/No recipes for this meal type/i)).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { level: 3 })).not.toBeInTheDocument()
+  })
+
+  it('restores all matches when the meal type is cleared with "All"', async () => {
+    mockedUseRecipeMatch.mockReturnValue({ matches, isLoading: false, refetch: vi.fn() })
+    const user = userEvent.setup()
+    renderRecipeMatch()
+
+    await user.click(screen.getByRole('button', { name: 'Breakfast' }))
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(1)
+
+    await user.click(screen.getByRole('button', { name: 'All' }))
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(2)
   })
 
   it('navigates to the recipe detail when a card is clicked', async () => {

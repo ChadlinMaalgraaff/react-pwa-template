@@ -50,10 +50,12 @@ describe('StaplesCheckIn Page', () => {
     expect(screen.queryByRole('button', { name: 'Add Salt' })).not.toBeInTheDocument()
   })
 
-  it('renders staple chips unselected when the pantry is empty', () => {
+  it('pre-selects default staples when the pantry is empty (new user)', () => {
     render(<StaplesCheckIn />)
-    const saltBtn = screen.getByRole('button', { name: 'Add Salt' })
-    expect(saltBtn).toHaveAttribute('aria-pressed', 'false')
+    // Salt is a default — pre-selected for new users
+    expect(screen.getByRole('button', { name: 'Remove Salt' })).toHaveAttribute('aria-pressed', 'true')
+    // Cheddar Cheese is common but not a default — unselected
+    expect(screen.getByRole('button', { name: 'Add Cheddar Cheese' })).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('groups staples under category headings, revealing empty categories on Show more', async () => {
@@ -73,8 +75,8 @@ describe('StaplesCheckIn Page', () => {
     const user = userEvent.setup()
     render(<StaplesCheckIn />)
 
-    // Salt is common; Cumin lives behind "Show more"
-    expect(screen.getByRole('button', { name: 'Add Salt' })).toBeInTheDocument()
+    // Cheddar Cheese is common (not default-selected); Cumin lives behind "Show more"
+    expect(screen.getByRole('button', { name: 'Add Cheddar Cheese' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Add Cumin' })).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Show more' }))
@@ -106,11 +108,9 @@ describe('StaplesCheckIn Page', () => {
   it('toggles a chip on click', async () => {
     const user = userEvent.setup()
     render(<StaplesCheckIn />)
-    await user.click(screen.getByRole('button', { name: 'Add Salt' }))
-    expect(screen.getByRole('button', { name: 'Remove Salt' })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    // Salt is pre-selected by default; clicking it deselects it
+    await user.click(screen.getByRole('button', { name: 'Remove Salt' }))
+    expect(screen.getByRole('button', { name: 'Add Salt' })).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('commits added and removed staples on Next, then navigates to the pantry', async () => {

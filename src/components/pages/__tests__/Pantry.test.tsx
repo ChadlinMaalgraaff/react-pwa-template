@@ -36,8 +36,8 @@ const buildStore = () =>
   })
 
 const items: PantryItem[] = [
-  { id: 'item-1', ingredientId: 'ing-1', ingredientName: 'Rice', category: 'Grains', quantity: 2, unit: 'kg', source: 'manual', addedAt: '2026-01-01T00:00:00Z' },
-  { id: 'item-2', ingredientId: 'ing-2', ingredientName: 'Salt', category: 'Spices', quantity: 1, unit: 'kg', source: 'manual', addedAt: '2026-01-01T00:00:00Z' },
+  { id: 'item-1', ingredientId: 'ing-1', ingredientName: 'Chicken Breast', category: 'Protein', quantity: 2, unit: 'kg', source: 'manual', addedAt: '2026-01-01T00:00:00Z' },
+  { id: 'item-2', ingredientId: 'ing-2', ingredientName: 'Apple', category: 'Fruit', quantity: 1, unit: 'kg', source: 'manual', addedAt: '2026-01-01T00:00:00Z' },
 ]
 
 const renderPantry = () =>
@@ -79,10 +79,10 @@ describe('Pantry Page', () => {
   it('renders pantry items grouped by category', () => {
     mockedUsePantry.mockReturnValue({ items, isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem: vi.fn(), clearAll: vi.fn() })
     renderPantry()
-    expect(screen.getByRole('heading', { name: 'Grains' })).toBeInTheDocument()
-    expect(screen.getByText('Rice')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Spices' })).toBeInTheDocument()
-    expect(screen.getByText('Salt')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Protein' })).toBeInTheDocument()
+    expect(screen.getByText('Chicken Breast')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Fruit' })).toBeInTheDocument()
+    expect(screen.getByText('Apple')).toBeInTheDocument()
   })
 
   it('navigates to the photo capture screen when the FAB is clicked', async () => {
@@ -98,7 +98,7 @@ describe('Pantry Page', () => {
     mockedUsePantry.mockReturnValue({ items, isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem, clearAll: vi.fn() })
     const user = userEvent.setup()
     renderPantry()
-    await user.click(screen.getByRole('button', { name: 'Delete Rice' }))
+    await user.click(screen.getByRole('button', { name: 'Delete Chicken Breast' }))
     expect(removeItem).toHaveBeenCalledWith('item-1')
   })
 
@@ -123,9 +123,9 @@ describe('Pantry Page', () => {
     expect(screen.getByRole('button', { name: 'Done' })).toBeInTheDocument()
   })
 
-  it('opens clear pantry confirmation and calls clearAll on confirm', async () => {
-    const clearAll = vi.fn().mockResolvedValue(undefined)
-    mockedUsePantry.mockReturnValue({ items, isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem: vi.fn(), clearAll })
+  it('opens clear pantry confirmation and removes only non-staple items on confirm', async () => {
+    const removeItem = vi.fn().mockResolvedValue(undefined)
+    mockedUsePantry.mockReturnValue({ items, isLoading: false, addItem: vi.fn(), updateItem: vi.fn(), removeItem, clearAll: vi.fn() })
     const user = userEvent.setup()
     renderPantry()
 
@@ -134,6 +134,8 @@ describe('Pantry Page', () => {
 
     const clearBtns = screen.getAllByRole('button', { name: 'Clear pantry' })
     await user.click(clearBtns[clearBtns.length - 1])
-    await waitFor(() => expect(clearAll).toHaveBeenCalled())
+    // Both test items (Chicken Breast, Apple) are non-staples — both should be removed
+    await waitFor(() => expect(removeItem).toHaveBeenCalledWith('item-1'))
+    expect(removeItem).toHaveBeenCalledWith('item-2')
   })
 })

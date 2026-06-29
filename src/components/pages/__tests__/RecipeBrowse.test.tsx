@@ -79,6 +79,18 @@ describe('RecipeBrowse Page', () => {
     )
   })
 
+  it('filters by the selected meal type chip', async () => {
+    const user = userEvent.setup()
+    renderRecipeBrowse()
+    await waitFor(() => expect(screen.getByText('Bobotie')).toBeInTheDocument())
+
+    await user.click(screen.getByRole('button', { name: 'Breakfast' }))
+
+    await waitFor(() =>
+      expect(mockedRecipesService.listRecipes).toHaveBeenLastCalledWith({ page: 1, pageSize: 10, mealType: 'breakfast' })
+    )
+  })
+
   it('navigates to the recipe detail when a card is clicked', async () => {
     const user = userEvent.setup()
     renderRecipeBrowse()

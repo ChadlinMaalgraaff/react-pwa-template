@@ -39,6 +39,40 @@ describe('recipesService', () => {
     expect(result).toEqual(data)
   })
 
+  it('matchRecipes passes through nutrition and mealTypes fields unchanged', async () => {
+    const enriched = {
+      id: 'recipe-1',
+      title: 'Bobotie',
+      imageUrl: null,
+      totalIngredients: 8,
+      matchedIngredients: 8,
+      missingIngredients: [],
+      isFullyMakeable: true,
+      calories: 400,
+      protein: 25,
+      fat: 30,
+      carbs: 20,
+      mealTypes: ['supper', 'lunch'],
+    }
+    const unenriched = {
+      id: 'recipe-2',
+      title: 'Mystery Stew',
+      imageUrl: null,
+      totalIngredients: 5,
+      matchedIngredients: 4,
+      missingIngredients: [{ ingredientId: 'ing-1', name: 'Salt' }],
+      isFullyMakeable: false,
+    }
+    const data = { items: [enriched, unenriched], page: 1, pageSize: 20, total: 2 }
+    mockedClient.get.mockResolvedValue({ data })
+
+    const result = await recipesService.matchRecipes({ maxMissing: 1 })
+
+    expect(result.items[0]).toEqual(enriched)
+    expect(result.items[1].calories).toBeUndefined()
+    expect(result.items[1].mealTypes).toBeUndefined()
+  })
+
   it('getRecipe calls GET /recipes/{id}', async () => {
     const data = { id: 'rec-1', title: 'Bobotie' }
     mockedClient.get.mockResolvedValue({ data })

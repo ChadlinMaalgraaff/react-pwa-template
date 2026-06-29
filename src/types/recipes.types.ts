@@ -8,6 +8,20 @@ import { PaginatedResult } from './common.types'
 
 export type RecipeSource = 'admin' | 'api' | 'wikibooks' | 'usda' | 'generated'
 
+export type MealType = 'breakfast' | 'lunch' | 'supper' | 'dessert' | 'snack'
+
+/** Selectable meal-type filters, in display order. */
+export const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'supper', 'dessert', 'snack']
+
+/** Human-readable labels for each meal type. */
+export const MEAL_TYPE_LABELS: Record<MealType, string> = {
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  supper: 'Supper',
+  dessert: 'Dessert',
+  snack: 'Snack',
+}
+
 /**
  * Attribution fields returned by GET /recipes/{id} (all nullable).
  * Two independent works can require credit: the recipe text and the photo.
@@ -78,6 +92,7 @@ export interface RecipeDetail {
 export interface ListRecipesParams {
   search?: string
   cuisine?: string
+  mealType?: MealType
   isSaStaple?: boolean
   page?: number
   pageSize?: number
@@ -104,6 +119,12 @@ export interface MatchedRecipe {
   matchedIngredients: number
   missingIngredients: MissingIngredient[]
   isFullyMakeable: boolean
+  // AI-estimated nutrition per serving — omitted for recipes not yet enriched, so guard on render.
+  calories?: number
+  protein?: number
+  fat?: number
+  carbs?: number
+  mealTypes?: MealType[]
 }
 
 export type RecipeMatchPage = PaginatedResult<MatchedRecipe>

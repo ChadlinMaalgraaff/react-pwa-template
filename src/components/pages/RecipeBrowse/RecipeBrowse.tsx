@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Tabs, SearchBar, Chip, Button, EmptyState, Spinner, type TabOption } from '@components/shared'
 import { RecipeCard } from '@components/recipes'
 import { useRecipes } from '@hooks/useRecipes'
+import { MEAL_TYPES, MEAL_TYPE_LABELS, MealType } from '@/types/recipes.types'
 import './RecipeBrowse.css'
 
 const RECIPE_TABS: TabOption[] = [
@@ -18,6 +19,7 @@ const RecipeBrowse = () => {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [cuisineFilter, setCuisineFilter] = useState<string | null>(null)
+  const [mealTypeFilter, setMealTypeFilter] = useState<MealType | null>(null)
   const [pageSize, setPageSize] = useState(PAGE_SIZE)
   const { recipes, total, isLoading, setParams } = useRecipes({ page: 1, pageSize: PAGE_SIZE })
 
@@ -28,8 +30,9 @@ const RecipeBrowse = () => {
       search: search || undefined,
       cuisine: cuisineFilter && cuisineFilter !== 'South African' ? cuisineFilter : undefined,
       isSaStaple: cuisineFilter === 'South African' ? true : undefined,
+      mealType: mealTypeFilter ?? undefined,
     })
-  }, [search, cuisineFilter, pageSize, setParams])
+  }, [search, cuisineFilter, mealTypeFilter, pageSize, setParams])
 
   const handleTabChange = (value: string) => {
     if (value === 'match') navigate('/recipes')
@@ -45,6 +48,11 @@ const RecipeBrowse = () => {
     setPageSize(PAGE_SIZE)
   }
 
+  const handleMealTypeSelect = (mealType: MealType) => {
+    setMealTypeFilter((prev) => (prev === mealType ? null : mealType))
+    setPageSize(PAGE_SIZE)
+  }
+
   return (
     <div className="recipe-browse-page">
       <Tabs tabs={RECIPE_TABS} value="browse" onChange={handleTabChange} />
@@ -55,6 +63,14 @@ const RecipeBrowse = () => {
         {CUISINE_FILTERS.map((cuisine) => (
           <Chip key={cuisine} selected={cuisineFilter === cuisine} onClick={() => handleCuisineSelect(cuisine)}>
             {cuisine}
+          </Chip>
+        ))}
+      </div>
+
+      <div className="recipe-browse-cuisines">
+        {MEAL_TYPES.map((mealType) => (
+          <Chip key={mealType} selected={mealTypeFilter === mealType} onClick={() => handleMealTypeSelect(mealType)}>
+            {MEAL_TYPE_LABELS[mealType]}
           </Chip>
         ))}
       </div>

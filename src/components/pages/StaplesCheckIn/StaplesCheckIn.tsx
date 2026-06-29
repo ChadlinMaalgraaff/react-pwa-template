@@ -5,6 +5,7 @@ import { Button, Spinner } from '@components/shared'
 import { usePantry } from '@hooks/usePantry'
 import {
   COMMON_STAPLES,
+  DEFAULT_STAPLE_NAMES,
   MORE_STAPLES,
   STAPLES,
   Staple,
@@ -24,6 +25,8 @@ const StaplesCheckIn = () => {
   // Pre-check staples already in the pantry so the user confirms and adjusts
   // rather than re-selecting from scratch. Re-seeds whenever the pantry loads,
   // but stops once the user starts toggling so their choices are never clobbered.
+  // For new users with an empty pantry, seed the obvious defaults so recipe
+  // matching works immediately without requiring manual setup.
   useEffect(() => {
     if (hasInteracted.current) return
     const present = new Set(
@@ -31,13 +34,17 @@ const StaplesCheckIn = () => {
         items.some((item) => item.ingredientName.toLowerCase() === staple.name.toLowerCase())
       ).map((staple) => staple.name)
     )
-    setSelected(present)
+    if (present.size > 0) {
+      setSelected(present)
+    } else if (!isLoading) {
+      setSelected(new Set(DEFAULT_STAPLE_NAMES))
+    }
     // Reveal the full list if any pre-checked staple lives behind "Show more",
     // so the user can always see what's already counted.
     if (MORE_STAPLES.some((staple) => present.has(staple.name))) {
       setShowAll(true)
     }
-  }, [items])
+  }, [items, isLoading])
 
   const toggle = (name: string) => {
     hasInteracted.current = true

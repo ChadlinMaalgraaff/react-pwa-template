@@ -3,13 +3,16 @@ import { Camera, Package, Plus, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Badge, Button, BottomSheet, Spinner, QuantityStepper } from '@components/shared'
 import { PantryItemRow, IngredientAutocomplete, IngredientSelection, PantryStaplesSection } from '@components/pantry'
+import { STAPLES } from '@components/pantry/PantryStaplesSection/staples'
 import { usePantry } from '@hooks/usePantry'
 import { groupItemsByCategory } from './groupItemsByCategory'
 import './Pantry.css'
 
+const STAPLE_NAMES = new Set(STAPLES.map((s) => s.name.toLowerCase()))
+
 const Pantry = () => {
   const navigate = useNavigate()
-  const { items, isLoading, addItem, updateItem, removeItem, clearAll } = usePantry()
+  const { items, isLoading, addItem, updateItem, removeItem } = usePantry()
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [selection, setSelection] = useState<IngredientSelection | null>(null)
   const [quantity, setQuantity] = useState(1)
@@ -61,7 +64,8 @@ const Pantry = () => {
   const handleClearConfirm = async () => {
     setIsClearing(true)
     try {
-      await clearAll()
+      const toRemove = items.filter((item) => !STAPLE_NAMES.has(item.ingredientName.toLowerCase()))
+      await Promise.all(toRemove.map((item) => removeItem(item.id)))
       setIsClearOpen(false)
     } finally {
       setIsClearing(false)
@@ -72,13 +76,14 @@ const Pantry = () => {
     await addItem({ ingredientName: name, quantity, unit })
   }
 
-  const groups = groupItemsByCategory(items)
-  const hasItems = items.length > 0
+  const nonStapleItems = items.filter((item) => !STAPLE_NAMES.has(item.ingredientName.toLowerCase()))
+  const groups = groupItemsByCategory(nonStapleItems)
+  const hasItems = nonStapleItems.length > 0
 
   return (
     <div className="pantry-page">
       <div className="pantry-actions">
-        {hasItems && (
+        {nonStapleItems.length > 0 && (
           <button
             type="button"
             aria-label="Clear pantry"
@@ -201,7 +206,7 @@ const Pantry = () => {
           </div>
           <p className="pantry-clear-title">Clear your pantry?</p>
           <p className="pantry-clear-message">
-            This removes all <strong className="text-ink">{items.length} items</strong>. You can re-scan or add them again whenever you like.
+            This removes <strong className="text-ink">{nonStapleItems.length} non-staple items</strong>. Your staples stay. You can re-scan or add items again whenever you like.
           </p>
           <Button
             type="button"
