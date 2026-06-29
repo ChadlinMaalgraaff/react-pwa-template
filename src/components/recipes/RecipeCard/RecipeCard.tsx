@@ -14,8 +14,20 @@ interface RecipeCardProps {
   prepTimeMinutes?: number | null
   cookTimeMinutes?: number | null
   servings?: number | null
+  /** AI-estimated kcal per serving — omitted/null for un-enriched recipes. */
+  calories?: number | null
+  /** AI-estimated grams of protein per serving — omitted/null for un-enriched recipes. */
+  protein?: number | null
   matchInfo?: RecipeCardMatchInfo
   onClick?: () => void
+}
+
+// Nutrition values are AI estimates, so always prefix with "Est." per the recipe-enrichment PRD.
+const formatEstimatedNutrition = (calories?: number | null, protein?: number | null): string | null => {
+  const parts: string[] = []
+  if (typeof calories === 'number') parts.push(`${Math.round(calories)} kcal`)
+  if (typeof protein === 'number') parts.push(`${Math.round(protein)}g protein`)
+  return parts.length > 0 ? `Est. ${parts.join(' · ')}` : null
 }
 
 const RecipeCard = ({
@@ -25,10 +37,13 @@ const RecipeCard = ({
   prepTimeMinutes,
   cookTimeMinutes,
   servings,
+  calories,
+  protein,
   matchInfo,
   onClick,
 }: RecipeCardProps) => {
   const totalTime = (prepTimeMinutes ?? 0) + (cookTimeMinutes ?? 0)
+  const nutrition = formatEstimatedNutrition(calories, protein)
 
   const content = (
     <div className="recipe-card">
@@ -55,6 +70,7 @@ const RecipeCard = ({
           {servings && totalTime > 0 && <span className="recipe-card-meta-dot" />}
           {servings && <span>{servings} servings</span>}
         </div>
+        {nutrition && <p className="recipe-card-nutrition">{nutrition}</p>}
       </div>
     </div>
   )

@@ -44,6 +44,26 @@ describe('RecipeCard Component', () => {
     expect(screen.getByText('Pantry is missing 2 ingredients for this recipe')).toBeInTheDocument()
   })
 
+  it('shows estimated calories and protein when both are provided', () => {
+    render(<RecipeCard title="Bobotie" imageUrl={null} calories={400} protein={25} />)
+    expect(screen.getByText('Est. 400 kcal · 25g protein')).toBeInTheDocument()
+  })
+
+  it('shows only the fields that are present', () => {
+    render(<RecipeCard title="Bobotie" imageUrl={null} calories={400} />)
+    expect(screen.getByText('Est. 400 kcal')).toBeInTheDocument()
+  })
+
+  it('rounds estimated values for display', () => {
+    render(<RecipeCard title="Bobotie" imageUrl={null} calories={399.6} protein={24.4} />)
+    expect(screen.getByText('Est. 400 kcal · 24g protein')).toBeInTheDocument()
+  })
+
+  it('omits the nutrition line for un-enriched recipes', () => {
+    render(<RecipeCard title="Bobotie" imageUrl={null} />)
+    expect(screen.queryByText(/Est\./)).not.toBeInTheDocument()
+  })
+
   it('calls onClick when clicked', async () => {
     const user = userEvent.setup()
     const handleClick = vi.fn()

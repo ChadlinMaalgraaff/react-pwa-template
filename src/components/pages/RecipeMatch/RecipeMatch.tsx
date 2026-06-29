@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Camera, Sparkles, X } from 'lucide-react'
-import { Tabs, Button, Chip, Spinner, type TabOption } from '@components/shared'
+import { Camera, SlidersHorizontal } from 'lucide-react'
+import { Tabs, Button, Chip, SearchBar, BottomSheet, Spinner, type TabOption } from '@components/shared'
 import { RecipeCard } from '@components/recipes'
 import { useRecipeMatch } from '@hooks/useRecipeMatch'
-import { useRecipeRecommendation } from '@hooks/useRecipeRecommendation'
-import { MEAL_TYPES, MEAL_TYPE_LABELS, MealType, RecommendGoal } from '@/types/recipes.types'
+import { MEAL_TYPES, MEAL_TYPE_LABELS, MealType, MatchedRecipe } from '@/types/recipes.types'
 import './RecipeMatch.css'
 
 const RECIPE_TABS: TabOption[] = [
@@ -25,18 +24,76 @@ const MAX_MISSING_OPTIONS: MaxMissingOption[] = [
   { label: 'Any', value: undefined },
 ]
 
-type GoalOption = { value: RecommendGoal; label: string }
+// Every sort is computed instantly from data already on each match — no AI involved.
+type SortMode = 'best' | 'protein' | 'light' | 'low-carb' | 'filling' | 'low-fat' | 'shuffle'
 
-const GOAL_OPTIONS: GoalOption[] = [
-  { value: 'cost-effective', label: 'Cost-effective' },
-  { value: 'high-protein', label: 'High protein' },
-  { value: 'light-meal', label: 'Light meal' },
-  { value: 'quick-cook', label: 'Quick cook' },
+type SortOption = { value: SortMode; label: string }
+
+const SORT_OPTIONS: SortOption[] = [
+  { value: 'best', label: 'Best match' },
+  { value: 'protein', label: 'Highest protein' },
+  { value: 'light', label: 'Lightest' },
+  { value: 'low-carb', label: 'Lowest carb' },
+  { value: 'low-fat', label: 'Lowest fat' },
+  { value: 'filling', label: 'Most filling' },
+  { value: 'shuffle', label: 'Surprise me' },
 ]
 
-const SHUFFLE_SEED_KEY = 'recipeMatchShuffleSeed'
+// Fully-makeable recipes first, then fewest missing ingredients. Stable for equal items,
+// so the order is deterministic across remounts.
+const byMatchQuality = (a: MatchedRecipe, b: MatchedRecipe): number => {
+  if (a.isFullyMakeable !== b.isFullyMakeable) return a.isFullyMakeable ? -1 : 1
+  return a.missingIngredients.length - b.missingIngredients.length
+}
 
-// Seed persisted for the browser session so the random order stays stable when the
+// Recipes missing the estimate sink to the bottom of nutrition sorts (Infinity for ascending,
+// -Infinity for descending) so un-enriched recipes never crowd out the relevant results.
+const ascBy = (key: 'calories' | 'carbs' | 'fat') => (a: MatchedRecipe, b: MatchedRecipe) =>
+  (a[key] ?? Infinity) - (b[key] ?? Infinity)
+
+const descBy = (key: 'calories' | 'protein') => (a: MatchedRecipe, b: MatchedRecipe) =>
+  (b[key] ?? -Infinity) - (a[key] ?? -Infinity)
+
+const SORT_COMPARATORS: Record<Exclude<SortMode, 'shuffle'>, (a: MatchedRecipe, b: MatchedRecipe) => number> = {
+  best: byMatchQuality,
+  protein: descBy('protein'),
+  light: ascBy('calories'),
+  'low-carb': ascBy('carbs'),
+  'low-fat': ascBy('fat'),
+  filling: descBy('calories'),
+}
+
+const SHUFFLE_SEED_KEY = 'recipeMatchShuffleSeed'
+const FILTERS_KEY = 'recipeMatchFilters'
+
+interface PersistedFilters {
+  maxMissing: number | undefined
+  mealType: MealType | null
+  sortMode: SortMode
+}
+
+const DEFAULT_FILTERS: PersistedFilters = { maxMissing: 2, mealType: null, sortMode: 'best' }
+
+const isSortMode = (value: unknown): value is SortMode =>
+  SORT_OPTIONS.some((option) => option.value === value)
+
+// Filters persist for the browser session so they survive navigating into a recipe and back.
+const loadFilters = (): PersistedFilters => {
+  try {
+    const raw = sessionStorage.getItem(FILTERS_KEY)
+    if (!raw) return DEFAULT_FILTERS
+    const parsed = JSON.parse(raw) as Partial<PersistedFilters>
+    return {
+      maxMissing: typeof parsed.maxMissing === 'number' ? parsed.maxMissing : undefined,
+      mealType: parsed.mealType && MEAL_TYPES.includes(parsed.mealType) ? parsed.mealType : null,
+      sortMode: isSortMode(parsed.sortMode) ? parsed.sortMode : 'best',
+    }
+  } catch {
+    return DEFAULT_FILTERS
+  }
+}
+
+// Seed persisted for the browser session so the random "Surprise me" order stays stable when the
 // user navigates to a recipe and back, instead of reshuffling on every remount.
 const getShuffleSeed = (): number => {
   const stored = sessionStorage.getItem(SHUFFLE_SEED_KEY)
@@ -63,110 +120,90 @@ const mulberry32 = (seed: number): (() => number) => {
 
 const RecipeMatch = () => {
   const navigate = useNavigate()
-  const [maxMissing, setMaxMissing] = useState<number | undefined>(2)
-  const [mealTypeFilter, setMealTypeFilter] = useState<MealType | null>(null)
-  const [selectedGoal, setSelectedGoal] = useState<RecommendGoal | null>(null)
+  // Lazy init reads sessionStorage on every mount (not once at module load), so filters saved
+  // before navigating into a recipe are restored when this screen remounts.
+  const [initialFilters] = useState(loadFilters)
+  const [maxMissing, setMaxMissing] = useState<number | undefined>(initialFilters.maxMissing)
+  const [mealTypeFilter, setMealTypeFilter] = useState<MealType | null>(initialFilters.mealType)
+  const [sortMode, setSortMode] = useState<SortMode>(initialFilters.sortMode)
+  const [search, setSearch] = useState('')
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const { matches, isLoading } = useRecipeMatch({ maxMissing, pageSize: 3000 })
-  const { recommendation, isLoading: isRecommending, recommend, clear } = useRecipeRecommendation()
+
+  // Count of filters set away from their defaults, surfaced as a badge on the filter button.
+  const activeFilterCount =
+    (maxMissing !== DEFAULT_FILTERS.maxMissing ? 1 : 0) +
+    (mealTypeFilter !== null ? 1 : 0) +
+    (sortMode !== DEFAULT_FILTERS.sortMode ? 1 : 0)
+
+  const resetFilters = () => {
+    setMaxMissing(DEFAULT_FILTERS.maxMissing)
+    setMealTypeFilter(DEFAULT_FILTERS.mealType)
+    setSortMode(DEFAULT_FILTERS.sortMode)
+  }
 
   const handleTabChange = (value: string) => {
     if (value === 'browse') navigate('/recipes/browse')
   }
 
-  // Seed is read once per mount from sessionStorage, so the random order is preserved
+  // Persist filters so they survive navigating into a recipe and back.
+  useEffect(() => {
+    const toStore: PersistedFilters = { maxMissing, mealType: mealTypeFilter, sortMode }
+    sessionStorage.setItem(FILTERS_KEY, JSON.stringify(toStore))
+  }, [maxMissing, mealTypeFilter, sortMode])
+
+  // Seed is read once per mount from sessionStorage, so the "Surprise me" order is preserved
   // when navigating to a recipe and back instead of reshuffling.
   const [shuffleSeed] = useState(getShuffleSeed)
 
-  const shuffledMatches = useMemo(() => {
-    const random = mulberry32(shuffleSeed)
-    const shuffled = [...matches]
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(random() * (i + 1))
-      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  // Search + meal-type narrowing, before any ordering is applied.
+  const searchedMatches = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    return matches.filter(
+      (match) =>
+        (mealTypeFilter === null || match.mealTypes?.includes(mealTypeFilter)) &&
+        (query === '' || match.title.toLowerCase().includes(query))
+    )
+  }, [matches, mealTypeFilter, search])
+
+  const displayedMatches = useMemo(() => {
+    if (sortMode === 'shuffle') {
+      const random = mulberry32(shuffleSeed)
+      const shuffled = [...searchedMatches]
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1))
+        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+      }
+      return shuffled
     }
-    return shuffled
-  }, [matches, shuffleSeed])
-
-  const filteredMatches = useMemo(
-    () =>
-      mealTypeFilter === null
-        ? shuffledMatches
-        : shuffledMatches.filter((match) => match.mealTypes?.includes(mealTypeFilter)),
-    [shuffledMatches, mealTypeFilter]
-  )
-
-  // Changing a filter can hide the recommended recipe, so clear any active goal pick.
-  useEffect(() => {
-    if (selectedGoal !== null) {
-      clear()
-      setSelectedGoal(null)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [maxMissing, mealTypeFilter])
-
-  const handleGoalSelect = (goal: RecommendGoal) => {
-    if (selectedGoal === goal) {
-      clear()
-      setSelectedGoal(null)
-      return
-    }
-    setSelectedGoal(goal)
-    recommend(goal, filteredMatches)
-  }
-
-  const handleDismiss = () => {
-    clear()
-    setSelectedGoal(null)
-  }
-
-  const recommendedRecipe = recommendation
-    ? filteredMatches.find((m) => m.id === recommendation.recommendedRecipeId)
-    : null
+    return [...searchedMatches].sort(SORT_COMPARATORS[sortMode])
+  }, [searchedMatches, sortMode, shuffleSeed])
 
   return (
     <div className="recipe-match-page">
       <Tabs tabs={RECIPE_TABS} value="match" onChange={handleTabChange} />
 
-      <div className="recipe-match-filter">
-        <span className="recipe-match-filter-label">
-          {maxMissing === undefined
-            ? 'Recipes with any number of missing ingredients'
-            : `Recipes with up to ${maxMissing} missing ingredient${maxMissing === 1 ? '' : 's'}`}
-        </span>
-        <div className="recipe-match-filter-chips">
-          {MAX_MISSING_OPTIONS.map((option) => (
-            <Chip
-              key={option.label}
-              selected={maxMissing === option.value}
-              onClick={() => setMaxMissing(option.value)}
-            >
-              {option.label}
-            </Chip>
-          ))}
-        </div>
-      </div>
-
-      <div className="recipe-match-filter">
-        <span className="recipe-match-filter-label">Meal type</span>
-        <div className="recipe-match-filter-chips">
-          <Chip selected={mealTypeFilter === null} onClick={() => setMealTypeFilter(null)}>
-            All
-          </Chip>
-          {MEAL_TYPES.map((mealType) => (
-            <Chip
-              key={mealType}
-              selected={mealTypeFilter === mealType}
-              onClick={() => setMealTypeFilter((prev) => (prev === mealType ? null : mealType))}
-            >
-              {MEAL_TYPE_LABELS[mealType]}
-            </Chip>
-          ))}
-        </div>
-      </div>
+      <SearchBar
+        placeholder="Search recipes you can cook..."
+        onSearch={setSearch}
+        filterAction={
+          <button
+            type="button"
+            aria-label={`Filters${activeFilterCount > 0 ? ` (${activeFilterCount} active)` : ''}`}
+            onClick={() => setIsFilterOpen(true)}
+            className="recipe-match-filter-btn"
+          >
+            <SlidersHorizontal className="h-[18px] w-[18px]" />
+            {activeFilterCount > 0 && (
+              <span className="recipe-match-filter-btn-badge">{activeFilterCount}</span>
+            )}
+          </button>
+        }
+      />
 
       {isLoading ? (
         <Spinner fullScreen />
-      ) : shuffledMatches.length === 0 ? (
+      ) : matches.length === 0 ? (
         <div className="recipe-match-empty">
           <p className="recipe-match-empty-title">No recipes found yet</p>
           <p className="recipe-match-empty-message">
@@ -182,20 +219,55 @@ const RecipeMatch = () => {
             </Button>
           </div>
         </div>
-      ) : filteredMatches.length === 0 ? (
+      ) : searchedMatches.length === 0 ? (
         <p className="recipe-match-nudge">
-          No recipes for this meal type. Try another or pick &quot;All&quot;.
+          {search.trim()
+            ? `No recipes match "${search.trim()}". Try a different search or filter.`
+            : 'No recipes for this meal type. Try another or pick "All".'}
         </p>
       ) : (
         <>
-          <div className="recipe-match-goal-section">
-            <span className="recipe-match-goal-label">What&apos;s your goal today?</span>
+          <p className="recipe-match-count">
+            {displayedMatches.length} recipe{displayedMatches.length === 1 ? '' : 's'} you can cook
+          </p>
+
+          {displayedMatches.length < 3 && maxMissing !== undefined && (
+            <p className="recipe-match-nudge">Try &quot;Any&quot; to see more recipes.</p>
+          )}
+
+          <div className="recipe-match-list">
+            {displayedMatches.map((match) => (
+              <RecipeCard
+                key={match.id}
+                title={match.title}
+                imageUrl={match.imageUrl}
+                calories={match.calories}
+                protein={match.protein}
+                matchInfo={{
+                  isFullyMakeable: match.isFullyMakeable,
+                  missingCount: match.missingIngredients.length,
+                }}
+                onClick={() => navigate(`/recipes/${match.id}`)}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      <BottomSheet isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} title="Filters">
+        <div className="recipe-match-filter-groups">
+          <div className="recipe-match-filter">
+            <span className="recipe-match-filter-label">
+              {maxMissing === undefined
+                ? 'Recipes with any number of missing ingredients'
+                : `Recipes with up to ${maxMissing} missing ingredient${maxMissing === 1 ? '' : 's'}`}
+            </span>
             <div className="recipe-match-filter-chips">
-              {GOAL_OPTIONS.map((option) => (
+              {MAX_MISSING_OPTIONS.map((option) => (
                 <Chip
-                  key={option.value}
-                  selected={selectedGoal === option.value}
-                  onClick={() => handleGoalSelect(option.value)}
+                  key={option.label}
+                  selected={maxMissing === option.value}
+                  onClick={() => setMaxMissing(option.value)}
                 >
                   {option.label}
                 </Chip>
@@ -203,62 +275,49 @@ const RecipeMatch = () => {
             </div>
           </div>
 
-          {isRecommending && (
-            <div className="recipe-match-skeleton" aria-label="Loading recommendation">
-              <div className="recipe-match-skeleton-line recipe-match-skeleton-line--short" />
-              <div className="recipe-match-skeleton-line" />
-              <div className="recipe-match-skeleton-line recipe-match-skeleton-line--medium" />
-            </div>
-          )}
-
-          {!isRecommending && recommendation && recommendedRecipe && (
-            <div className="recipe-match-recommendation">
-              <span className="recipe-match-recommendation-glow" />
-              <div className="recipe-match-recommendation-header">
-                <span className="recipe-match-recommendation-eyebrow">
-                  <Sparkles className="h-3 w-3" />
-                  Today&apos;s pick
-                </span>
-                <button
-                  type="button"
-                  aria-label="Dismiss recommendation"
-                  onClick={handleDismiss}
-                  className="recipe-match-recommendation-dismiss"
+          <div className="recipe-match-filter">
+            <span className="recipe-match-filter-label">Meal type</span>
+            <div className="recipe-match-filter-chips">
+              <Chip selected={mealTypeFilter === null} onClick={() => setMealTypeFilter(null)}>
+                All
+              </Chip>
+              {MEAL_TYPES.map((mealType) => (
+                <Chip
+                  key={mealType}
+                  selected={mealTypeFilter === mealType}
+                  onClick={() => setMealTypeFilter((prev) => (prev === mealType ? null : mealType))}
                 >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <p className="recipe-match-recommendation-title">{recommendedRecipe.title}</p>
-              <p className="recipe-match-recommendation-rationale">{recommendation.rationale}</p>
-              <button
-                type="button"
-                className="recipe-match-recommendation-btn"
-                onClick={() => navigate(`/recipes/${recommendation.recommendedRecipeId}`)}
-              >
-                View Recipe →
-              </button>
+                  {MEAL_TYPE_LABELS[mealType]}
+                </Chip>
+              ))}
             </div>
-          )}
-
-          {filteredMatches.length < 3 && maxMissing !== undefined && (
-            <p className="recipe-match-nudge">
-              Try &quot;Any&quot; to see more recipes.
-            </p>
-          )}
-
-          <div className="recipe-match-list">
-            {filteredMatches.map((match) => (
-              <RecipeCard
-                key={match.id}
-                title={match.title}
-                imageUrl={match.imageUrl}
-                matchInfo={{ isFullyMakeable: match.isFullyMakeable, missingCount: match.missingIngredients.length }}
-                onClick={() => navigate(`/recipes/${match.id}`)}
-              />
-            ))}
           </div>
-        </>
-      )}
+
+          <div className="recipe-match-filter">
+            <span className="recipe-match-filter-label">Sort by</span>
+            <div className="recipe-match-filter-chips">
+              {SORT_OPTIONS.map((option) => (
+                <Chip
+                  key={option.value}
+                  selected={sortMode === option.value}
+                  onClick={() => setSortMode(option.value)}
+                >
+                  {option.label}
+                </Chip>
+              ))}
+            </div>
+          </div>
+
+          <div className="recipe-match-filter-actions">
+            {activeFilterCount > 0 && (
+              <Button variant="secondary" onClick={resetFilters}>
+                Reset
+              </Button>
+            )}
+            <Button onClick={() => setIsFilterOpen(false)}>Done</Button>
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   )
 }
