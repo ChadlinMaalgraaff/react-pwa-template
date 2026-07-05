@@ -5,6 +5,13 @@ import { Tabs, Button, Chip, SearchBar, BottomSheet, Spinner, type TabOption } f
 import { RecipeCard } from '@components/recipes'
 import { useRecipeMatch } from '@hooks/useRecipeMatch'
 import { MEAL_TYPES, MEAL_TYPE_LABELS, MealType, MatchedRecipe } from '@/types/recipes.types'
+import {
+  NutritionSort,
+  NUTRITION_COMPARATORS,
+  NUTRITION_SORT_LABELS,
+  seededShuffle,
+  getSessionShuffleSeed,
+} from '@utils/recipeSort'
 import './RecipeMatch.css'
 
 const RECIPE_TABS: TabOption[] = [
@@ -25,17 +32,18 @@ const MAX_MISSING_OPTIONS: MaxMissingOption[] = [
 ]
 
 // Every sort is computed instantly from data already on each match — no AI involved.
-type SortMode = 'best' | 'protein' | 'light' | 'low-carb' | 'filling' | 'low-fat' | 'shuffle'
+// 'best' is match-specific; the nutrition sorts and shuffle are shared with Browse.
+type SortMode = 'best' | NutritionSort | 'shuffle'
 
 type SortOption = { value: SortMode; label: string }
 
 const SORT_OPTIONS: SortOption[] = [
   { value: 'best', label: 'Best match' },
-  { value: 'protein', label: 'Highest protein' },
-  { value: 'light', label: 'Lightest' },
-  { value: 'low-carb', label: 'Lowest carb' },
-  { value: 'low-fat', label: 'Lowest fat' },
-  { value: 'filling', label: 'Most filling' },
+  { value: 'protein', label: NUTRITION_SORT_LABELS.protein },
+  { value: 'light', label: NUTRITION_SORT_LABELS.light },
+  { value: 'low-carb', label: NUTRITION_SORT_LABELS['low-carb'] },
+  { value: 'low-fat', label: NUTRITION_SORT_LABELS['low-fat'] },
+  { value: 'filling', label: NUTRITION_SORT_LABELS.filling },
   { value: 'shuffle', label: 'Surprise me' },
 ]
 
@@ -44,23 +52,6 @@ const SORT_OPTIONS: SortOption[] = [
 const byMatchQuality = (a: MatchedRecipe, b: MatchedRecipe): number => {
   if (a.isFullyMakeable !== b.isFullyMakeable) return a.isFullyMakeable ? -1 : 1
   return a.missingIngredients.length - b.missingIngredients.length
-}
-
-// Recipes missing the estimate sink to the bottom of nutrition sorts (Infinity for ascending,
-// -Infinity for descending) so un-enriched recipes never crowd out the relevant results.
-const ascBy = (key: 'calories' | 'carbs' | 'fat') => (a: MatchedRecipe, b: MatchedRecipe) =>
-  (a[key] ?? Infinity) - (b[key] ?? Infinity)
-
-const descBy = (key: 'calories' | 'protein') => (a: MatchedRecipe, b: MatchedRecipe) =>
-  (b[key] ?? -Infinity) - (a[key] ?? -Infinity)
-
-const SORT_COMPARATORS: Record<Exclude<SortMode, 'shuffle'>, (a: MatchedRecipe, b: MatchedRecipe) => number> = {
-  best: byMatchQuality,
-  protein: descBy('protein'),
-  light: ascBy('calories'),
-  'low-carb': ascBy('carbs'),
-  'low-fat': ascBy('fat'),
-  filling: descBy('calories'),
 }
 
 const SHUFFLE_SEED_KEY = 'recipeMatchShuffleSeed'
@@ -90,31 +81,6 @@ const loadFilters = (): PersistedFilters => {
     }
   } catch {
     return DEFAULT_FILTERS
-  }
-}
-
-// Seed persisted for the browser session so the random "Surprise me" order stays stable when the
-// user navigates to a recipe and back, instead of reshuffling on every remount.
-const getShuffleSeed = (): number => {
-  const stored = sessionStorage.getItem(SHUFFLE_SEED_KEY)
-  if (stored !== null) {
-    const parsed = Number(stored)
-    if (Number.isFinite(parsed)) return parsed
-  }
-  const seed = Math.floor(Math.random() * 2 ** 32)
-  sessionStorage.setItem(SHUFFLE_SEED_KEY, String(seed))
-  return seed
-}
-
-// Small deterministic PRNG so the same seed always yields the same shuffle.
-const mulberry32 = (seed: number): (() => number) => {
-  let state = seed
-  return () => {
-    state |= 0
-    state = (state + 0x6d2b79f5) | 0
-    let t = Math.imul(state ^ (state >>> 15), 1 | state)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
 }
 
@@ -154,7 +120,7 @@ const RecipeMatch = () => {
 
   // Seed is read once per mount from sessionStorage, so the "Surprise me" order is preserved
   // when navigating to a recipe and back instead of reshuffling.
-  const [shuffleSeed] = useState(getShuffleSeed)
+  const [shuffleSeed] = useState(() => getSessionShuffleSeed(SHUFFLE_SEED_KEY))
 
   // Search + meal-type narrowing, before any ordering is applied.
   const searchedMatches = useMemo(() => {
@@ -167,16 +133,9 @@ const RecipeMatch = () => {
   }, [matches, mealTypeFilter, search])
 
   const displayedMatches = useMemo(() => {
-    if (sortMode === 'shuffle') {
-      const random = mulberry32(shuffleSeed)
-      const shuffled = [...searchedMatches]
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(random() * (i + 1))
-        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-      }
-      return shuffled
-    }
-    return [...searchedMatches].sort(SORT_COMPARATORS[sortMode])
+    if (sortMode === 'shuffle') return seededShuffle(searchedMatches, shuffleSeed)
+    if (sortMode === 'best') return [...searchedMatches].sort(byMatchQuality)
+    return [...searchedMatches].sort(NUTRITION_COMPARATORS[sortMode])
   }, [searchedMatches, sortMode, shuffleSeed])
 
   return (

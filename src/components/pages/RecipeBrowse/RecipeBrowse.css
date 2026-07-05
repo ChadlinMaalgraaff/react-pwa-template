@@ -4,10 +4,38 @@
   @apply flex flex-col gap-4 p-4;
 }
 
-.recipe-browse-cuisines {
-  @apply flex gap-2 overflow-x-auto pb-2;
-}
-
 .recipe-browse-list {
   @apply flex flex-col gap-3;
+}
+
+.recipe-browse-count {
+  @apply -mb-1 text-[13px] font-semibold text-ink-soft;
+}
+
+.recipe-browse-filter-btn {
+  @apply relative flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-ink-soft shadow-sm;
+}
+
+.recipe-browse-filter-btn-badge {
+  @apply absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[11px] font-bold leading-none text-white;
+}
+
+.recipe-browse-filter-groups {
+  @apply flex flex-col gap-5;
+}
+
+.recipe-browse-filter {
+  @apply flex flex-col gap-2;
+}
+
+.recipe-browse-filter-label {
+  @apply text-[11px] font-bold uppercase tracking-[.14em] text-ink-mute;
+}
+
+.recipe-browse-filter-chips {
+  @apply flex flex-wrap gap-2;
+}
+
+.recipe-browse-filter-actions {
+  @apply mt-1 flex gap-2.5;
 }

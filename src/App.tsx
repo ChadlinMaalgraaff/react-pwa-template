@@ -4,6 +4,7 @@ import { ProtectedRoute, AdminRoute, Toast } from '@components/shared'
 import NotFound from '@components/pages/NotFound/NotFound'
 import Login from '@components/pages/Login/Login'
 import Register from '@components/pages/Register/Register'
+import AuthCallback from '@components/pages/AuthCallback/AuthCallback'
 import Onboarding from '@components/pages/Onboarding/Onboarding'
 import Pantry from '@components/pages/Pantry/Pantry'
 import StaplesCheckIn from '@components/pages/StaplesCheckIn/StaplesCheckIn'
@@ -34,6 +35,7 @@ function App() {
         {/* Public routes - no shell, no auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/onboarding" element={<Onboarding />} />
 
         <Route element={<ProtectedRoute />}>

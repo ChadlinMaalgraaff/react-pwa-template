@@ -34,10 +34,22 @@ class AuthService {
   }
 
   /**
-   * Register new user
+   * Register new user. The backend auto-confirms new accounts and returns a
+   * plain confirmation message — no tokens — so callers must follow up with
+   * `login` to start a session.
    */
-  async register(data: RegisterRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/register', data)
+  async register(data: RegisterRequest): Promise<{ message: string }> {
+    const response = await apiClient.post<{ message: string }>('/auth/register', data)
+    return response.data
+  }
+
+  /**
+   * Exchange a Google (Cognito Hosted UI) authorization code for tokens.
+   * The backend performs the code→token exchange and first-login provisioning,
+   * returning the same token shape as password login.
+   */
+  async loginWithGoogleCode(code: string): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>('/auth/google/callback', { code })
     return response.data
   }
 

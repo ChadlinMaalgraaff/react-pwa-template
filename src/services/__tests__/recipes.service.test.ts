@@ -190,6 +190,16 @@ describe('recipesService', () => {
     expect(second).toBe(first)
   })
 
+  it('seedBriefCache makes a subsequent getCookingBrief return immediately without hitting the API', async () => {
+    const brief = { segments: [{ type: 'intro' as const, index: 0, text: 'Pre-cached' }] }
+
+    recipesService.seedBriefCache('rec-1', brief)
+    const result = await recipesService.getCookingBrief('rec-1')
+
+    expect(mockedClient.post).not.toHaveBeenCalled()
+    expect(result).toBe(brief)
+  })
+
   it('getCookingBrief deduplicates concurrent calls for the same recipe', async () => {
     const data = { segments: [{ type: 'intro', index: 0, text: 'Welcome' }] }
     mockedClient.post.mockResolvedValue({ data })

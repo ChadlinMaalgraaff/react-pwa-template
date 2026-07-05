@@ -11,6 +11,7 @@ import authService from '@/services/auth.service'
 import profileService from '@/services/profile.service'
 import Login from '@components/pages/Login/Login'
 import { ONBOARDING_STORAGE_KEY } from '@components/pages/HowItWorksCarousel/HowItWorksCarousel'
+import { redirectToGoogleSignIn } from '@utils/googleAuth'
 import { UserProfile } from '@/types/profile.types'
 
 vi.mock('@/services/auth.service', () => ({
@@ -25,8 +26,13 @@ vi.mock('@/services/profile.service', () => ({
   },
 }))
 
+vi.mock('@utils/googleAuth', () => ({
+  redirectToGoogleSignIn: vi.fn(),
+}))
+
 const mockedAuthService = authService as unknown as Record<'login', ReturnType<typeof vi.fn>>
 const mockedProfileService = profileService as unknown as Record<'getProfile', ReturnType<typeof vi.fn>>
+const mockedRedirectToGoogleSignIn = redirectToGoogleSignIn as unknown as ReturnType<typeof vi.fn>
 
 const navigateMock = vi.fn()
 
@@ -60,6 +66,15 @@ const renderLogin = () =>
     </Provider>
   )
 
+const renderLoginWithState = (state: Record<string, unknown>) =>
+  render(
+    <Provider store={buildStore()}>
+      <MemoryRouter initialEntries={[{ pathname: '/login', state }]}>
+        <Login />
+      </MemoryRouter>
+    </Provider>
+  )
+
 describe('Login Page', () => {
   beforeEach(() => {
     navigateMock.mockClear()
@@ -69,7 +84,7 @@ describe('Login Page', () => {
   it('renders email and password fields with a submit button', () => {
     renderLogin()
     expect(screen.getByLabelText('Email', { exact: false })).toBeInTheDocument()
-    expect(screen.getByLabelText('Password', { exact: false })).toBeInTheDocument()
+    expect(screen.getByLabelText('Password', { exact: true })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
   })
 
@@ -86,7 +101,7 @@ describe('Login Page', () => {
     renderLogin()
 
     await user.type(screen.getByLabelText('Email', { exact: false }), 'jane@example.com')
-    await user.type(screen.getByLabelText('Password', { exact: false }), 'password123')
+    await user.type(screen.getByLabelText('Password', { exact: true }), 'password123')
     await user.click(screen.getByRole('button', { name: 'Log in' }))
 
     await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/how-it-works'))
@@ -106,7 +121,7 @@ describe('Login Page', () => {
     renderLogin()
 
     await user.type(screen.getByLabelText('Email', { exact: false }), 'jane@example.com')
-    await user.type(screen.getByLabelText('Password', { exact: false }), 'password123')
+    await user.type(screen.getByLabelText('Password', { exact: true }), 'password123')
     await user.click(screen.getByRole('button', { name: 'Log in' }))
 
     await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/staples'))
@@ -126,10 +141,25 @@ describe('Login Page', () => {
     renderLogin()
 
     await user.type(screen.getByLabelText('Email', { exact: false }), 'admin@example.com')
-    await user.type(screen.getByLabelText('Password', { exact: false }), 'password123')
+    await user.type(screen.getByLabelText('Password', { exact: true }), 'password123')
     await user.click(screen.getByRole('button', { name: 'Log in' }))
 
     await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/admin'))
+  })
+
+  it('prefills the email when arriving with a location state (e.g. fallback from registration)', () => {
+    renderLoginWithState({ email: 'jane@example.com' })
+
+    expect(screen.getByLabelText('Email', { exact: false })).toHaveValue('jane@example.com')
+  })
+
+  it('starts Google sign-in when the Continue with Google button is clicked', async () => {
+    const user = userEvent.setup()
+    renderLogin()
+
+    await user.click(screen.getByRole('button', { name: /continue with google/i }))
+
+    expect(mockedRedirectToGoogleSignIn).toHaveBeenCalledTimes(1)
   })
 
   it('shows an error message on failed login', async () => {
@@ -138,7 +168,7 @@ describe('Login Page', () => {
     renderLogin()
 
     await user.type(screen.getByLabelText('Email', { exact: false }), 'jane@example.com')
-    await user.type(screen.getByLabelText('Password', { exact: false }), 'wrong-password')
+    await user.type(screen.getByLabelText('Password', { exact: true }), 'wrong-password')
     await user.click(screen.getByRole('button', { name: 'Log in' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password')

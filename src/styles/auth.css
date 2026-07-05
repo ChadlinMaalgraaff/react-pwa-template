@@ -1,0 +1,377 @@
+/*
+ * Auth pages (Login / Register) — "What's Lekker?" redesign.
+ * Shared by Login.tsx and Register.tsx. All classes are namespaced `wl-auth-*`
+ * and design tokens are scoped to `.wl-auth` so nothing leaks globally.
+ */
+
+.wl-auth {
+  /* design tokens */
+  --herb-700: #1e5645;
+  --herb-600: #235c47;
+  --herb-500: #2c6b53;
+  --honey: #cc8a1e;
+  --honey-soft: #e6a93f;
+  --oat: #f0ede2;
+  --oat-deep: #e9e5d6;
+  --cream: #fbfaf4;
+  --cream-2: #f6f3ea;
+  --ink: #1b2a22;
+  --muted: #6f756a;
+  --hairline: #e3dfd1;
+  --hairline-2: #ece8da;
+  --radius-card: 30px;
+  --radius-field: 16px;
+  --shadow-card: 0 1px 2px rgba(23, 61, 47, 0.04), 0 18px 40px -18px rgba(23, 61, 47, 0.28), 0 40px 80px -40px rgba(23, 61, 47, 0.22);
+  --shadow-btn: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 8px 18px -6px rgba(30, 86, 69, 0.55);
+  --wl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: radial-gradient(120% 80% at 50% -10%, #f6f3e8 0%, var(--oat) 46%, var(--oat-deep) 100%);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px calc(24px + env(safe-area-inset-bottom));
+  min-height: 100dvh;
+}
+
+.wl-auth-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* emblem badge that nudges over the card edge */
+.wl-auth-badge {
+  width: 104px;
+  height: 104px;
+  margin: 0 auto -52px;
+  position: relative;
+  z-index: 3;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--cream-2) 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 12px 26px -10px rgba(23, 61, 47, 0.35), 0 0 0 1px var(--hairline);
+  display: grid;
+  place-items: center;
+  animation: wl-badge-in 0.9s var(--wl-ease) both;
+}
+
+.wl-auth-badge img {
+  width: 78px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(23, 61, 47, 0.18));
+}
+
+.wl-auth-card {
+  position: relative;
+  background: linear-gradient(180deg, var(--cream) 0%, #f8f5ec 100%);
+  border: 1px solid var(--hairline-2);
+  border-radius: var(--radius-card);
+  padding: 74px 30px 28px;
+  box-shadow: var(--shadow-card);
+  animation: wl-card-in 0.8s var(--wl-ease) both;
+}
+
+/* honey hairline accent at the very top of the card */
+.wl-auth-card::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -1px;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent, var(--honey) 30%, var(--honey-soft) 70%, transparent);
+  opacity: 0.85;
+}
+
+.wl-auth-head {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.wl-auth-wordmark {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: var(--herb-700);
+  margin: 0;
+}
+
+.wl-auth-q {
+  color: var(--honey);
+}
+
+.wl-auth-welcome {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--ink);
+  margin: 10px 0 0;
+}
+
+.wl-auth-sub {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 5px 0 0;
+}
+
+.wl-auth-error {
+  margin: 0 0 18px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: rgba(157, 47, 34, 0.08);
+  border: 1px solid rgba(157, 47, 34, 0.18);
+  color: #9d2f22;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.wl-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wl-auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.wl-auth-field label {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--herb-700);
+}
+
+.wl-auth-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--cream-2);
+  border: 1.5px solid var(--hairline);
+  border-radius: var(--radius-field);
+  transition: border-color 0.2s var(--wl-ease), box-shadow 0.2s var(--wl-ease), background 0.2s var(--wl-ease);
+}
+
+.wl-auth-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 52px;
+  color: var(--muted);
+  flex: none;
+}
+
+.wl-auth-input input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15.5px;
+  color: var(--ink);
+  padding: 14px 8px 14px 0;
+  min-width: 0;
+}
+
+.wl-auth-input input::placeholder {
+  color: #a7a89c;
+}
+
+.wl-auth-toggle {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted);
+  width: 46px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 0 var(--radius-field) var(--radius-field) 0;
+}
+
+.wl-auth-toggle:hover {
+  color: var(--herb-700);
+}
+
+.wl-auth-input:focus-within {
+  border-color: var(--herb-600);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(30, 86, 69, 0.1);
+}
+
+.wl-auth-btn {
+  margin-top: 4px;
+  border: 0;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15.5px;
+  letter-spacing: 0.01em;
+  color: #f4f1e6;
+  padding: 15px 16px;
+  border-radius: var(--radius-field);
+  background: linear-gradient(180deg, var(--herb-500) 0%, var(--herb-700) 100%);
+  box-shadow: var(--shadow-btn);
+  transition: transform 0.15s var(--wl-ease), box-shadow 0.2s var(--wl-ease), filter 0.2s var(--wl-ease);
+}
+
+.wl-auth-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 12px 24px -8px rgba(30, 86, 69, 0.6);
+}
+
+.wl-auth-btn:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+.wl-auth-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+  transform: none;
+  filter: none;
+}
+
+.wl-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0 18px;
+}
+
+.wl-auth-divider::before,
+.wl-auth-divider::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: var(--hairline);
+}
+
+.wl-auth-divider span {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.wl-auth-google {
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid var(--hairline);
+  padding: 13px 16px;
+  border-radius: var(--radius-field);
+  transition: border-color 0.2s var(--wl-ease), box-shadow 0.2s var(--wl-ease), transform 0.15s var(--wl-ease);
+}
+
+.wl-auth-google:hover {
+  border-color: #d6d1c0;
+  box-shadow: 0 6px 16px -10px rgba(23, 61, 47, 0.4);
+  transform: translateY(-1px);
+}
+
+.wl-auth-google svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.wl-auth-foot {
+  text-align: center;
+  margin: 22px 0 2px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+/* OAuth callback loading state */
+.wl-auth-callback {
+  display: flex;
+  justify-content: center;
+  padding: 14px 0 6px;
+}
+
+.wl-auth-link {
+  color: var(--herb-700);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13.5px;
+  position: relative;
+}
+
+.wl-auth-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 100%;
+  bottom: -2px;
+  height: 1.5px;
+  background: var(--herb-700);
+  transition: right 0.25s var(--wl-ease);
+}
+
+.wl-auth-link:hover::after {
+  right: 0;
+}
+
+@keyframes wl-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wl-badge-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wl-auth *,
+  .wl-auth-badge,
+  .wl-auth-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .wl-auth-card {
+    padding: 70px 22px 24px;
+  }
+  .wl-auth-wordmark {
+    font-size: 27px;
+  }
+}

@@ -71,12 +71,6 @@ export const useCookingMode = (recipeId: string | undefined): UseCookingModeRetu
     stateRef.current.cache.clear()
   }, [])
 
-  // Warm the brief cache the moment the recipe detail page opens.
-  useEffect(() => {
-    if (!recipeId) return
-    recipesService.getCookingBrief(recipeId).catch(() => {})
-  }, [recipeId])
-
   const prefetchAll = useCallback((steps: CookingBriefSegment[]) => {
     steps.forEach((step, index) => {
       const state = stateRef.current

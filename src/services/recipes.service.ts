@@ -118,6 +118,14 @@ class RecipesService {
     return promise
   }
 
+  /**
+   * Pre-seed the brief cache from a recipe response so the first getCookingBrief
+   * call is a synchronous cache hit — no POST needed.
+   */
+  seedBriefCache(recipeId: string, brief: CookingBriefResponse): void {
+    this.briefCache.set(recipeId, brief)
+  }
+
   clearBriefCache() {
     this.briefCache.clear()
     this.briefPending.clear()

@@ -18,6 +18,9 @@ export const useRecipeDetail = (id: string | undefined) => {
       try {
         setIsLoading(true)
         const data = await recipesService.getRecipe(id)
+        if (data.cookingBrief) {
+          recipesService.seedBriefCache(data.id, data.cookingBrief)
+        }
         setRecipe(data)
       } catch (err) {
         const message = getErrorMessage(err)

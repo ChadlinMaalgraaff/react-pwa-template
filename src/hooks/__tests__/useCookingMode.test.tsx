@@ -274,14 +274,8 @@ describe('useCookingMode', () => {
     await waitFor(() => expect(result.current.status).toBe('done'))
   })
 
-  it('calls getCookingBrief in the background on mount to warm the cache', async () => {
+  it('does not call getCookingBrief on mount — brief is seeded by useRecipeDetail', () => {
     renderHook(() => useCookingMode('recipe-1'), { wrapper })
-
-    await waitFor(() => expect(mockedGetCookingBrief).toHaveBeenCalledWith('recipe-1'))
-  })
-
-  it('does not background-prefetch when recipeId is undefined', () => {
-    renderHook(() => useCookingMode(undefined), { wrapper })
     expect(mockedGetCookingBrief).not.toHaveBeenCalled()
   })
 

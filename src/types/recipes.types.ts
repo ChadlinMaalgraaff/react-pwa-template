@@ -51,6 +51,7 @@ export interface RecipeSummary {
   fat?: number | null
   carbs?: number | null
   mealTypes?: string[] | null
+  cookingBrief?: CookingBriefResponse
 }
 
 export interface RecipeIngredientDetail {
@@ -87,6 +88,7 @@ export interface RecipeDetail {
   fat?: number | null
   carbs?: number | null
   mealTypes?: string[] | null
+  cookingBrief?: CookingBriefResponse
 }
 
 export interface ListRecipesParams {
@@ -125,6 +127,7 @@ export interface MatchedRecipe {
   fat?: number
   carbs?: number
   mealTypes?: MealType[]
+  cookingBrief?: CookingBriefResponse
 }
 
 export type RecipeMatchPage = PaginatedResult<MatchedRecipe>

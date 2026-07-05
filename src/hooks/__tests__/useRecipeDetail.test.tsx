@@ -12,10 +12,11 @@ import { RecipeDetail } from '@/types/recipes.types'
 vi.mock('@/services/recipes.service', () => ({
   default: {
     getRecipe: vi.fn(),
+    seedBriefCache: vi.fn(),
   },
 }))
 
-const mockedService = recipesService as unknown as Record<'getRecipe', ReturnType<typeof vi.fn>>
+const mockedService = recipesService as unknown as Record<'getRecipe' | 'seedBriefCache', ReturnType<typeof vi.fn>>
 
 const buildStore = () =>
   configureStore({
@@ -43,6 +44,13 @@ const recipe: RecipeDetail = {
   source: null,
 }
 
+const brief = {
+  segments: [
+    { type: 'intro' as const, index: 0, text: 'Welcome to Bobotie' },
+    { type: 'step' as const, index: 1, stepIndex: 0, text: 'Brown the mince' },
+  ],
+}
+
 describe('useRecipeDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -60,6 +68,30 @@ describe('useRecipeDetail', () => {
 
     expect(result.current.recipe).toEqual(recipe)
     expect(mockedService.getRecipe).toHaveBeenCalledWith('recipe-1')
+  })
+
+  it('seeds the brief cache when the recipe response includes a cookingBrief', async () => {
+    const recipeWithBrief = { ...recipe, cookingBrief: brief }
+    mockedService.getRecipe.mockResolvedValue(recipeWithBrief)
+    const store = buildStore()
+
+    renderHook(() => useRecipeDetail('recipe-1'), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    })
+
+    await waitFor(() => expect(mockedService.seedBriefCache).toHaveBeenCalledWith('recipe-1', brief))
+  })
+
+  it('does not call seedBriefCache when cookingBrief is absent from the response', async () => {
+    mockedService.getRecipe.mockResolvedValue(recipe)
+    const store = buildStore()
+
+    const { result } = renderHook(() => useRecipeDetail('recipe-1'), {
+      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
+    })
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+    expect(mockedService.seedBriefCache).not.toHaveBeenCalled()
   })
 
   it('does not fetch when id is undefined', async () => {

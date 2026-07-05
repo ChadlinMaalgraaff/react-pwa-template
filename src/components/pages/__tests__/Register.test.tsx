@@ -13,10 +13,17 @@ import Register from '@components/pages/Register/Register'
 vi.mock('@/services/auth.service', () => ({
   default: {
     register: vi.fn(),
+    login: vi.fn(),
   },
 }))
 
-const mockedAuthService = authService as unknown as Record<'register', ReturnType<typeof vi.fn>>
+const mockedAuthService = authService as unknown as Record<'register' | 'login', ReturnType<typeof vi.fn>>
+
+const completeLoginMock = vi.fn()
+
+vi.mock('@hooks/useCompleteLogin', () => ({
+  useCompleteLogin: () => completeLoginMock,
+}))
 
 const navigateMock = vi.fn()
 
@@ -42,27 +49,41 @@ const renderRegister = () =>
 describe('Register Page', () => {
   beforeEach(() => {
     navigateMock.mockClear()
+    completeLoginMock.mockClear()
+    mockedAuthService.register.mockReset()
+    mockedAuthService.login.mockReset()
   })
 
   it('renders name, email, and password fields with a submit button', () => {
     renderRegister()
     expect(screen.getByLabelText('Name', { exact: false })).toBeInTheDocument()
     expect(screen.getByLabelText('Email', { exact: false })).toBeInTheDocument()
-    expect(screen.getByLabelText('Password', { exact: false })).toBeInTheDocument()
+    expect(screen.getByLabelText('Password', { exact: true })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Sign up' })).toBeInTheDocument()
   })
 
-  it('navigates to /login on successful registration', async () => {
-    mockedAuthService.register.mockResolvedValue({ token: 'token-123', user: {} })
+  it('logs the user straight in after a successful registration', async () => {
+    mockedAuthService.register.mockResolvedValue({ message: 'Account created' })
+    mockedAuthService.login.mockResolvedValue({
+      accessToken: 'access-token-123',
+      idToken: 'id-token-123',
+      refreshToken: 'refresh-token-123',
+      expiresIn: 3600,
+      tokenType: 'Bearer',
+    })
     const user = userEvent.setup()
     renderRegister()
 
     await user.type(screen.getByLabelText('Name', { exact: false }), 'Jane Doe')
     await user.type(screen.getByLabelText('Email', { exact: false }), 'jane@example.com')
-    await user.type(screen.getByLabelText('Password', { exact: false }), 'password123')
+    await user.type(screen.getByLabelText('Password', { exact: true }), 'password123')
     await user.click(screen.getByRole('button', { name: 'Sign up' }))
 
-    await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/login'))
+    await waitFor(() =>
+      expect(mockedAuthService.login).toHaveBeenCalledWith({ email: 'jane@example.com', password: 'password123' })
+    )
+    await waitFor(() => expect(completeLoginMock).toHaveBeenCalledWith('access-token-123'))
+    expect(navigateMock).not.toHaveBeenCalled()
   })
 
   it('shows an error message on failed registration', async () => {
@@ -72,9 +93,27 @@ describe('Register Page', () => {
 
     await user.type(screen.getByLabelText('Name', { exact: false }), 'Jane Doe')
     await user.type(screen.getByLabelText('Email', { exact: false }), 'jane@example.com')
-    await user.type(screen.getByLabelText('Password', { exact: false }), 'password123')
+    await user.type(screen.getByLabelText('Password', { exact: true }), 'password123')
     await user.click(screen.getByRole('button', { name: 'Sign up' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Email already registered')
+    expect(mockedAuthService.login).not.toHaveBeenCalled()
+  })
+
+  it('falls back to /login with the email prefilled if auto-login fails after a successful registration', async () => {
+    mockedAuthService.register.mockResolvedValue({ message: 'Account created' })
+    mockedAuthService.login.mockRejectedValue(new Error('user not confirmed'))
+    const user = userEvent.setup()
+    renderRegister()
+
+    await user.type(screen.getByLabelText('Name', { exact: false }), 'Jane Doe')
+    await user.type(screen.getByLabelText('Email', { exact: false }), 'jane@example.com')
+    await user.type(screen.getByLabelText('Password', { exact: true }), 'password123')
+    await user.click(screen.getByRole('button', { name: 'Sign up' }))
+
+    await waitFor(() =>
+      expect(navigateMock).toHaveBeenCalledWith('/login', { state: { email: 'jane@example.com' } })
+    )
+    expect(completeLoginMock).not.toHaveBeenCalled()
   })
 })
